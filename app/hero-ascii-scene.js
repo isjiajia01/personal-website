@@ -103,8 +103,12 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
 
   for (let layer = 3; layer >= 1; layer -= 1) {
     const shell = buildLetter(bodyMaterial);
-    shell.position.set(-layer * 0.2, layer * 0.12, -layer * 0.18);
-    shell.rotation.z = -0.003 * layer;
+    const depthBias = layer / 3;
+    shell.position.set(-layer * 0.28, layer * 0.1, -layer * 0.32);
+    shell.rotation.z = -0.005 * layer;
+    shell.rotation.y = -0.055 * depthBias;
+    shell.scale.x = 1 - depthBias * 0.018;
+    shell.scale.y = 1 + depthBias * 0.012;
     group.add(shell);
   }
 
@@ -177,8 +181,20 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
       const horizontalEdge = Math.abs(top - bottom);
       const verticalEdge = Math.abs(left - right);
       const edgeWeight = clamp((verticalEdge + horizontalEdge) * 0.88, 0, 1);
-      const horizontalBoost = clamp(horizontalEdge * 1.35, 0, 1);
-      const sculptedBrightness = clamp(posterized - edgeWeight * 0.12 - horizontalBoost * 0.06, 0, 1);
+      const orientationTotal = horizontalEdge + verticalEdge + 0.0001;
+      const horizontalDominance = clamp((horizontalEdge - verticalEdge) / orientationTotal, 0, 1);
+      const verticalDominance = clamp((verticalEdge - horizontalEdge) / orientationTotal, 0, 1);
+      const diagonalPresence = clamp(1 - Math.abs(horizontalEdge - verticalEdge) / orientationTotal, 0, 1);
+      const topBarBias = y < rows * 0.24 ? 1 : 0;
+      const bottomBarBias = y > rows * 0.72 ? 1 : 0;
+      const horizontalBoost = horizontalDominance * (0.045 + (topBarBias + bottomBarBias) * 0.03);
+      const verticalBoost = verticalDominance * 0.038;
+      const diagonalLift = diagonalPresence * 0.035;
+      const sculptedBrightness = clamp(
+        posterized - edgeWeight * 0.09 - horizontalBoost - verticalBoost + diagonalLift,
+        0,
+        1
+      );
       const darkness = Math.pow(1 - sculptedBrightness, 1.74);
       const charIndex = Math.round(darkness * maxIndex);
       const char = ASCII_CHARS[charIndex];
@@ -208,8 +224,8 @@ export default function HeroAsciiScene() {
 
     const bgColor = new THREE.Color(0xf4eadb);
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
-    camera.position.set(0.18, 0.7, 46.2);
-    camera.lookAt(0, 0.72, 0);
+    camera.position.set(0.95, 0.68, 45.5);
+    camera.lookAt(0.15, 0.7, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -222,13 +238,13 @@ export default function HeroAsciiScene() {
 
     const scene = new THREE.Scene();
     const ambient = new THREE.AmbientLight(0xfff3e4, 0.72);
-    const keyLight = new THREE.DirectionalLight(0xfff8ee, 1.2);
-    const fillLight = new THREE.DirectionalLight(0xe9c99c, 0.88);
-    const rimLight = new THREE.DirectionalLight(0x8e643d, 0.42);
+    const keyLight = new THREE.DirectionalLight(0xfff8ee, 1.32);
+    const fillLight = new THREE.DirectionalLight(0xf0d7b7, 0.66);
+    const rimLight = new THREE.DirectionalLight(0x8e643d, 0.62);
 
-    keyLight.position.set(10, 14, 18);
-    fillLight.position.set(-12, -2, 10);
-    rimLight.position.set(-14, 10, 6);
+    keyLight.position.set(14, 15, 20);
+    fillLight.position.set(-8, -2, 12);
+    rimLight.position.set(-18, 11, 4);
     scene.add(ambient, keyLight, fillLight, rimLight);
 
     const faceMaterial = new THREE.MeshStandardMaterial({
@@ -250,10 +266,10 @@ export default function HeroAsciiScene() {
     const i = createLetterStack(buildLetterI, faceMaterial, bodyMaterial);
     const a = createLetterStack(buildLetterA, faceMaterial, bodyMaterial);
 
-    j.position.x = -5.85;
+    j.position.x = -5.9;
     i.position.x = 0;
-    a.position.x = 5.95;
-    a.position.z = 0.2;
+    a.position.x = 6.0;
+    a.position.z = 0.55;
 
     root.add(j, i, a);
     root.scale.setScalar(0.9);
@@ -401,21 +417,21 @@ export default function HeroAsciiScene() {
       pointerCurrentX += (pointerTargetX - pointerCurrentX) * pointerLerp;
       pointerCurrentY += (pointerTargetY - pointerCurrentY) * pointerLerp;
 
-      root.rotation.x = -0.04 + Math.cos(t * 0.7) * 0.01 - pointerCurrentY * 0.028;
-      root.rotation.y = 0.095 + Math.sin(t * 0.52) * 0.022 + pointerCurrentX * 0.04;
-      root.rotation.z = Math.sin(t * 0.3) * 0.008;
+      root.rotation.x = -0.038 + Math.cos(t * 0.7) * 0.01 - pointerCurrentY * 0.026;
+      root.rotation.y = 0.18 + Math.sin(t * 0.52) * 0.026 + pointerCurrentX * 0.055;
+      root.rotation.z = Math.sin(t * 0.3) * 0.006;
       root.position.y = 0.92 + Math.sin(t * 0.9) * 0.08 - pointerCurrentY * 0.11;
-      root.position.x = pointerCurrentX * 0.14;
+      root.position.x = pointerCurrentX * 0.18;
 
       if (isGlitching) {
         root.rotation.y += (Math.random() - 0.5) * 0.028;
         root.position.x = (Math.random() - 0.5) * 0.08;
-        camera.position.x = 0.18 + (Math.random() - 0.5) * 0.05;
+        camera.position.x = 0.95 + (Math.random() - 0.5) * 0.05;
       } else {
-        camera.position.x += (0.18 - camera.position.x) * 0.12;
+        camera.position.x += (0.95 - camera.position.x) * 0.12;
       }
 
-      camera.lookAt(root.position.x * 0.05, 0.72, 0);
+      camera.lookAt(0.18 + root.position.x * 0.06, 0.7, 0);
 
       renderer.setRenderTarget(renderTarget);
       renderer.render(scene, camera);
