@@ -52,10 +52,10 @@ function buildLetterJ(material) {
 
 function buildLetterI(material) {
   const shape = new THREE.Shape();
-  shape.moveTo(-3.8, 5.1);
-  shape.lineTo(3.8, 5.1);
-  shape.lineTo(3.8, 4.15);
-  shape.lineTo(1.32, 4.15);
+  shape.moveTo(-3.45, 5.1);
+  shape.lineTo(3.45, 5.1);
+  shape.lineTo(3.45, 4.15);
+  shape.lineTo(1.24, 4.15);
   shape.lineTo(1.32, 3.35);
   shape.lineTo(0.55, 3.35);
   shape.lineTo(0.55, -5.6);
@@ -70,8 +70,8 @@ function buildLetterI(material) {
   shape.lineTo(-0.55, -5.6);
   shape.lineTo(-0.55, 3.35);
   shape.lineTo(-1.32, 3.35);
-  shape.lineTo(-1.32, 4.15);
-  shape.lineTo(-3.8, 4.15);
+  shape.lineTo(-1.24, 4.15);
+  shape.lineTo(-3.45, 4.15);
   shape.closePath();
   return shapeToMesh(shape, material);
 }
