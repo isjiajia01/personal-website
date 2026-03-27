@@ -81,17 +81,17 @@ function buildLetterA(material) {
   shape.moveTo(0, 6.4);
   shape.lineTo(5.55, -7.2);
   shape.lineTo(4.0, -7.2);
-  shape.lineTo(2.7, -4.1);
-  shape.lineTo(-2.7, -4.1);
+  shape.lineTo(2.7, -3.65);
+  shape.lineTo(-2.7, -3.65);
   shape.lineTo(-4.0, -7.2);
   shape.lineTo(-5.55, -7.2);
   shape.lineTo(0, 6.4);
   shape.closePath();
 
   const inner = new THREE.Path();
-  inner.moveTo(0, 2.9);
-  inner.lineTo(2.18, -1.72);
-  inner.lineTo(-2.18, -1.72);
+  inner.moveTo(0, 2.72);
+  inner.lineTo(2.12, -2.28);
+  inner.lineTo(-2.12, -2.28);
   inner.closePath();
   shape.holes.push(inner);
 
