@@ -25,6 +25,8 @@ export default function SiteShell() {
   const releaseTimerRef = useRef(null);
   const touchStartYRef = useRef(null);
   const snapLockRef = useRef(false);
+  const snapFrameRef = useRef(0);
+  const snapClassTimerRef = useRef(null);
 
   const featuredProjects = useMemo(() => getFeaturedProjects(), []);
   const archivedProjects = useMemo(() => getArchivedProjects(), []);
@@ -177,17 +179,54 @@ export default function SiteShell() {
 
       releaseTimerRef.current = window.setTimeout(() => {
         scrollEnergyRef.current = 0;
-      }, 140);
+      }, 180);
+    };
+
+    const smoothScrollTo = (targetY, duration = 860) => {
+      const startY = window.scrollY;
+      const distance = targetY - startY;
+      const startTime = performance.now();
+
+      const easeOutQuint = (value) => 1 - Math.pow(1 - value, 5);
+
+      const step = (now) => {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = easeOutQuint(progress);
+        window.scrollTo(0, startY + distance * eased);
+
+        if (progress < 1) {
+          snapFrameRef.current = window.requestAnimationFrame(step);
+        }
+      };
+
+      snapFrameRef.current = window.requestAnimationFrame(step);
+    };
+
+    const triggerWorkArrivalCue = () => {
+      const node = workNode;
+      node.classList.remove("is-snap-arrival");
+      void node.offsetWidth;
+      node.classList.add("is-snap-arrival");
+
+      if (snapClassTimerRef.current) {
+        window.clearTimeout(snapClassTimerRef.current);
+      }
+
+      snapClassTimerRef.current = window.setTimeout(() => {
+        node.classList.remove("is-snap-arrival");
+      }, 900);
     };
 
     const smoothSnapToWork = () => {
       if (snapLockRef.current) return;
       snapLockRef.current = true;
       scrollEnergyRef.current = 0;
-      workNode.scrollIntoView({ behavior: "smooth", block: "start" });
+      const targetY = Math.max(workNode.offsetTop - 88, 0);
+      smoothScrollTo(targetY, 980);
+      triggerWorkArrivalCue();
       window.setTimeout(() => {
         snapLockRef.current = false;
-      }, 900);
+      }, 1180);
     };
 
     const isHeroActive = () => {
@@ -202,7 +241,7 @@ export default function SiteShell() {
       scrollEnergyRef.current = Math.min(scrollEnergyRef.current + event.deltaY, 220);
       releaseEnergy();
 
-      if (scrollEnergyRef.current < 110) return;
+      if (scrollEnergyRef.current < 145) return;
 
       event.preventDefault();
       smoothSnapToWork();
@@ -220,7 +259,7 @@ export default function SiteShell() {
       if (startY === null || endY === null) return;
 
       const swipeDistance = startY - endY;
-      if (swipeDistance < 44) return;
+      if (swipeDistance < 64) return;
       smoothSnapToWork();
     };
 
@@ -231,6 +270,12 @@ export default function SiteShell() {
     return () => {
       if (releaseTimerRef.current) {
         window.clearTimeout(releaseTimerRef.current);
+      }
+      if (snapFrameRef.current) {
+        window.cancelAnimationFrame(snapFrameRef.current);
+      }
+      if (snapClassTimerRef.current) {
+        window.clearTimeout(snapClassTimerRef.current);
       }
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
@@ -366,7 +411,7 @@ export default function SiteShell() {
             <div className="project-grid project-grid-reset">
               {featuredProjects.map((project, index) => (
                 <article
-                  className="project-card editorial-project-card reveal-item"
+                  className={`project-card editorial-project-card reveal-item${index < 2 ? " work-arrival-card" : ""}`}
                   data-reveal
                   style={{ "--reveal-delay": `${220 + index * 90}ms` }}
                   key={project.slug}
