@@ -337,13 +337,18 @@ pre {
 
 .hero-ascii-scene {
   position: absolute;
-  inset: 0 0 5.8rem;
-  width: 100%;
+  top: clamp(1rem, 4vh, 2.4rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 1080px);
+  height: clamp(280px, 54vh, 620px);
   display: grid;
   place-items: center;
   animation: ascii-fade-in 1.8s ease both;
   pointer-events: auto;
-  padding: 1.5rem 2rem 1rem;
+  padding: 0;
+  overflow: hidden;
+  contain: layout paint;
 }
 
 .hero-ascii-scene::before,
@@ -352,16 +357,15 @@ pre {
 }
 
 .hero-ascii-output {
-  width: auto;
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   margin: 0;
   overflow: hidden;
   background: transparent !important;
   color: #5b4429 !important;
   font-family: var(--mono) !important;
-  font-size: clamp(8px, 0.68vw, 10px) !important;
-  line-height: 0.72 !important;
+  font-size: clamp(7px, 0.56vw, 9px) !important;
+  line-height: 0.74 !important;
   letter-spacing: -0.06em !important;
   text-align: center;
   white-space: pre !important;
@@ -373,6 +377,8 @@ pre {
 }
 
 .hero-ascii-output table {
+  width: 100% !important;
+  height: 100% !important;
   margin: 0 auto !important;
   color: inherit !important;
   background: transparent !important;
@@ -413,6 +419,7 @@ pre {
   width: 100%;
   min-height: calc(100vh - 9.5rem);
   padding-bottom: 0.7rem;
+  padding-top: clamp(320px, 58vh, 690px);
 }
 
 .hero-cta-stack {

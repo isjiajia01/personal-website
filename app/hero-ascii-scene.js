@@ -128,7 +128,7 @@ export default function HeroAsciiScene() {
 
     const effect = new AsciiEffect(renderer, " .,:;=ox%#@", {
       invert: false,
-      resolution: 0.15
+      resolution: 0.12
     });
     effect.domElement.className = "hero-ascii-output";
     effect.domElement.style.background = "transparent";
