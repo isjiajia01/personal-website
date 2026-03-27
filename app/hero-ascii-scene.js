@@ -105,22 +105,6 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
   return group;
 }
 
-function extractForegroundAscii(rawText) {
-  const allowedChars = new Set([";", "=", "o", "x", "%", "#", "@"]);
-
-  return rawText
-    .split("\n")
-    .map((line) =>
-      line
-        .split("")
-        .map((char) => (allowedChars.has(char) ? char : " "))
-        .join("")
-        .replace(/\s+$/g, "")
-    )
-    .filter((line) => /[^\s]/.test(line))
-    .join("\n");
-}
-
 export default function HeroAsciiScene() {
   const mountRef = useRef(null);
 
@@ -262,7 +246,7 @@ export default function HeroAsciiScene() {
       camera.lookAt(root.position.x * 0.05, 0.72, 0);
 
       effect.render(scene, camera);
-      output.textContent = extractForegroundAscii(effect.domElement.textContent);
+      output.textContent = effect.domElement.textContent;
       frameId = window.requestAnimationFrame(render);
     };
 
