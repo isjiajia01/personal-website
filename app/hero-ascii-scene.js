@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const ASCII_CHARS = " .`',:;~-=";
+const ASCII_CHARS = " .`',:;~-+=";
 const NORMAL_FRAME_INTERVAL = 1000 / 20;
 const SNAP_FRAME_INTERVAL = 1000 / 10;
 const POSTERIZE_LEVELS = 6;
@@ -122,6 +122,7 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
 
   const maxIndex = ASCII_CHARS.length - 1;
   const brightnessMap = new Float32Array(cols * rows);
+  const smoothMap = new Float32Array(cols * rows);
   const alphaMap = new Uint8Array(cols * rows);
 
   for (let y = 0; y < rows; y += 1) {
@@ -141,18 +142,38 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
 
   for (let y = 0; y < rows; y += 1) {
     for (let x = 0; x < cols; x += 1) {
+      let total = 0;
+      let weight = 0;
+
+      for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+        const sampleY = clamp(y + offsetY, 0, rows - 1);
+        for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+          const sampleX = clamp(x + offsetX, 0, cols - 1);
+          const sampleIndex = sampleY * cols + sampleX;
+          const sampleWeight = offsetX === 0 && offsetY === 0 ? 4 : 1;
+          total += brightnessMap[sampleIndex] * sampleWeight;
+          weight += sampleWeight;
+        }
+      }
+
+      smoothMap[y * cols + x] = total / weight;
+    }
+  }
+
+  for (let y = 0; y < rows; y += 1) {
+    for (let x = 0; x < cols; x += 1) {
       const pixelIndex = y * cols + x;
       const alpha = alphaMap[pixelIndex];
 
       if (alpha === 0) continue;
 
-      const brightness = brightnessMap[pixelIndex];
+      const brightness = smoothMap[pixelIndex];
       const posterized = Math.round(brightness * (POSTERIZE_LEVELS - 1)) / (POSTERIZE_LEVELS - 1);
 
-      const left = x > 0 ? brightnessMap[pixelIndex - 1] : brightness;
-      const right = x < cols - 1 ? brightnessMap[pixelIndex + 1] : brightness;
-      const top = y > 0 ? brightnessMap[pixelIndex - cols] : brightness;
-      const bottom = y < rows - 1 ? brightnessMap[pixelIndex + cols] : brightness;
+      const left = x > 0 ? smoothMap[pixelIndex - 1] : brightness;
+      const right = x < cols - 1 ? smoothMap[pixelIndex + 1] : brightness;
+      const top = y > 0 ? smoothMap[pixelIndex - cols] : brightness;
+      const bottom = y < rows - 1 ? smoothMap[pixelIndex + cols] : brightness;
       const edgeWeight = clamp((Math.abs(left - right) + Math.abs(top - bottom)) * 0.88, 0, 1);
       const sculptedBrightness = clamp(posterized - edgeWeight * 0.12, 0, 1);
       const darkness = Math.pow(1 - sculptedBrightness, 1.74);
@@ -313,11 +334,15 @@ export default function HeroAsciiScene() {
       const normalizedY = (event.clientY - rect.top) / rect.height;
       pointerTargetX = (normalizedX - 0.5) * 2;
       pointerTargetY = (normalizedY - 0.5) * 2;
+      container.style.setProperty("--hero-pointer-x", pointerTargetX.toFixed(3));
+      container.style.setProperty("--hero-pointer-y", pointerTargetY.toFixed(3));
     };
 
     const handlePointerLeave = () => {
       pointerTargetX = 0;
       pointerTargetY = 0;
+      container.style.setProperty("--hero-pointer-x", "0");
+      container.style.setProperty("--hero-pointer-y", "0");
     };
 
     const handleSnapTransition = (event) => {
@@ -325,6 +350,8 @@ export default function HeroAsciiScene() {
       if (snapTransitionActive) {
         pointerTargetX = 0;
         pointerTargetY = 0;
+        container.style.setProperty("--hero-pointer-x", "0");
+        container.style.setProperty("--hero-pointer-y", "0");
       }
       if (isVisible && !document.hidden && !frameId) {
         frameId = window.requestAnimationFrame(render);
