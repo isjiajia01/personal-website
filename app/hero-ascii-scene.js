@@ -174,8 +174,11 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
       const right = x < cols - 1 ? smoothMap[pixelIndex + 1] : brightness;
       const top = y > 0 ? smoothMap[pixelIndex - cols] : brightness;
       const bottom = y < rows - 1 ? smoothMap[pixelIndex + cols] : brightness;
-      const edgeWeight = clamp((Math.abs(left - right) + Math.abs(top - bottom)) * 0.88, 0, 1);
-      const sculptedBrightness = clamp(posterized - edgeWeight * 0.12, 0, 1);
+      const horizontalEdge = Math.abs(top - bottom);
+      const verticalEdge = Math.abs(left - right);
+      const edgeWeight = clamp((verticalEdge + horizontalEdge) * 0.88, 0, 1);
+      const horizontalBoost = clamp(horizontalEdge * 1.35, 0, 1);
+      const sculptedBrightness = clamp(posterized - edgeWeight * 0.12 - horizontalBoost * 0.06, 0, 1);
       const darkness = Math.pow(1 - sculptedBrightness, 1.74);
       const charIndex = Math.round(darkness * maxIndex);
       const char = ASCII_CHARS[charIndex];
