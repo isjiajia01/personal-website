@@ -3,9 +3,10 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const ASCII_CHARS = " .,:;=ox%#@";
+const ASCII_CHARS = " .:-=+#@";
 const NORMAL_FRAME_INTERVAL = 1000 / 20;
 const SNAP_FRAME_INTERVAL = 1000 / 10;
+const POSTERIZE_LEVELS = 5;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -120,23 +121,45 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
   ctx.shadowBlur = 6;
 
   const maxIndex = ASCII_CHARS.length - 1;
+  const brightnessMap = new Float32Array(cols * rows);
+  const alphaMap = new Uint8Array(cols * rows);
 
   for (let y = 0; y < rows; y += 1) {
     for (let x = 0; x < cols; x += 1) {
       const sourceY = rows - 1 - y;
-      const index = (sourceY * cols + x) * 4;
+      const pixelIndex = sourceY * cols + x;
+      const index = pixelIndex * 4;
       const red = pixels[index];
       const green = pixels[index + 1];
       const blue = pixels[index + 2];
       const alpha = pixels[index + 3];
 
+      alphaMap[pixelIndex] = alpha;
+      brightnessMap[pixelIndex] = alpha === 0 ? 1 : (0.3 * red + 0.59 * green + 0.11 * blue) / 255;
+    }
+  }
+
+  for (let y = 0; y < rows; y += 1) {
+    for (let x = 0; x < cols; x += 1) {
+      const pixelIndex = y * cols + x;
+      const alpha = alphaMap[pixelIndex];
+
       if (alpha === 0) continue;
 
-      const brightness = (0.3 * red + 0.59 * green + 0.11 * blue) / 255;
-      const charIndex = Math.round((1 - brightness) * maxIndex);
+      const brightness = brightnessMap[pixelIndex];
+      const posterized = Math.round(brightness * (POSTERIZE_LEVELS - 1)) / (POSTERIZE_LEVELS - 1);
+
+      const left = x > 0 ? brightnessMap[pixelIndex - 1] : brightness;
+      const right = x < cols - 1 ? brightnessMap[pixelIndex + 1] : brightness;
+      const top = y > 0 ? brightnessMap[pixelIndex - cols] : brightness;
+      const bottom = y < rows - 1 ? brightnessMap[pixelIndex + cols] : brightness;
+      const edgeWeight = clamp((Math.abs(left - right) + Math.abs(top - bottom)) * 1.75, 0, 1);
+
+      const sculptedBrightness = clamp(posterized - edgeWeight * 0.26, 0, 1);
+      const charIndex = Math.round((1 - sculptedBrightness) * maxIndex);
       const char = ASCII_CHARS[charIndex];
 
-      if (!char || char === " " || brightness > 0.96) continue;
+      if (!char || char === " " || sculptedBrightness > 0.94) continue;
       ctx.fillText(char, x * cellWidth, y * cellHeight);
     }
   }
