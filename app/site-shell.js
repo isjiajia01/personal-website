@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { asciiBlocks, siteCopy } from "./data/copy";
 import { getArchivedProjects, getFeaturedProjects, projectCategoryLabels } from "./data/projects";
 import HeroAsciiScene from "./hero-ascii-scene";
@@ -19,6 +19,12 @@ export default function SiteShell() {
   const [resolvedTheme, setResolvedTheme] = useState("dark");
   const [timeLabel, setTimeLabel] = useState("");
   const [displayTimeLabel, setDisplayTimeLabel] = useState("");
+  const heroSectionRef = useRef(null);
+  const workSectionRef = useRef(null);
+  const scrollEnergyRef = useRef(0);
+  const releaseTimerRef = useRef(null);
+  const touchStartYRef = useRef(null);
+  const snapLockRef = useRef(false);
 
   const featuredProjects = useMemo(() => getFeaturedProjects(), []);
   const archivedProjects = useMemo(() => getArchivedProjects(), []);
@@ -134,6 +140,82 @@ export default function SiteShell() {
   }, [menuOpen]);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    const heroNode = heroSectionRef.current;
+    const workNode = workSectionRef.current;
+    if (!heroNode || !workNode) return;
+
+    const releaseEnergy = () => {
+      if (releaseTimerRef.current) {
+        window.clearTimeout(releaseTimerRef.current);
+      }
+
+      releaseTimerRef.current = window.setTimeout(() => {
+        scrollEnergyRef.current = 0;
+      }, 140);
+    };
+
+    const smoothSnapToWork = () => {
+      if (snapLockRef.current) return;
+      snapLockRef.current = true;
+      scrollEnergyRef.current = 0;
+      workNode.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.setTimeout(() => {
+        snapLockRef.current = false;
+      }, 900);
+    };
+
+    const isHeroActive = () => {
+      const heroRect = heroNode.getBoundingClientRect();
+      const workRect = workNode.getBoundingClientRect();
+      return heroRect.top <= 0 && workRect.top > window.innerHeight * 0.18;
+    };
+
+    const handleWheel = (event) => {
+      if (event.deltaY <= 0 || snapLockRef.current || !isHeroActive()) return;
+
+      scrollEnergyRef.current = Math.min(scrollEnergyRef.current + event.deltaY, 220);
+      releaseEnergy();
+
+      if (scrollEnergyRef.current < 110) return;
+
+      event.preventDefault();
+      smoothSnapToWork();
+    };
+
+    const handleTouchStart = (event) => {
+      touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchEnd = (event) => {
+      if (snapLockRef.current || !isHeroActive()) return;
+      const startY = touchStartYRef.current;
+      const endY = event.changedTouches[0]?.clientY ?? null;
+      touchStartYRef.current = null;
+      if (startY === null || endY === null) return;
+
+      const swipeDistance = startY - endY;
+      if (swipeDistance < 44) return;
+      smoothSnapToWork();
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      if (releaseTimerRef.current) {
+        window.clearTimeout(releaseTimerRef.current);
+      }
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
+
+  useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       document.querySelectorAll("[data-reveal]").forEach((node) => {
         node.classList.add("is-visible");
@@ -207,7 +289,7 @@ export default function SiteShell() {
       </header>
 
       <main className="editorial-main">
-        <section className="hero-section hero-reset reveal-section is-visible" id="home" data-reveal>
+        <section className="hero-section hero-reset reveal-section is-visible" id="home" data-reveal ref={heroSectionRef}>
           <div className="editorial-hero">
             <div className="editorial-intro">
               <HeroAsciiScene />
@@ -234,7 +316,7 @@ export default function SiteShell() {
           </div>
         </section>
 
-        <section className="section editorial-section reveal-section" id="work" data-reveal>
+        <section className="section editorial-section reveal-section" id="work" data-reveal ref={workSectionRef}>
           <div className="section-index reveal-item" data-reveal>
             {siteCopy.work.index}
           </div>
