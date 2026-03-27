@@ -30,10 +30,6 @@ export const siteCopy = {
     location: "CPH [DK]",
     label: "Systems, products, and execution design",
     title: "Jiajia Zhang",
-    subtitle:
-      "I work across internal systems, AI workflows, product surfaces, and decision support.",
-    summary:
-      "I design and build product systems, AI workflows, and internal tools that make complex work clearer, faster, and more reliable.",
     cta: "Email me",
     scrollPrompt: "Scroll down to learn more about my work"
   },
@@ -115,15 +111,8 @@ export const siteCopy = {
     eyebrow: "// Say hello",
     title: "Contact",
     lead: "Open to product systems, AI workflow, and internal tooling work where clarity, reliability, and execution quality matter.",
-    availability: "Currently open to selected roles, collaborations, and thoughtful product conversations.",
     cta: "Email me",
     secondaryCta: "View GitHub",
-    links: [
-      {
-        label: "GitHub",
-        href: "https://github.com/isjiajia01"
-      }
-    ],
     footer: "© 2026 Jiajia Zhang  Copenhagen, Denmark"
   }
 };

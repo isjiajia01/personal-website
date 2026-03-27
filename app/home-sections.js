@@ -74,14 +74,6 @@ export function HeroSection({ heroSectionRef }) {
       <div className="editorial-hero">
         <div className="editorial-intro">
           <HeroAsciiScene />
-          <div className="hero-copy-block reveal-item is-visible" data-reveal style={{ "--reveal-delay": "40ms" }}>
-            <p className="hero-label">{siteCopy.hero.label}</p>
-            <h1>
-              {siteCopy.hero.title}
-              <span>{siteCopy.hero.subtitle}</span>
-            </h1>
-            <p className="hero-summary">{siteCopy.hero.summary}</p>
-          </div>
           <div className="hero-cta-stack reveal-item is-visible" data-reveal style={{ "--reveal-delay": "120ms" }}>
             <a className="button button-primary editorial-cta" href="mailto:isjiajiazhang@gmail.com">
               {siteCopy.hero.cta}
@@ -212,23 +204,13 @@ export function ContactSection() {
           <div className="contact-copy">
             <h2 className="reveal-item" data-reveal style={{ "--reveal-delay": "120ms" }}>{siteCopy.contact.title}</h2>
             <p className="section-copy reveal-item" data-reveal style={{ "--reveal-delay": "160ms" }}>{siteCopy.contact.lead}</p>
-            <p className="contact-availability reveal-item" data-reveal style={{ "--reveal-delay": "190ms" }}>
-              {siteCopy.contact.availability}
-            </p>
             <div className="contact-actions reveal-item" data-reveal style={{ "--reveal-delay": "210ms" }}>
-              <a className="button button-primary editorial-email" href="mailto:isjiajiazhang@gmail.com">
+              <a className="button button-primary contact-button" href="mailto:isjiajiazhang@gmail.com">
                 {siteCopy.contact.cta}
               </a>
-              <a className="button button-secondary" href="https://github.com/isjiajia01" target="_blank" rel="noreferrer">
+              <a className="button button-secondary contact-button" href="https://github.com/isjiajia01" target="_blank" rel="noreferrer">
                 {siteCopy.contact.secondaryCta}
               </a>
-            </div>
-            <div className="contact-link-list reveal-item" data-reveal style={{ "--reveal-delay": "250ms" }}>
-              {siteCopy.contact.links.map((link) => (
-                <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
-                  {link.label}
-                </a>
-              ))}
             </div>
           </div>
           <div className="contact-signature-wrap reveal-item" data-reveal style={{ "--reveal-delay": "240ms" }}>
