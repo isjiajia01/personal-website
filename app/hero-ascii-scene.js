@@ -106,9 +106,17 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
 }
 
 function extractForegroundAscii(rawText) {
+  const allowedChars = new Set([";", "=", "o", "x", "%", "#", "@"]);
+
   return rawText
     .split("\n")
-    .map((line) => line.replace(/[.:]/g, " ").replace(/\s+$/g, ""))
+    .map((line) =>
+      line
+        .split("")
+        .map((char) => (allowedChars.has(char) ? char : " "))
+        .join("")
+        .replace(/\s+$/g, "")
+    )
     .filter((line) => /[^\s]/.test(line))
     .join("\n");
 }
@@ -126,8 +134,8 @@ export default function HeroAsciiScene() {
 
     const bgColor = new THREE.Color(0xf4eadb);
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
-    camera.position.set(0.45, 0.86, 44);
-    camera.lookAt(0, 0.88, 0);
+    camera.position.set(0.18, 0.7, 48);
+    camera.lookAt(0, 0.72, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -175,14 +183,14 @@ export default function HeroAsciiScene() {
     const i = createLetterStack(buildLetterI, faceMaterial, bodyMaterial);
     const a = createLetterStack(buildLetterA, faceMaterial, bodyMaterial);
 
-    j.position.x = -6.25;
+    j.position.x = -5.85;
     i.position.x = 0;
-    a.position.x = 6.4;
+    a.position.x = 5.95;
     a.position.z = 0.2;
 
     root.add(j, i, a);
-    root.scale.setScalar(0.9);
-    root.position.y = 1.25;
+    root.scale.setScalar(0.82);
+    root.position.y = 0.92;
     scene.add(root);
 
     let width = 0;
@@ -237,21 +245,21 @@ export default function HeroAsciiScene() {
       pointerCurrentX += (pointerTargetX - pointerCurrentX) * 0.06;
       pointerCurrentY += (pointerTargetY - pointerCurrentY) * 0.06;
 
-      root.rotation.x = -0.05 + Math.cos(t * 0.7) * 0.012 - pointerCurrentY * 0.035;
-      root.rotation.y = 0.11 + Math.sin(t * 0.52) * 0.028 + pointerCurrentX * 0.05;
+      root.rotation.x = -0.04 + Math.cos(t * 0.7) * 0.01 - pointerCurrentY * 0.028;
+      root.rotation.y = 0.095 + Math.sin(t * 0.52) * 0.022 + pointerCurrentX * 0.04;
       root.rotation.z = Math.sin(t * 0.3) * 0.008;
-      root.position.y = 1.25 + Math.sin(t * 0.9) * 0.1 - pointerCurrentY * 0.14;
-      root.position.x = pointerCurrentX * 0.18;
+      root.position.y = 0.92 + Math.sin(t * 0.9) * 0.08 - pointerCurrentY * 0.11;
+      root.position.x = pointerCurrentX * 0.14;
 
       if (isGlitching) {
-        root.rotation.y += (Math.random() - 0.5) * 0.035;
-        root.position.x = (Math.random() - 0.5) * 0.12;
-        camera.position.x = 0.45 + (Math.random() - 0.5) * 0.08;
+        root.rotation.y += (Math.random() - 0.5) * 0.028;
+        root.position.x = (Math.random() - 0.5) * 0.08;
+        camera.position.x = 0.18 + (Math.random() - 0.5) * 0.05;
       } else {
-        camera.position.x += (0.45 - camera.position.x) * 0.12;
+        camera.position.x += (0.18 - camera.position.x) * 0.12;
       }
 
-      camera.lookAt(root.position.x * 0.06, 0.88, 0);
+      camera.lookAt(root.position.x * 0.05, 0.72, 0);
 
       effect.render(scene, camera);
       output.textContent = extractForegroundAscii(effect.domElement.textContent);
