@@ -237,11 +237,13 @@ export default function SiteShell() {
       if (snapLockRef.current) return;
       snapLockRef.current = true;
       scrollEnergyRef.current = 0;
+      window.dispatchEvent(new CustomEvent("hero-snap-transition", { detail: { active: true } }));
       const targetY = Math.max(workNode.offsetTop - 88, 0);
       smoothScrollTo(targetY, 980);
       triggerWorkArrivalCue();
       window.setTimeout(() => {
         snapLockRef.current = false;
+        window.dispatchEvent(new CustomEvent("hero-snap-transition", { detail: { active: false } }));
       }, 1180);
     };
 
@@ -293,6 +295,7 @@ export default function SiteShell() {
       if (snapClassTimerRef.current) {
         window.clearTimeout(snapClassTimerRef.current);
       }
+      window.dispatchEvent(new CustomEvent("hero-snap-transition", { detail: { active: false } }));
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);

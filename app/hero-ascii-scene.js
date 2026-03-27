@@ -181,13 +181,15 @@ export default function HeroAsciiScene() {
     let frameId = 0;
     let isVisible = true;
     let lastRenderAt = 0;
+    let snapTransitionActive = false;
     let glitchEndsAt = 0;
     let nextGlitchAt = performance.now() + 2600;
     let pointerTargetX = 0;
     let pointerTargetY = 0;
     let pointerCurrentX = 0;
     let pointerCurrentY = 0;
-    const frameInterval = 1000 / 20;
+    const normalFrameInterval = 1000 / 20;
+    const snapFrameInterval = 1000 / 9;
 
     const resize = () => {
       width = container.clientWidth || 960;
@@ -213,6 +215,7 @@ export default function HeroAsciiScene() {
     visibilityObserver.observe(container);
 
     const handlePointerMove = (event) => {
+      if (snapTransitionActive) return;
       const rect = container.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       const normalizedX = (event.clientX - rect.left) / rect.width;
@@ -226,8 +229,17 @@ export default function HeroAsciiScene() {
       pointerTargetY = 0;
     };
 
+    const handleSnapTransition = (event) => {
+      snapTransitionActive = Boolean(event.detail?.active);
+      if (snapTransitionActive) {
+        pointerTargetX = 0;
+        pointerTargetY = 0;
+      }
+    };
+
     container.addEventListener("pointermove", handlePointerMove, { passive: true });
     container.addEventListener("pointerleave", handlePointerLeave);
+    window.addEventListener("hero-snap-transition", handleSnapTransition);
 
     const handleVisibilityChange = () => {
       if (document.hidden && frameId) {
@@ -246,7 +258,8 @@ export default function HeroAsciiScene() {
       frameId = 0;
       if (!isVisible || document.hidden) return;
 
-      if (time - lastRenderAt < frameInterval) {
+      const activeFrameInterval = snapTransitionActive ? snapFrameInterval : normalFrameInterval;
+      if (time - lastRenderAt < activeFrameInterval) {
         frameId = window.requestAnimationFrame(render);
         return;
       }
@@ -260,8 +273,9 @@ export default function HeroAsciiScene() {
         nextGlitchAt = time + 3200 + Math.random() * 4200;
       }
 
-      pointerCurrentX += (pointerTargetX - pointerCurrentX) * 0.06;
-      pointerCurrentY += (pointerTargetY - pointerCurrentY) * 0.06;
+      const pointerLerp = snapTransitionActive ? 0.12 : 0.06;
+      pointerCurrentX += (pointerTargetX - pointerCurrentX) * pointerLerp;
+      pointerCurrentY += (pointerTargetY - pointerCurrentY) * pointerLerp;
 
       root.rotation.x = -0.04 + Math.cos(t * 0.7) * 0.01 - pointerCurrentY * 0.028;
       root.rotation.y = 0.095 + Math.sin(t * 0.52) * 0.022 + pointerCurrentX * 0.04;
@@ -292,6 +306,7 @@ export default function HeroAsciiScene() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
+      window.removeEventListener("hero-snap-transition", handleSnapTransition);
       effect.domElement.remove();
       root.traverse((node) => {
         if (node instanceof THREE.Mesh) {
