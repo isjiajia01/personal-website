@@ -372,6 +372,17 @@ pre {
   pointer-events: none;
 }
 
+.hero-ascii-output table {
+  margin: 0 auto !important;
+  color: inherit !important;
+  background: transparent !important;
+}
+
+.hero-ascii-output td {
+  background: transparent !important;
+  color: inherit !important;
+}
+
 .ascii-art-bottom {
   margin-top: 2.2rem;
   justify-self: center;

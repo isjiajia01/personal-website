@@ -112,10 +112,6 @@ export default function HeroAsciiScene() {
     const container = mountRef.current;
     if (!container) return;
 
-    const output = document.createElement("pre");
-    output.className = "hero-ascii-output";
-    container.appendChild(output);
-
     const bgColor = new THREE.Color(0xf4eadb);
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
     camera.position.set(0.18, 0.7, 48);
@@ -134,7 +130,10 @@ export default function HeroAsciiScene() {
       invert: false,
       resolution: 0.15
     });
-    effect.domElement.style.display = "none";
+    effect.domElement.className = "hero-ascii-output";
+    effect.domElement.style.background = "transparent";
+    effect.domElement.style.color = "#5b4429";
+    container.appendChild(effect.domElement);
 
     const scene = new THREE.Scene();
     const ambient = new THREE.AmbientLight(0xfff3e4, 0.72);
@@ -246,7 +245,6 @@ export default function HeroAsciiScene() {
       camera.lookAt(root.position.x * 0.05, 0.72, 0);
 
       effect.render(scene, camera);
-      output.textContent = effect.domElement.textContent;
       frameId = window.requestAnimationFrame(render);
     };
 
@@ -257,7 +255,6 @@ export default function HeroAsciiScene() {
       resizeObserver.disconnect();
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
-      output.remove();
       effect.domElement.remove();
       root.traverse((node) => {
         if (node instanceof THREE.Mesh) {
