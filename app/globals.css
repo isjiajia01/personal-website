@@ -384,9 +384,9 @@ pre {
   text-align: center;
   white-space: pre !important;
   text-shadow:
-    0 0 0.6px rgba(246, 208, 156, 0.32),
-    0 0 3px rgba(232, 174, 97, 0.04) !important;
-  opacity: 0.97;
+    0 0 0.35px rgba(246, 208, 156, 0.22),
+    0 0 2px rgba(232, 174, 97, 0.025) !important;
+  opacity: 0.9;
   pointer-events: none;
 }
 
