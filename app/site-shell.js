@@ -18,6 +18,7 @@ export default function SiteShell() {
   const [themeMode, setThemeMode] = useState("auto");
   const [resolvedTheme, setResolvedTheme] = useState("dark");
   const [timeLabel, setTimeLabel] = useState("");
+  const [displayTimeLabel, setDisplayTimeLabel] = useState("");
 
   const featuredProjects = useMemo(() => getFeaturedProjects(), []);
   const archivedProjects = useMemo(() => getArchivedProjects(), []);
@@ -91,6 +92,43 @@ export default function SiteShell() {
   }, []);
 
   useEffect(() => {
+    if (!timeLabel) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      setDisplayTimeLabel(timeLabel);
+      return;
+    }
+
+    const scrambleChars = "0123456789:APM ";
+    let frame = 0;
+    const extraFrames = 6;
+    const totalFrames = timeLabel.length + extraFrames;
+
+    const timer = window.setInterval(() => {
+      const revealCount = Math.max(0, frame - 2);
+      const nextLabel = timeLabel
+        .split("")
+        .map((char, index) => {
+          if (char === " ") return " ";
+          if (index < revealCount) return char;
+          return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+        })
+        .join("");
+
+      setDisplayTimeLabel(nextLabel);
+      frame += 1;
+
+      if (frame > totalFrames) {
+        window.clearInterval(timer);
+        setDisplayTimeLabel(timeLabel);
+      }
+    }, 42);
+
+    return () => window.clearInterval(timer);
+  }, [timeLabel]);
+
+  useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
     return () => document.body.classList.remove("menu-open");
   }, [menuOpen]);
@@ -149,7 +187,9 @@ export default function SiteShell() {
           </div>
           <div className="nav-meta">
             <span>{siteCopy.hero.location}</span>
-            <span>{timeLabel || "--:-- --"}</span>
+            <span className="nav-time" aria-label={timeLabel || "--:-- --"}>
+              {displayTimeLabel || timeLabel || "--:-- --"}
+            </span>
             <span className="nav-status-dot" aria-hidden="true" />
           </div>
           <div className="nav-actions">
@@ -176,7 +216,15 @@ export default function SiteShell() {
                   {siteCopy.hero.cta}
                 </a>
                 <p className="hero-scroll">
-                  <span>{siteCopy.hero.scrollPrompt}</span>
+                  <span
+                    className="hero-scroll-copy"
+                    style={{
+                      "--steps-count": siteCopy.hero.scrollPrompt.length,
+                      "--steps-width": `${siteCopy.hero.scrollPrompt.length}ch`
+                    }}
+                  >
+                    {siteCopy.hero.scrollPrompt}
+                  </span>
                   <span className="hero-scroll-arrow" aria-hidden="true">
                     ↓
                   </span>
