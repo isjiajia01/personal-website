@@ -135,6 +135,10 @@ export default function HeroAsciiScene() {
     effect.domElement.style.color = "#5b4429";
     container.appendChild(effect.domElement);
 
+    const frozenEffect = document.createElement("div");
+    frozenEffect.className = "hero-ascii-output hero-ascii-frozen";
+    container.appendChild(frozenEffect);
+
     const scene = new THREE.Scene();
     const ambient = new THREE.AmbientLight(0xfff3e4, 0.72);
     const keyLight = new THREE.DirectionalLight(0xfff8ee, 1.2);
@@ -234,6 +238,20 @@ export default function HeroAsciiScene() {
       if (snapTransitionActive) {
         pointerTargetX = 0;
         pointerTargetY = 0;
+        frozenEffect.innerHTML = effect.domElement.innerHTML;
+        frozenEffect.classList.add("is-active");
+        effect.domElement.classList.add("is-paused");
+        if (frameId) {
+          window.cancelAnimationFrame(frameId);
+          frameId = 0;
+        }
+        return;
+      }
+
+      frozenEffect.classList.remove("is-active");
+      effect.domElement.classList.remove("is-paused");
+      if (isVisible && !document.hidden && !frameId) {
+        frameId = window.requestAnimationFrame(render);
       }
     };
 
@@ -307,6 +325,7 @@ export default function HeroAsciiScene() {
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("hero-snap-transition", handleSnapTransition);
+      frozenEffect.remove();
       effect.domElement.remove();
       root.traverse((node) => {
         if (node instanceof THREE.Mesh) {

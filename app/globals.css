@@ -389,6 +389,21 @@ pre {
   pointer-events: none;
 }
 
+.hero-ascii-output.is-paused {
+  opacity: 0;
+}
+
+.hero-ascii-frozen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 140ms linear;
+}
+
+.hero-ascii-frozen.is-active {
+  opacity: 0.97;
+}
+
 .hero-ascii-output table {
   width: 100% !important;
   height: 100% !important;
