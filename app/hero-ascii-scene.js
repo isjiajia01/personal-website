@@ -179,12 +179,15 @@ export default function HeroAsciiScene() {
     let width = 0;
     let height = 0;
     let frameId = 0;
+    let isVisible = true;
+    let lastRenderAt = 0;
     let glitchEndsAt = 0;
     let nextGlitchAt = performance.now() + 2600;
     let pointerTargetX = 0;
     let pointerTargetY = 0;
     let pointerCurrentX = 0;
     let pointerCurrentY = 0;
+    const frameInterval = 1000 / 20;
 
     const resize = () => {
       width = container.clientWidth || 960;
@@ -198,6 +201,16 @@ export default function HeroAsciiScene() {
     resize();
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry?.isIntersecting ?? false;
+        if (isVisible && !document.hidden && !frameId) {
+          frameId = window.requestAnimationFrame(render);
+        }
+      },
+      { threshold: 0.08 }
+    );
+    visibilityObserver.observe(container);
 
     const handlePointerMove = (event) => {
       const rect = container.getBoundingClientRect();
@@ -216,7 +229,29 @@ export default function HeroAsciiScene() {
     container.addEventListener("pointermove", handlePointerMove, { passive: true });
     container.addEventListener("pointerleave", handlePointerLeave);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden && frameId) {
+        window.cancelAnimationFrame(frameId);
+        frameId = 0;
+        return;
+      }
+
+      if (!document.hidden && isVisible && !frameId) {
+        frameId = window.requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const render = (time) => {
+      frameId = 0;
+      if (!isVisible || document.hidden) return;
+
+      if (time - lastRenderAt < frameInterval) {
+        frameId = window.requestAnimationFrame(render);
+        return;
+      }
+      lastRenderAt = time;
+
       const t = time * 0.001;
       const isGlitching = time < glitchEndsAt;
 
@@ -253,6 +288,8 @@ export default function HeroAsciiScene() {
     return () => {
       window.cancelAnimationFrame(frameId);
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
       effect.domElement.remove();

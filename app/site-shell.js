@@ -84,12 +84,21 @@ export default function SiteShell() {
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let scrollFrame = 0;
+    let compactValue = false;
 
-    const onScroll = () => setCompact(window.scrollY > 24);
+    const onScroll = () => {
+      const nextCompact = window.scrollY > 24;
+      if (nextCompact !== compactValue) {
+        compactValue = nextCompact;
+        setCompact(nextCompact);
+      }
+    };
     const onResize = () => {
       if (window.innerWidth > 840) {
         setMenuOpen(false);
       }
+      syncHeroSnapProgress();
     };
 
     const syncHeroSnapProgress = () => {
@@ -109,14 +118,21 @@ export default function SiteShell() {
     };
 
     const handleScroll = () => {
-      onScroll();
-      syncHeroSnapProgress();
+      if (scrollFrame) return;
+      scrollFrame = window.requestAnimationFrame(() => {
+        scrollFrame = 0;
+        onScroll();
+        syncHeroSnapProgress();
+      });
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", onResize);
     return () => {
+      if (scrollFrame) {
+        window.cancelAnimationFrame(scrollFrame);
+      }
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", onResize);
     };
