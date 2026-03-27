@@ -92,12 +92,12 @@ function buildLetterA(material) {
 
 function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
   const group = new THREE.Group();
-  const depthLayers = 8;
+  const depthLayers = 3;
 
   for (let layer = depthLayers; layer >= 1; layer -= 1) {
     const shell = buildLetter(bodyMaterial);
-    shell.position.set(-layer * 0.32, layer * 0.18, -layer * 0.34);
-    shell.rotation.z = -0.006 * layer;
+    shell.position.set(-layer * 0.2, layer * 0.12, -layer * 0.18);
+    shell.rotation.z = -0.003 * layer;
     group.add(shell);
   }
 
@@ -119,8 +119,8 @@ export default function HeroAsciiScene() {
     const bgColor = new THREE.Color(0xf4eadb);
     scene.background = bgColor;
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
-    camera.position.set(1.35, 1.15, 35);
-    camera.lookAt(0, 1.1, 0);
+    camera.position.set(0.85, 1.0, 39);
+    camera.lookAt(0, 1.0, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -160,9 +160,11 @@ export default function HeroAsciiScene() {
     });
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
-      color: 0xc4935f,
-      roughness: 0.92,
-      metalness: 0.01
+      color: 0xddc2a2,
+      roughness: 0.96,
+      metalness: 0.0,
+      transparent: true,
+      opacity: 0.18
     });
 
     const root = new THREE.Group();
@@ -170,14 +172,14 @@ export default function HeroAsciiScene() {
     const i = createLetterStack(buildLetterI, faceMaterial, bodyMaterial);
     const a = createLetterStack(buildLetterA, faceMaterial, bodyMaterial);
 
-    j.position.x = -7.2;
+    j.position.x = -6.8;
     i.position.x = 0;
-    a.position.x = 7.4;
-    a.position.z = 0.4;
+    a.position.x = 6.95;
+    a.position.z = 0.2;
 
     root.add(j, i, a);
-    root.scale.setScalar(1.12);
-    root.position.y = 1.9;
+    root.scale.setScalar(0.98);
+    root.position.y = 1.55;
     scene.add(root);
 
     let width = 0;
@@ -232,21 +234,21 @@ export default function HeroAsciiScene() {
       pointerCurrentX += (pointerTargetX - pointerCurrentX) * 0.06;
       pointerCurrentY += (pointerTargetY - pointerCurrentY) * 0.06;
 
-      root.rotation.x = -0.08 + Math.cos(t * 0.7) * 0.016 - pointerCurrentY * 0.05;
-      root.rotation.y = 0.18 + Math.sin(t * 0.52) * 0.045 + pointerCurrentX * 0.08;
+      root.rotation.x = -0.06 + Math.cos(t * 0.7) * 0.014 - pointerCurrentY * 0.04;
+      root.rotation.y = 0.14 + Math.sin(t * 0.52) * 0.035 + pointerCurrentX * 0.06;
       root.rotation.z = Math.sin(t * 0.3) * 0.008;
-      root.position.y = 1.9 + Math.sin(t * 0.9) * 0.18 - pointerCurrentY * 0.22;
-      root.position.x = pointerCurrentX * 0.34;
+      root.position.y = 1.55 + Math.sin(t * 0.9) * 0.14 - pointerCurrentY * 0.18;
+      root.position.x = pointerCurrentX * 0.24;
 
       if (isGlitching) {
-        root.rotation.y += (Math.random() - 0.5) * 0.08;
-        root.position.x = (Math.random() - 0.5) * 0.3;
-        camera.position.x = 1.35 + (Math.random() - 0.5) * 0.16;
+        root.rotation.y += (Math.random() - 0.5) * 0.05;
+        root.position.x = (Math.random() - 0.5) * 0.18;
+        camera.position.x = 0.85 + (Math.random() - 0.5) * 0.1;
       } else {
-        camera.position.x += (1.35 - camera.position.x) * 0.12;
+        camera.position.x += (0.85 - camera.position.x) * 0.12;
       }
 
-      camera.lookAt(root.position.x * 0.12, 1.08, 0);
+      camera.lookAt(root.position.x * 0.08, 0.98, 0);
 
       effect.render(scene, camera);
       frameId = window.requestAnimationFrame(render);
