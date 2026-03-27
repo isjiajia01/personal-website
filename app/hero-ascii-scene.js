@@ -101,11 +101,16 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
     group.add(shell);
   }
 
-  const face = buildLetter(faceMaterial);
-  face.renderOrder = 2;
-  group.add(face);
-
+  group.add(buildLetter(faceMaterial));
   return group;
+}
+
+function extractForegroundAscii(rawText) {
+  return rawText
+    .split("\n")
+    .map((line) => line.replace(/[.:]/g, " ").replace(/\s+$/g, ""))
+    .filter((line) => /[^\s]/.test(line))
+    .join("\n");
 }
 
 export default function HeroAsciiScene() {
@@ -115,43 +120,41 @@ export default function HeroAsciiScene() {
     const container = mountRef.current;
     if (!container) return;
 
-    const scene = new THREE.Scene();
+    const output = document.createElement("pre");
+    output.className = "hero-ascii-output";
+    container.appendChild(output);
+
     const bgColor = new THREE.Color(0xf4eadb);
-    scene.background = bgColor;
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
-    camera.position.set(0.85, 1.0, 39);
-    camera.lookAt(0, 1.0, 0);
+    camera.position.set(0.45, 0.86, 44);
+    camera.lookAt(0, 0.88, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: false,
+      alpha: true,
       powerPreference: "high-performance"
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.setClearColor(bgColor, 1);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setClearColor(bgColor, 0);
+    renderer.domElement.style.display = "none";
 
-    const asciiChars = " .,:;=ox%#@";
-    const effect = new AsciiEffect(renderer, asciiChars, { invert: false, resolution: 0.16 });
-    effect.domElement.className = "hero-ascii-output";
-    effect.domElement.style.backgroundColor = "#f4eadb";
-    effect.domElement.style.color = "#5b4429";
+    const effect = new AsciiEffect(renderer, " .,:;=ox%#@", {
+      invert: false,
+      resolution: 0.15
+    });
+    effect.domElement.style.display = "none";
 
-    container.appendChild(effect.domElement);
-
+    const scene = new THREE.Scene();
     const ambient = new THREE.AmbientLight(0xfff3e4, 0.72);
-    scene.add(ambient);
-
     const keyLight = new THREE.DirectionalLight(0xfff8ee, 1.2);
-    keyLight.position.set(10, 14, 18);
-    scene.add(keyLight);
-
     const fillLight = new THREE.DirectionalLight(0xe9c99c, 0.88);
-    fillLight.position.set(-12, -2, 10);
-    scene.add(fillLight);
-
     const rimLight = new THREE.DirectionalLight(0x8e643d, 0.42);
+
+    keyLight.position.set(10, 14, 18);
+    fillLight.position.set(-12, -2, 10);
     rimLight.position.set(-14, 10, 6);
-    scene.add(rimLight);
+
+    scene.add(ambient, keyLight, fillLight, rimLight);
 
     const faceMaterial = new THREE.MeshStandardMaterial({
       color: 0x2c2218,
@@ -162,7 +165,7 @@ export default function HeroAsciiScene() {
     const bodyMaterial = new THREE.MeshStandardMaterial({
       color: 0xddc2a2,
       roughness: 0.96,
-      metalness: 0.0,
+      metalness: 0,
       transparent: true,
       opacity: 0.18
     });
@@ -172,14 +175,14 @@ export default function HeroAsciiScene() {
     const i = createLetterStack(buildLetterI, faceMaterial, bodyMaterial);
     const a = createLetterStack(buildLetterA, faceMaterial, bodyMaterial);
 
-    j.position.x = -6.8;
+    j.position.x = -6.25;
     i.position.x = 0;
-    a.position.x = 6.95;
+    a.position.x = 6.4;
     a.position.z = 0.2;
 
     root.add(j, i, a);
-    root.scale.setScalar(0.98);
-    root.position.y = 1.55;
+    root.scale.setScalar(0.9);
+    root.position.y = 1.25;
     scene.add(root);
 
     let width = 0;
@@ -234,23 +237,24 @@ export default function HeroAsciiScene() {
       pointerCurrentX += (pointerTargetX - pointerCurrentX) * 0.06;
       pointerCurrentY += (pointerTargetY - pointerCurrentY) * 0.06;
 
-      root.rotation.x = -0.06 + Math.cos(t * 0.7) * 0.014 - pointerCurrentY * 0.04;
-      root.rotation.y = 0.14 + Math.sin(t * 0.52) * 0.035 + pointerCurrentX * 0.06;
+      root.rotation.x = -0.05 + Math.cos(t * 0.7) * 0.012 - pointerCurrentY * 0.035;
+      root.rotation.y = 0.11 + Math.sin(t * 0.52) * 0.028 + pointerCurrentX * 0.05;
       root.rotation.z = Math.sin(t * 0.3) * 0.008;
-      root.position.y = 1.55 + Math.sin(t * 0.9) * 0.14 - pointerCurrentY * 0.18;
-      root.position.x = pointerCurrentX * 0.24;
+      root.position.y = 1.25 + Math.sin(t * 0.9) * 0.1 - pointerCurrentY * 0.14;
+      root.position.x = pointerCurrentX * 0.18;
 
       if (isGlitching) {
-        root.rotation.y += (Math.random() - 0.5) * 0.05;
-        root.position.x = (Math.random() - 0.5) * 0.18;
-        camera.position.x = 0.85 + (Math.random() - 0.5) * 0.1;
+        root.rotation.y += (Math.random() - 0.5) * 0.035;
+        root.position.x = (Math.random() - 0.5) * 0.12;
+        camera.position.x = 0.45 + (Math.random() - 0.5) * 0.08;
       } else {
-        camera.position.x += (0.85 - camera.position.x) * 0.12;
+        camera.position.x += (0.45 - camera.position.x) * 0.12;
       }
 
-      camera.lookAt(root.position.x * 0.08, 0.98, 0);
+      camera.lookAt(root.position.x * 0.06, 0.88, 0);
 
       effect.render(scene, camera);
+      output.textContent = extractForegroundAscii(effect.domElement.textContent);
       frameId = window.requestAnimationFrame(render);
     };
 
@@ -261,11 +265,12 @@ export default function HeroAsciiScene() {
       resizeObserver.disconnect();
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
+      output.remove();
       effect.domElement.remove();
-
       root.traverse((node) => {
-        if (!(node instanceof THREE.Mesh)) return;
-        node.geometry.dispose();
+        if (node instanceof THREE.Mesh) {
+          node.geometry.dispose();
+        }
       });
       faceMaterial.dispose();
       bodyMaterial.dispose();
