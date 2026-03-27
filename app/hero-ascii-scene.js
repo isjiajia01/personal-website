@@ -2,7 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { AsciiEffect } from "three/examples/jsm/effects/AsciiEffect.js";
+
+const ASCII_CHARS = " .,:;=ox%#@";
+const NORMAL_FRAME_INTERVAL = 1000 / 20;
+const SNAP_FRAME_INTERVAL = 1000 / 10;
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
 
 function shapeToMesh(shape, material) {
   const geometry = new THREE.ExtrudeGeometry(shape, {
@@ -92,9 +99,8 @@ function buildLetterA(material) {
 
 function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
   const group = new THREE.Group();
-  const depthLayers = 3;
 
-  for (let layer = depthLayers; layer >= 1; layer -= 1) {
+  for (let layer = 3; layer >= 1; layer -= 1) {
     const shell = buildLetter(bodyMaterial);
     shell.position.set(-layer * 0.2, layer * 0.12, -layer * 0.18);
     shell.rotation.z = -0.003 * layer;
@@ -105,12 +111,53 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
   return group;
 }
 
+function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFamily) {
+  ctx.clearRect(0, 0, cols * cellWidth, rows * cellHeight);
+  ctx.font = `${Math.floor(cellHeight * 1.02)}px ${fontFamily}`;
+  ctx.textBaseline = "top";
+  ctx.fillStyle = "#5b4429";
+  ctx.shadowColor = "rgba(232, 174, 97, 0.08)";
+  ctx.shadowBlur = 6;
+
+  const maxIndex = ASCII_CHARS.length - 1;
+
+  for (let y = 0; y < rows; y += 1) {
+    for (let x = 0; x < cols; x += 1) {
+      const sourceY = rows - 1 - y;
+      const index = (sourceY * cols + x) * 4;
+      const red = pixels[index];
+      const green = pixels[index + 1];
+      const blue = pixels[index + 2];
+      const alpha = pixels[index + 3];
+
+      if (alpha === 0) continue;
+
+      const brightness = (0.3 * red + 0.59 * green + 0.11 * blue) / 255;
+      const charIndex = Math.round((1 - brightness) * maxIndex);
+      const char = ASCII_CHARS[charIndex];
+
+      if (!char || char === " " || brightness > 0.96) continue;
+      ctx.fillText(char, x * cellWidth, y * cellHeight);
+    }
+  }
+}
+
 export default function HeroAsciiScene() {
   const mountRef = useRef(null);
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
+
+    const outputCanvas = document.createElement("canvas");
+    outputCanvas.className = "hero-ascii-output";
+    container.appendChild(outputCanvas);
+
+    const outputContext = outputCanvas.getContext("2d", { alpha: true });
+    if (!outputContext) {
+      outputCanvas.remove();
+      return;
+    }
 
     const bgColor = new THREE.Color(0xf4eadb);
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
@@ -122,22 +169,9 @@ export default function HeroAsciiScene() {
       alpha: true,
       powerPreference: "high-performance"
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(1);
     renderer.setClearColor(bgColor, 0);
     renderer.domElement.style.display = "none";
-
-    const effect = new AsciiEffect(renderer, " .,:;=ox%#@", {
-      invert: false,
-      resolution: 0.12
-    });
-    effect.domElement.className = "hero-ascii-output";
-    effect.domElement.style.background = "transparent";
-    effect.domElement.style.color = "#5b4429";
-    container.appendChild(effect.domElement);
-
-    const frozenEffect = document.createElement("div");
-    frozenEffect.className = "hero-ascii-output hero-ascii-frozen";
-    container.appendChild(frozenEffect);
 
     const scene = new THREE.Scene();
     const ambient = new THREE.AmbientLight(0xfff3e4, 0.72);
@@ -148,7 +182,6 @@ export default function HeroAsciiScene() {
     keyLight.position.set(10, 14, 18);
     fillLight.position.set(-12, -2, 10);
     rimLight.position.set(-14, 10, 6);
-
     scene.add(ambient, keyLight, fillLight, rimLight);
 
     const faceMaterial = new THREE.MeshStandardMaterial({
@@ -182,31 +215,62 @@ export default function HeroAsciiScene() {
 
     let width = 0;
     let height = 0;
+    let cols = 0;
+    let rows = 0;
+    let cellWidth = 0;
+    let cellHeight = 0;
+    let pixelBuffer = new Uint8Array(4);
+    let fontFamily = "ui-monospace, monospace";
     let frameId = 0;
     let isVisible = true;
-    let lastRenderAt = 0;
     let snapTransitionActive = false;
+    let lastRenderAt = 0;
     let glitchEndsAt = 0;
     let nextGlitchAt = performance.now() + 2600;
     let pointerTargetX = 0;
     let pointerTargetY = 0;
     let pointerCurrentX = 0;
     let pointerCurrentY = 0;
-    const normalFrameInterval = 1000 / 20;
-    const snapFrameInterval = 1000 / 9;
+    let renderTarget = new THREE.WebGLRenderTarget(1, 1, {
+      depthBuffer: true,
+      stencilBuffer: false
+    });
 
     const resize = () => {
       width = container.clientWidth || 960;
       height = container.clientHeight || 440;
+
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
-      effect.setSize(width, height);
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      outputCanvas.width = Math.floor(width * dpr);
+      outputCanvas.height = Math.floor(height * dpr);
+      outputCanvas.style.width = `${width}px`;
+      outputCanvas.style.height = `${height}px`;
+      outputContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      cellWidth = clamp(Math.round(width / 120), 6, 9);
+      cellHeight = Math.round(cellWidth * 1.56);
+      cols = Math.max(48, Math.floor(width / cellWidth));
+      rows = Math.max(18, Math.floor(height / cellHeight));
+
+      renderTarget.dispose();
+      renderTarget = new THREE.WebGLRenderTarget(cols, rows, {
+        depthBuffer: true,
+        stencilBuffer: false
+      });
+      pixelBuffer = new Uint8Array(cols * rows * 4);
+
+      const computedFont = window.getComputedStyle(document.documentElement).getPropertyValue("--mono").trim();
+      fontFamily = computedFont || "ui-monospace, monospace";
     };
 
     resize();
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
+
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry?.isIntersecting ?? false;
@@ -238,18 +302,7 @@ export default function HeroAsciiScene() {
       if (snapTransitionActive) {
         pointerTargetX = 0;
         pointerTargetY = 0;
-        frozenEffect.innerHTML = effect.domElement.innerHTML;
-        frozenEffect.classList.add("is-active");
-        effect.domElement.classList.add("is-paused");
-        if (frameId) {
-          window.cancelAnimationFrame(frameId);
-          frameId = 0;
-        }
-        return;
       }
-
-      frozenEffect.classList.remove("is-active");
-      effect.domElement.classList.remove("is-paused");
       if (isVisible && !document.hidden && !frameId) {
         frameId = window.requestAnimationFrame(render);
       }
@@ -276,22 +329,22 @@ export default function HeroAsciiScene() {
       frameId = 0;
       if (!isVisible || document.hidden) return;
 
-      const activeFrameInterval = snapTransitionActive ? snapFrameInterval : normalFrameInterval;
-      if (time - lastRenderAt < activeFrameInterval) {
+      const frameInterval = snapTransitionActive ? SNAP_FRAME_INTERVAL : NORMAL_FRAME_INTERVAL;
+      if (time - lastRenderAt < frameInterval) {
         frameId = window.requestAnimationFrame(render);
         return;
       }
       lastRenderAt = time;
 
       const t = time * 0.001;
-      const isGlitching = time < glitchEndsAt;
+      const isGlitching = !snapTransitionActive && time < glitchEndsAt;
 
-      if (time > nextGlitchAt) {
+      if (!snapTransitionActive && time > nextGlitchAt) {
         glitchEndsAt = time + 140;
         nextGlitchAt = time + 3200 + Math.random() * 4200;
       }
 
-      const pointerLerp = snapTransitionActive ? 0.12 : 0.06;
+      const pointerLerp = snapTransitionActive ? 0.14 : 0.06;
       pointerCurrentX += (pointerTargetX - pointerCurrentX) * pointerLerp;
       pointerCurrentY += (pointerTargetY - pointerCurrentY) * pointerLerp;
 
@@ -311,7 +364,12 @@ export default function HeroAsciiScene() {
 
       camera.lookAt(root.position.x * 0.05, 0.72, 0);
 
-      effect.render(scene, camera);
+      renderer.setRenderTarget(renderTarget);
+      renderer.render(scene, camera);
+      renderer.readRenderTargetPixels(renderTarget, 0, 0, cols, rows, pixelBuffer);
+      renderer.setRenderTarget(null);
+
+      drawAsciiFrame(outputContext, pixelBuffer, cols, rows, cellWidth, cellHeight, fontFamily);
       frameId = window.requestAnimationFrame(render);
     };
 
@@ -325,8 +383,7 @@ export default function HeroAsciiScene() {
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("hero-snap-transition", handleSnapTransition);
-      frozenEffect.remove();
-      effect.domElement.remove();
+      outputCanvas.remove();
       root.traverse((node) => {
         if (node instanceof THREE.Mesh) {
           node.geometry.dispose();
@@ -334,6 +391,7 @@ export default function HeroAsciiScene() {
       });
       faceMaterial.dispose();
       bodyMaterial.dispose();
+      renderTarget.dispose();
       renderer.dispose();
       scene.clear();
     };

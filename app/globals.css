@@ -370,6 +370,7 @@ pre {
 }
 
 .hero-ascii-output {
+  display: block;
   width: 100%;
   height: 100%;
   margin: 0;
@@ -387,34 +388,6 @@ pre {
     0 0 6px rgba(232, 174, 97, 0.08) !important;
   opacity: 0.97;
   pointer-events: none;
-}
-
-.hero-ascii-output.is-paused {
-  opacity: 0;
-}
-
-.hero-ascii-frozen {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 140ms linear;
-}
-
-.hero-ascii-frozen.is-active {
-  opacity: 0.97;
-}
-
-.hero-ascii-output table {
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 auto !important;
-  color: inherit !important;
-  background: transparent !important;
-}
-
-.hero-ascii-output td {
-  background: transparent !important;
-  color: inherit !important;
 }
 
 .ascii-art-bottom {
