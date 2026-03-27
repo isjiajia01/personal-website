@@ -3,10 +3,10 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const ASCII_CHARS = " .:-=+#@";
+const ASCII_CHARS = " .`'^\",:;~-+=*ox%#@";
 const NORMAL_FRAME_INTERVAL = 1000 / 20;
 const SNAP_FRAME_INTERVAL = 1000 / 10;
-const POSTERIZE_LEVELS = 5;
+const POSTERIZE_LEVELS = 6;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -114,11 +114,11 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
 
 function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFamily) {
   ctx.clearRect(0, 0, cols * cellWidth, rows * cellHeight);
-  ctx.font = `${Math.floor(cellHeight * 1.02)}px ${fontFamily}`;
+  ctx.font = `${Math.floor(cellHeight * 0.94)}px ${fontFamily}`;
   ctx.textBaseline = "top";
   ctx.fillStyle = "#5b4429";
-  ctx.shadowColor = "rgba(232, 174, 97, 0.08)";
-  ctx.shadowBlur = 6;
+  ctx.shadowColor = "rgba(232, 174, 97, 0.05)";
+  ctx.shadowBlur = 3;
 
   const maxIndex = ASCII_CHARS.length - 1;
   const brightnessMap = new Float32Array(cols * rows);
@@ -126,8 +126,7 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
 
   for (let y = 0; y < rows; y += 1) {
     for (let x = 0; x < cols; x += 1) {
-      const sourceY = rows - 1 - y;
-      const pixelIndex = sourceY * cols + x;
+      const pixelIndex = y * cols + x;
       const index = pixelIndex * 4;
       const red = pixels[index];
       const green = pixels[index + 1];
@@ -153,13 +152,12 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
       const right = x < cols - 1 ? brightnessMap[pixelIndex + 1] : brightness;
       const top = y > 0 ? brightnessMap[pixelIndex - cols] : brightness;
       const bottom = y < rows - 1 ? brightnessMap[pixelIndex + cols] : brightness;
-      const edgeWeight = clamp((Math.abs(left - right) + Math.abs(top - bottom)) * 1.75, 0, 1);
-
-      const sculptedBrightness = clamp(posterized - edgeWeight * 0.26, 0, 1);
+      const edgeWeight = clamp((Math.abs(left - right) + Math.abs(top - bottom)) * 1.15, 0, 1);
+      const sculptedBrightness = clamp(posterized - edgeWeight * 0.18, 0, 1);
       const charIndex = Math.round((1 - sculptedBrightness) * maxIndex);
       const char = ASCII_CHARS[charIndex];
 
-      if (!char || char === " " || sculptedBrightness > 0.94) continue;
+      if (!char || char === " " || sculptedBrightness > 0.965) continue;
       ctx.fillText(char, x * cellWidth, y * cellHeight);
     }
   }
@@ -184,7 +182,7 @@ export default function HeroAsciiScene() {
 
     const bgColor = new THREE.Color(0xf4eadb);
     const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
-    camera.position.set(0.18, 0.7, 48);
+    camera.position.set(0.18, 0.7, 46.2);
     camera.lookAt(0, 0.72, 0);
 
     const renderer = new THREE.WebGLRenderer({
@@ -232,8 +230,8 @@ export default function HeroAsciiScene() {
     a.position.z = 0.2;
 
     root.add(j, i, a);
-    root.scale.setScalar(0.82);
-    root.position.y = 0.92;
+    root.scale.setScalar(0.9);
+    root.position.y = 0.86;
     scene.add(root);
 
     let width = 0;
@@ -274,10 +272,10 @@ export default function HeroAsciiScene() {
       outputCanvas.style.height = `${height}px`;
       outputContext.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      cellWidth = clamp(Math.round(width / 120), 6, 9);
-      cellHeight = Math.round(cellWidth * 1.56);
-      cols = Math.max(48, Math.floor(width / cellWidth));
-      rows = Math.max(18, Math.floor(height / cellHeight));
+      cellWidth = clamp(Math.round(width / 152), 5, 7);
+      cellHeight = Math.round(cellWidth * 1.42);
+      cols = Math.max(62, Math.floor(width / cellWidth));
+      rows = Math.max(22, Math.floor(height / cellHeight));
 
       renderTarget.dispose();
       renderTarget = new THREE.WebGLRenderTarget(cols, rows, {
