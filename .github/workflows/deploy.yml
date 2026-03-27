@@ -29,7 +29,6 @@ jobs:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER_OCID }}
       OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-      OCI_CLI_KEY_FILE: ${{ runner.temp }}/oci_api_key.pem
       OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING: "True"
     steps:
       - name: Check out repository
@@ -69,6 +68,8 @@ jobs:
           set -euo pipefail
           : "${OCI_CLI_PRIVATE_KEY:?Missing OCI_CLI_PRIVATE_KEY secret}"
           umask 077
+          export OCI_CLI_KEY_FILE="${RUNNER_TEMP}/oci_api_key.pem"
+          echo "OCI_CLI_KEY_FILE=${OCI_CLI_KEY_FILE}" >> "$GITHUB_ENV"
           printf '%s\n' "$OCI_CLI_PRIVATE_KEY" > "$OCI_CLI_KEY_FILE"
 
       - name: Resolve runner IP
