@@ -126,8 +126,9 @@ function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFami
 
   for (let y = 0; y < rows; y += 1) {
     for (let x = 0; x < cols; x += 1) {
+      const sourceY = rows - 1 - y;
       const pixelIndex = y * cols + x;
-      const index = pixelIndex * 4;
+      const index = (sourceY * cols + x) * 4;
       const red = pixels[index];
       const green = pixels[index + 1];
       const blue = pixels[index + 2];
