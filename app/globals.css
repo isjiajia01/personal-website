@@ -661,6 +661,15 @@ pre {
   animation-delay: 90ms;
 }
 
+.is-snap-arrival .work-arrival-eyebrow,
+.is-snap-arrival .work-arrival-title {
+  animation: work-terminal-flash 320ms steps(3, end) both;
+}
+
+.is-snap-arrival .work-arrival-title {
+  animation-delay: 55ms;
+}
+
 .card-kicker,
 .tag-row span {
   font-family: var(--mono);
@@ -998,6 +1007,32 @@ pre {
   }
 }
 
+@keyframes work-terminal-flash {
+  0% {
+    opacity: 0.55;
+    filter: blur(1.5px);
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  35% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: 0 0 8px rgba(242, 182, 95, 0.12);
+  }
+
+  70% {
+    opacity: 0.82;
+    filter: blur(0.5px);
+    text-shadow: 0 0 4px rgba(242, 182, 95, 0.08);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-item {
     opacity: 1;
@@ -1025,6 +1060,11 @@ pre {
   }
 
   .is-snap-arrival .work-arrival-card {
+    animation: none;
+  }
+
+  .is-snap-arrival .work-arrival-eyebrow,
+  .is-snap-arrival .work-arrival-title {
     animation: none;
   }
 }

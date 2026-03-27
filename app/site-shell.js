@@ -389,8 +389,8 @@ export default function SiteShell() {
             {siteCopy.work.index}
           </div>
           <div className="section-body reveal-item" data-reveal style={{ "--reveal-delay": "40ms" }}>
-            <p className="eyebrow reveal-item" data-reveal style={{ "--reveal-delay": "80ms" }}>{siteCopy.work.eyebrow}</p>
-            <h2 className="reveal-item" data-reveal style={{ "--reveal-delay": "120ms" }}>{siteCopy.work.title}</h2>
+            <p className="eyebrow reveal-item work-arrival-eyebrow" data-reveal style={{ "--reveal-delay": "80ms" }}>{siteCopy.work.eyebrow}</p>
+            <h2 className="reveal-item work-arrival-title" data-reveal style={{ "--reveal-delay": "120ms" }}>{siteCopy.work.title}</h2>
             <div className="editorial-list">
               {siteCopy.work.current.map((item, index) => (
                 <article
