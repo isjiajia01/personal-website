@@ -13,7 +13,7 @@ export const projectCatalog = [
       zh: "Nimbus"
     },
     summary: {
-      en: "A weather product spanning app UI, aggregation logic, radar, and richer context modules for real usage.",
+      en: "A weather product spanning app UI, aggregation logic, radar, and richer context modules, built to stay dependable under messy real-world data.",
       zh: "一个覆盖应用界面、聚合逻辑、雷达与丰富上下文模块的天气产品系统。"
     },
     tags: ["SwiftUI", "Cloud Run", "Weather APIs"],
@@ -34,7 +34,7 @@ export const projectCatalog = [
         zh: "把应用界面、后端聚合、供应商回退和天气可视模块当作一个整体产品系统来处理。"
       },
       impact: {
-        en: "Produced a more resilient surface with stronger fallback behavior and a clearer day-to-day weather experience.",
+        en: "Produced a more resilient product surface with stronger fallback behavior, clearer context, and a better day-to-day weather experience.",
         zh: "形成了更稳健的产品界面，在降级行为和日常天气体验上都更清晰。"
       },
       role: {
@@ -58,7 +58,7 @@ export const projectCatalog = [
       zh: "Nu"
     },
     summary: {
-      en: "A commuter-first iOS transit app prototype focused on scanning, choosing, and acting quickly.",
+      en: "A commuter-first iOS transit app prototype focused on helping people scan options quickly and act with confidence in motion.",
       zh: "一个面向通勤场景的 iOS 交通原型，重点是快速扫描、判断与行动。"
     },
     tags: ["SwiftUI", "Transit", "MapKit"],
@@ -79,7 +79,7 @@ export const projectCatalog = [
         zh: "先按用户流程组织应用：附近站点、发车信息、行程详情和地图上下文，并尽量减少界面噪音。"
       },
       impact: {
-        en: "Created a more legible experience for repeated transit decisions in real commuter contexts.",
+        en: "Created a more legible transit experience for repeated commuter decisions where time pressure and low attention matter.",
         zh: "形成了一个更适合真实通勤场景中反复决策的可读体验。"
       },
       role: {
@@ -103,7 +103,7 @@ export const projectCatalog = [
       zh: "Transport-Sim"
     },
     summary: {
-      en: "A transport network simulation and optimization demo shaped as a decision-support surface rather than a pure model showcase.",
+      en: "A transport network simulation and optimization demo shaped as a decision-support surface for discussing scenarios, tradeoffs, and operations.",
       zh: "一个交通网络仿真与优化演示，被塑造成决策支持界面，而不是单纯展示模型本身。"
     },
     tags: ["Optimization", "Streamlit", "Scenario Design"],
@@ -118,7 +118,7 @@ export const projectCatalog = [
         zh: "围绕情景、权衡和交通运营问题组织演示，而不是只围绕数学机制本身。"
       },
       impact: {
-        en: "Made the work easier to explain and easier to connect to actual operational decisions.",
+        en: "Made optimization work easier to explain, easier to evaluate with stakeholders, and easier to connect to operational decisions.",
         zh: "让这类工作更容易解释，也更容易连接到真实运营决策。"
       },
       role: {

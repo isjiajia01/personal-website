@@ -211,6 +211,15 @@ export default function HeroAsciiScene() {
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isCompactViewport = window.innerWidth < 768;
+
+    if (prefersReducedMotion || isCompactViewport) {
+      container.dataset.staticScene = "true";
+      return () => {
+        delete container.dataset.staticScene;
+      };
+    }
 
     const outputCanvas = document.createElement("canvas");
     outputCanvas.className = "hero-ascii-output";

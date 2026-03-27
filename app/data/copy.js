@@ -32,6 +32,8 @@ export const siteCopy = {
     title: "Jiajia Zhang",
     subtitle:
       "I work across internal systems, AI workflows, product surfaces, and decision support.",
+    summary:
+      "I design and build product systems, AI workflows, and internal tools that make complex work clearer, faster, and more reliable.",
     cta: "Email me",
     scrollPrompt: "Scroll down to learn more about my work"
   },
@@ -51,6 +53,8 @@ export const siteCopy = {
     index: "(01)",
     eyebrow: "// Current work",
     title: "Work",
+    intro:
+      "Selected projects that show how I frame ambiguous problems, shape product surfaces, and turn technical depth into usable systems.",
     current: [
       {
         role: "Product Builder",
@@ -78,33 +82,48 @@ export const siteCopy = {
     index: "(02)",
     eyebrow: "// The path so far",
     title: "About",
+    intro:
+      "My work sits between product direction and system depth. I like turning fuzzy operating problems into tools, workflows, and interfaces that teams can trust under real conditions.",
     timeline: [
       {
         years: "2026",
-        role: "Nimbus",
+        role: "Product systems",
         detail:
-          "Worked across app presentation, backend aggregation, provider fallback, and richer weather context as one product system."
+          "Across Nimbus, I treated interface design, backend aggregation, fallback logic, and context modules as one connected product system rather than separate layers."
       },
       {
         years: "2026",
-        role: "Nu",
+        role: "Decision-first UX",
         detail:
-          "Built a native iOS transit prototype organized around commuter flow: nearby stops, departures, and journey detail."
+          "In Nu, I focused on decision speed: helping people scan nearby options, understand departures, and act quickly without carrying extra interface noise."
       },
       {
         years: "2026",
-        role: "Transport-Sim",
+        role: "Operational clarity",
         detail:
-          "Framed transport optimization and simulation work around scenarios, tradeoffs, and operational decision-making."
+          "In transport simulation work, I shifted the conversation from model complexity toward scenarios, tradeoffs, and the decisions operators actually need to make."
       }
+    ],
+    principles: [
+      "I work comfortably across interface, architecture, and workflow design when the problem demands end-to-end ownership.",
+      "I care about systems that remain legible after launch, especially where reliability, fallback behavior, and operational clarity matter.",
+      "I am most energized by products and internal tools that reduce ambiguity and make hard work easier to execute."
     ]
   },
   contact: {
     index: "(03)",
     eyebrow: "// Say hello",
     title: "Contact",
-    lead: "If the work above is close to what you need, email me.",
+    lead: "Open to product systems, AI workflow, and internal tooling work where clarity, reliability, and execution quality matter.",
+    availability: "Currently open to selected roles, collaborations, and thoughtful product conversations.",
     cta: "Email me",
+    secondaryCta: "View GitHub",
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/isjiajia01"
+      }
+    ],
     footer: "© 2026 Jiajia Zhang  Copenhagen, Denmark"
   }
 };
@@ -112,6 +131,7 @@ export const siteCopy = {
 export const detailPageCopy = {
   backHome: "Back to work",
   sectionLabel: "Case file",
+  switchLabel: "Language",
   summaryLabel: "Project summary",
   roleLabel: "Scope",
   stackLabel: "Stack",

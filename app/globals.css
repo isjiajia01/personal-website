@@ -371,6 +371,27 @@ pre {
   content: none;
 }
 
+.hero-ascii-scene[data-static-scene="true"] {
+  height: clamp(220px, 34vh, 320px);
+  background:
+    radial-gradient(circle at 50% 36%, rgba(221, 194, 162, 0.24), transparent 30%),
+    linear-gradient(180deg, rgba(243, 241, 235, 0.08), rgba(243, 241, 235, 0));
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent 28%);
+}
+
+.hero-ascii-scene[data-static-scene="true"]::before {
+  content: "JIA";
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: color-mix(in srgb, var(--text) 70%, #d8c4aa 30%);
+  font-family: var(--mono);
+  font-size: clamp(2.6rem, 11vw, 5.2rem);
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+}
+
 .hero-ascii-output {
   display: block;
   width: 100%;
@@ -430,6 +451,22 @@ pre {
   min-height: calc(100vh - 9.5rem);
   padding-bottom: 0.7rem;
   padding-top: clamp(320px, 58vh, 690px);
+}
+
+.hero-copy-block {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  max-width: 46rem;
+  margin: 0 auto 1.4rem;
+}
+
+.hero-summary {
+  margin: 0;
+  max-width: 40rem;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: clamp(1rem, 1.6vw, 1.14rem);
 }
 
 .hero-cta-stack {
@@ -745,6 +782,38 @@ pre {
   max-width: 34rem;
 }
 
+.contact-availability {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  line-height: 1.7;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.contact-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.contact-link-list a {
+  color: var(--muted);
+}
+
+.contact-link-list a:hover {
+  color: var(--text);
+}
+
 .contact-copy h2 {
   margin-bottom: 0.1rem;
   font-weight: 500;
@@ -816,7 +885,7 @@ pre {
   }
 
   .theme-toggle {
-    display: none;
+    display: inline-flex;
   }
 
   .nav-links {
@@ -842,6 +911,10 @@ pre {
     gap: 0.5rem;
   }
 
+  .nav-actions {
+    justify-self: end;
+  }
+
   .keyword-marquee {
     font-size: 0.9rem;
     letter-spacing: 0.08em;
@@ -856,6 +929,10 @@ pre {
   .nav {
     grid-template-columns: auto auto;
     gap: 0.8rem;
+  }
+
+  .theme-toggle {
+    display: none;
   }
 
   .nav-meta {

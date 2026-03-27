@@ -37,6 +37,15 @@ export const metadata = {
   title: "Jiajia Zhang | Systems, AI Workflows, and Internal Products",
   description:
     "Jiajia Zhang designs systems, AI workflows, and internal products that help teams operate with more clarity and less friction.",
+  applicationName: "Jiajia Zhang",
+  keywords: [
+    "Jiajia Zhang",
+    "AI workflows",
+    "internal tools",
+    "product systems",
+    "decision support",
+    "systems design"
+  ],
   alternates: {
     canonical: "/"
   },
@@ -49,7 +58,7 @@ export const metadata = {
     url: "/",
     images: [
       {
-        url: "/assets/og-card.png",
+        url: "/assets/og-card-optimized.png",
         width: 1200,
         height: 630,
         alt: "Jiajia Zhang personal website preview card"
@@ -61,7 +70,7 @@ export const metadata = {
     title: "Jiajia Zhang | Systems, AI Workflows, and Internal Products",
     description:
       "Systems, AI workflows, and internal products built around operational clarity.",
-    images: ["/assets/og-card.png"]
+    images: ["/assets/og-card-optimized.png"]
   },
   icons: {
     icon: "/assets/og-card.svg"
