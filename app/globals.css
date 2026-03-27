@@ -449,11 +449,11 @@ pre {
 
 .hero-scroll-copy {
   display: inline-block;
-  width: 0;
-  max-width: var(--steps-width);
-  overflow: hidden;
+  width: auto;
   white-space: nowrap;
+  overflow: clip;
   border-right: 1px solid color-mix(in srgb, currentColor 60%, transparent 40%);
+  clip-path: inset(0 100% 0 0);
   animation:
     hero-scroll-reveal 1.25s steps(var(--steps-count)) 180ms both,
     hero-scroll-caret 0.95s steps(1) infinite;
@@ -933,11 +933,11 @@ pre {
 
 @keyframes hero-scroll-reveal {
   from {
-    width: 0;
+    clip-path: inset(0 100% 0 0);
   }
 
   to {
-    width: var(--steps-width);
+    clip-path: inset(0 0 0 0);
   }
 }
 
@@ -981,7 +981,7 @@ pre {
 
   .hero-scroll-copy {
     width: auto;
-    max-width: none;
+    clip-path: none;
     border-right: 0;
   }
 }
