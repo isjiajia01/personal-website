@@ -81,6 +81,8 @@ export default function SiteShell() {
   }, []);
 
   useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const onScroll = () => setCompact(window.scrollY > 24);
     const onResize = () => {
       if (window.innerWidth > 840) {
@@ -88,11 +90,32 @@ export default function SiteShell() {
       }
     };
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const syncHeroSnapProgress = () => {
+      const heroNode = heroSectionRef.current;
+      const workNode = workSectionRef.current;
+      if (!heroNode || !workNode) return;
+
+      if (reducedMotion) {
+        heroNode.style.setProperty("--hero-snap-progress", "0");
+        return;
+      }
+
+      const start = 0;
+      const end = Math.max(workNode.offsetTop - window.innerHeight * 0.72, 1);
+      const progress = Math.min(Math.max((window.scrollY - start) / end, 0), 1);
+      heroNode.style.setProperty("--hero-snap-progress", progress.toFixed(3));
+    };
+
+    const handleScroll = () => {
+      onScroll();
+      syncHeroSnapProgress();
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", onResize);
     };
   }, []);

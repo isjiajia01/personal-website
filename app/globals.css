@@ -230,6 +230,7 @@ pre {
 }
 
 .hero-reset {
+  --hero-snap-progress: 0;
   padding: 3.6rem 0 3rem;
 }
 
@@ -346,7 +347,10 @@ pre {
   position: absolute;
   top: clamp(1rem, 4vh, 2.4rem);
   left: 50%;
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%)
+    translateY(calc(var(--hero-snap-progress) * -28px))
+    scale(calc(1 - var(--hero-snap-progress) * 0.08));
   width: min(92vw, 1080px);
   height: clamp(280px, 54vh, 620px);
   display: grid;
@@ -356,6 +360,7 @@ pre {
   padding: 0;
   overflow: hidden;
   contain: layout paint;
+  transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .hero-ascii-scene::before,
@@ -978,6 +983,11 @@ pre {
   .hero-scroll-arrow,
   .hero-scroll-copy {
     animation: none;
+  }
+
+  .hero-ascii-scene {
+    transition: none;
+    transform: translateX(-50%);
   }
 
   .hero-scroll-copy {
