@@ -247,8 +247,8 @@ pre {
 
 .hero-ambient-layer {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -12vh;
+  bottom: -12vh;
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
@@ -915,7 +915,11 @@ pre {
   }
 
   .hero-ambient-layer {
-    inset: 0;
+    top: -8vh;
+    bottom: -8vh;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
   }
 
   .nav {
