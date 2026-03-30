@@ -242,6 +242,48 @@ pre {
   min-height: calc(100vh - 9.5rem);
   align-items: stretch;
   overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-ambient-layer {
+  position: absolute;
+  inset: clamp(1.5rem, 4vw, 2.75rem) 0 auto;
+  height: clamp(320px, 56vh, 700px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-spark-field,
+.hero-ambient-mask {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-spark-field {
+  display: block;
+  opacity: 0.9;
+  filter: blur(0.2px) saturate(0.92);
+  -webkit-mask-image: radial-gradient(circle at 50% 42%, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.82) 28%, rgba(0, 0, 0, 0.42) 52%, transparent 74%);
+  mask-image: radial-gradient(circle at 50% 42%, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.82) 28%, rgba(0, 0, 0, 0.42) 52%, transparent 74%);
+}
+
+.hero-ambient-mask {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(9, 9, 9, 0) 0%, rgba(9, 9, 9, 0) 24%, rgba(9, 9, 9, 0.1) 48%, rgba(9, 9, 9, 0.46) 70%, rgba(9, 9, 9, 0.78) 100%),
+    linear-gradient(180deg, rgba(9, 9, 9, 0.14), rgba(9, 9, 9, 0) 32%, rgba(9, 9, 9, 0) 72%, rgba(9, 9, 9, 0.26));
+}
+
+:root[data-theme="light"] .hero-spark-field {
+  opacity: 0.42;
+  filter: blur(0.4px) saturate(0.7);
+}
+
+:root[data-theme="light"] .hero-ambient-mask {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(243, 235, 222, 0) 0%, rgba(243, 235, 222, 0) 22%, rgba(243, 235, 222, 0.18) 48%, rgba(243, 235, 222, 0.54) 72%, rgba(243, 235, 222, 0.82) 100%),
+    linear-gradient(180deg, rgba(243, 235, 222, 0.14), rgba(243, 235, 222, 0) 34%, rgba(243, 235, 222, 0) 70%, rgba(243, 235, 222, 0.24));
 }
 
 .hero-label,
@@ -347,6 +389,7 @@ pre {
 
 .hero-ascii-scene {
   position: absolute;
+  z-index: 1;
   top: clamp(1rem, 4vh, 2.4rem);
   left: 50%;
   transform:
@@ -882,6 +925,11 @@ pre {
 @media (max-width: 640px) {
   .topbar {
     padding: 0.8rem 0.8rem 0;
+  }
+
+  .hero-ambient-layer {
+    inset: 0;
+    height: clamp(260px, 42vh, 360px);
   }
 
   .nav {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { asciiBlocks, siteCopy } from "./data/copy";
 import { projectCategoryLabels } from "./data/projects";
 import HeroAsciiScene from "./hero-ascii-scene";
+import HeroSparkField from "./hero-spark-field";
 
 export function Header({
   compact,
@@ -72,6 +73,10 @@ export function HeroSection({ heroSectionRef }) {
   return (
     <section className="hero-section hero-reset reveal-section is-visible" id="home" data-reveal ref={heroSectionRef}>
       <div className="editorial-hero">
+        <div className="hero-ambient-layer" aria-hidden="true">
+          <HeroSparkField />
+          <div className="hero-ambient-mask" />
+        </div>
         <div className="editorial-intro">
           <HeroAsciiScene />
           <div className="hero-cta-stack reveal-item is-visible" data-reveal style={{ "--reveal-delay": "120ms" }}>
