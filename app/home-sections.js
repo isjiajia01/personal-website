@@ -75,7 +75,6 @@ export function HeroSection({ heroSectionRef }) {
       <div className="editorial-hero">
         <div className="hero-ambient-layer" aria-hidden="true">
           <HeroSparkField />
-          <div className="hero-ambient-mask" />
         </div>
         <div className="editorial-intro">
           <HeroAsciiScene />
