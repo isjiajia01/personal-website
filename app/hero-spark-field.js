@@ -124,7 +124,6 @@ export default function HeroSparkField() {
       syncTheme();
 
       const darkTheme = theme !== "light";
-      const bgAlpha = darkTheme ? 0.18 : 0.07;
       const primary = darkTheme
         ? { r: 248, g: 194, b: 108 }
         : { r: 164, g: 118, b: 68 };
@@ -133,8 +132,6 @@ export default function HeroSparkField() {
         : { r: 184, g: 150, b: 112 };
 
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = `rgba(7, 7, 10, ${bgAlpha})`;
-      ctx.fillRect(0, 0, width, height);
 
       const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * 0.42);
       if (darkTheme) {
@@ -195,14 +192,6 @@ export default function HeroSparkField() {
       }
 
       ctx.globalCompositeOperation = "source-over";
-
-      const veil = ctx.createLinearGradient(0, 0, 0, height);
-      veil.addColorStop(0, darkTheme ? "rgba(9, 9, 9, 0.1)" : "rgba(243, 235, 222, 0.06)");
-      veil.addColorStop(0.24, "rgba(0, 0, 0, 0)");
-      veil.addColorStop(0.78, "rgba(0, 0, 0, 0)");
-      veil.addColorStop(1, darkTheme ? "rgba(9, 9, 9, 0.14)" : "rgba(243, 235, 222, 0.1)");
-      ctx.fillStyle = veil;
-      ctx.fillRect(0, 0, width, height);
 
       frameId = window.requestAnimationFrame(render);
     };

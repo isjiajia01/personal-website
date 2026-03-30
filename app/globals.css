@@ -247,8 +247,7 @@ pre {
 
 .hero-ambient-layer {
   position: absolute;
-  inset: clamp(1.25rem, 3vw, 2.2rem) 0 auto;
-  height: clamp(360px, 60vh, 760px);
+  inset: 0;
   z-index: 0;
   pointer-events: none;
 }
@@ -265,14 +264,18 @@ pre {
   display: block;
   opacity: 1;
   filter: blur(0.1px) saturate(1);
-  -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.94) 24%, rgba(0, 0, 0, 0.66) 46%, rgba(0, 0, 0, 0.18) 66%, transparent 82%);
-  mask-image: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.94) 24%, rgba(0, 0, 0, 0.66) 46%, rgba(0, 0, 0, 0.18) 66%, transparent 82%);
+  -webkit-mask-image:
+    radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.96) 22%, rgba(0, 0, 0, 0.76) 40%, rgba(0, 0, 0, 0.34) 58%, rgba(0, 0, 0, 0.08) 74%, transparent 88%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.22) 12%, rgba(0, 0, 0, 0.96) 26%, rgba(0, 0, 0, 0.96) 74%, rgba(0, 0, 0, 0.22) 88%, transparent 100%);
+  mask-image:
+    radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.96) 22%, rgba(0, 0, 0, 0.76) 40%, rgba(0, 0, 0, 0.34) 58%, rgba(0, 0, 0, 0.08) 74%, transparent 88%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.22) 12%, rgba(0, 0, 0, 0.96) 26%, rgba(0, 0, 0, 0.96) 74%, rgba(0, 0, 0, 0.22) 88%, transparent 100%);
 }
 
 .hero-ambient-mask {
   background:
-    radial-gradient(circle at 50% 40%, rgba(9, 9, 9, 0) 0%, rgba(9, 9, 9, 0) 20%, rgba(9, 9, 9, 0.06) 42%, rgba(9, 9, 9, 0.34) 68%, rgba(9, 9, 9, 0.72) 100%),
-    linear-gradient(180deg, rgba(9, 9, 9, 0.1), rgba(9, 9, 9, 0) 28%, rgba(9, 9, 9, 0) 76%, rgba(9, 9, 9, 0.18));
+    radial-gradient(circle at 50% 40%, rgba(9, 9, 9, 0) 0%, rgba(9, 9, 9, 0) 18%, rgba(9, 9, 9, 0.04) 40%, rgba(9, 9, 9, 0.24) 62%, rgba(9, 9, 9, 0.52) 82%, rgba(9, 9, 9, 0.72) 100%),
+    linear-gradient(180deg, rgba(9, 9, 9, 0) 0%, rgba(9, 9, 9, 0.04) 12%, rgba(9, 9, 9, 0) 28%, rgba(9, 9, 9, 0) 72%, rgba(9, 9, 9, 0.06) 88%, rgba(9, 9, 9, 0) 100%);
 }
 
 :root[data-theme="light"] .hero-spark-field {
@@ -282,8 +285,8 @@ pre {
 
 :root[data-theme="light"] .hero-ambient-mask {
   background:
-    radial-gradient(circle at 50% 42%, rgba(243, 235, 222, 0) 0%, rgba(243, 235, 222, 0) 22%, rgba(243, 235, 222, 0.18) 48%, rgba(243, 235, 222, 0.54) 72%, rgba(243, 235, 222, 0.82) 100%),
-    linear-gradient(180deg, rgba(243, 235, 222, 0.14), rgba(243, 235, 222, 0) 34%, rgba(243, 235, 222, 0) 70%, rgba(243, 235, 222, 0.24));
+    radial-gradient(circle at 50% 40%, rgba(243, 235, 222, 0) 0%, rgba(243, 235, 222, 0) 18%, rgba(243, 235, 222, 0.12) 40%, rgba(243, 235, 222, 0.34) 64%, rgba(243, 235, 222, 0.58) 84%, rgba(243, 235, 222, 0.74) 100%),
+    linear-gradient(180deg, rgba(243, 235, 222, 0) 0%, rgba(243, 235, 222, 0.04) 12%, rgba(243, 235, 222, 0) 28%, rgba(243, 235, 222, 0) 72%, rgba(243, 235, 222, 0.05) 88%, rgba(243, 235, 222, 0) 100%);
 }
 
 .hero-label,
@@ -929,7 +932,6 @@ pre {
 
   .hero-ambient-layer {
     inset: 0;
-    height: clamp(260px, 42vh, 360px);
   }
 
   .nav {
