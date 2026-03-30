@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from "react";
 
-const BASE_PARTICLE_COUNT = 18;
-const TRAIL_LENGTH = 56;
-const DRAG = 0.986;
-const SWIRL = 0.0028;
+const BASE_PARTICLE_COUNT = 28;
+const TRAIL_LENGTH = 72;
+const DRAG = 0.988;
+const SWIRL = 0.0034;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -16,27 +16,24 @@ function randomBetween(min, max) {
 }
 
 function createParticle(width, height, centerX, centerY, compact) {
-  const edge = Math.floor(Math.random() * 4);
-  const margin = 40;
+  const edge = Math.floor(Math.random() * 3);
+  const margin = 36;
   let x = centerX;
   let y = centerY;
 
   if (edge === 0) {
-    x = randomBetween(-margin, width * 0.22);
-    y = randomBetween(height * 0.15, height * 0.92);
+    x = randomBetween(width * 0.08, width * 0.28);
+    y = randomBetween(height * 0.2, height * 0.72);
   } else if (edge === 1) {
-    x = randomBetween(width * 0.78, width + margin);
-    y = randomBetween(height * 0.12, height * 0.88);
-  } else if (edge === 2) {
-    x = randomBetween(width * 0.16, width * 0.84);
-    y = randomBetween(-margin, height * 0.22);
+    x = randomBetween(width * 0.72, width * 0.92);
+    y = randomBetween(height * 0.16, height * 0.7);
   } else {
-    x = randomBetween(width * 0.22, width * 0.78);
-    y = randomBetween(height * 0.78, height + margin);
+    x = randomBetween(width * 0.28, width * 0.72);
+    y = randomBetween(-margin, height * 0.16);
   }
 
-  const angle = Math.atan2(centerY - y, centerX - x) + randomBetween(-0.42, 0.42);
-  const speed = compact ? randomBetween(0.28, 0.54) : randomBetween(0.34, 0.72);
+  const angle = Math.atan2(centerY - y, centerX - x) + randomBetween(-0.34, 0.34);
+  const speed = compact ? randomBetween(0.34, 0.62) : randomBetween(0.44, 0.92);
 
   return {
     x,
@@ -77,7 +74,7 @@ export default function HeroSparkField() {
     let pointerY = 0;
     let pointerActive = false;
 
-    const particleTarget = prefersReducedMotion ? 0 : compact ? 10 : BASE_PARTICLE_COUNT;
+    const particleTarget = prefersReducedMotion ? 0 : compact ? 14 : BASE_PARTICLE_COUNT;
 
     const setSize = () => {
       width = canvas.clientWidth || 1000;
@@ -127,13 +124,13 @@ export default function HeroSparkField() {
       syncTheme();
 
       const darkTheme = theme !== "light";
-      const bgAlpha = darkTheme ? 0.15 : 0.06;
+      const bgAlpha = darkTheme ? 0.18 : 0.07;
       const primary = darkTheme
-        ? { r: 242, g: 182, b: 95 }
-        : { r: 150, g: 111, b: 62 };
+        ? { r: 248, g: 194, b: 108 }
+        : { r: 164, g: 118, b: 68 };
       const secondary = darkTheme
-        ? { r: 132, g: 104, b: 76 }
-        : { r: 170, g: 141, b: 104 };
+        ? { r: 184, g: 132, b: 84 }
+        : { r: 184, g: 150, b: 112 };
 
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = `rgba(7, 7, 10, ${bgAlpha})`;
@@ -141,12 +138,13 @@ export default function HeroSparkField() {
 
       const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * 0.42);
       if (darkTheme) {
-        radialGlow.addColorStop(0, "rgba(208, 141, 74, 0.10)");
-        radialGlow.addColorStop(0.35, "rgba(82, 56, 32, 0.08)");
+        radialGlow.addColorStop(0, "rgba(224, 154, 78, 0.18)");
+        radialGlow.addColorStop(0.28, "rgba(148, 96, 46, 0.12)");
+        radialGlow.addColorStop(0.56, "rgba(82, 56, 32, 0.05)");
         radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
       } else {
-        radialGlow.addColorStop(0, "rgba(180, 132, 72, 0.05)");
-        radialGlow.addColorStop(0.45, "rgba(180, 132, 72, 0.02)");
+        radialGlow.addColorStop(0, "rgba(186, 136, 74, 0.08)");
+        radialGlow.addColorStop(0.4, "rgba(186, 136, 74, 0.03)");
         radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
       }
       ctx.fillStyle = radialGlow;
@@ -160,7 +158,7 @@ export default function HeroSparkField() {
         const dx = centerX - particle.x;
         const dy = centerY - particle.y;
         const dist = Math.max(Math.hypot(dx, dy), 1);
-        const inward = darkTheme ? 0.011 : 0.008;
+        const inward = darkTheme ? 0.015 : 0.01;
         const pointerPull = pointerActive
           ? clamp(1 - Math.hypot(pointerX - particle.x, pointerY - particle.y) / Math.max(width, height), 0, 1) * 0.01
           : 0;
@@ -181,7 +179,7 @@ export default function HeroSparkField() {
         particle.trail.push({ x: particle.x, y: particle.y });
         if (particle.trail.length > TRAIL_LENGTH) particle.trail.shift();
 
-        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.11 : 0.05);
+        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.075);
         drawTrail(particle, alphaMultiplier, particle.charge > 0 ? primary : secondary);
 
         if (
@@ -199,10 +197,10 @@ export default function HeroSparkField() {
       ctx.globalCompositeOperation = "source-over";
 
       const veil = ctx.createLinearGradient(0, 0, 0, height);
-      veil.addColorStop(0, darkTheme ? "rgba(9, 9, 9, 0.16)" : "rgba(243, 235, 222, 0.08)");
+      veil.addColorStop(0, darkTheme ? "rgba(9, 9, 9, 0.1)" : "rgba(243, 235, 222, 0.06)");
       veil.addColorStop(0.24, "rgba(0, 0, 0, 0)");
       veil.addColorStop(0.78, "rgba(0, 0, 0, 0)");
-      veil.addColorStop(1, darkTheme ? "rgba(9, 9, 9, 0.24)" : "rgba(243, 235, 222, 0.12)");
+      veil.addColorStop(1, darkTheme ? "rgba(9, 9, 9, 0.14)" : "rgba(243, 235, 222, 0.1)");
       ctx.fillStyle = veil;
       ctx.fillRect(0, 0, width, height);
 
