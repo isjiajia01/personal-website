@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 const BASE_PARTICLE_COUNT = 28;
 const LIGHT_PARTICLE_COUNT = 6;
 const TRAIL_LENGTH = 72;
+const LIGHT_TRAIL_LENGTH = 36;
 const DRAG = 0.988;
 const SWIRL = 0.0034;
 
@@ -56,7 +57,7 @@ export default function HeroSparkField() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -71,22 +72,87 @@ export default function HeroSparkField() {
     let centerY = 0;
     let theme = document.documentElement.dataset.theme || "dark";
     let lastTime = performance.now();
+    let frameInterval = 1000 / 48;
     let pointerX = 0;
     let pointerY = 0;
     let pointerActive = false;
+    let backgroundCanvas = null;
+    let backgroundCtx = null;
+    let backgroundTheme = "";
 
     const particleTargetBase = prefersReducedMotion ? 0 : compact ? 14 : BASE_PARTICLE_COUNT;
+
+    const paintBackground = (currentTheme) => {
+      if (!backgroundCtx || !backgroundCanvas) return;
+
+      const darkTheme = currentTheme !== "light";
+      backgroundCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      backgroundCtx.clearRect(0, 0, width, height);
+
+      const radialGlow = backgroundCtx.createRadialGradient(
+        centerX,
+        centerY,
+        0,
+        centerX,
+        centerY,
+        Math.max(width, height) * (darkTheme ? 0.42 : 0.46)
+      );
+
+      if (darkTheme) {
+        radialGlow.addColorStop(0, "rgba(224, 154, 78, 0.18)");
+        radialGlow.addColorStop(0.28, "rgba(148, 96, 46, 0.12)");
+        radialGlow.addColorStop(0.56, "rgba(82, 56, 32, 0.05)");
+        radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+      } else {
+        radialGlow.addColorStop(0, "rgba(219, 183, 141, 0.44)");
+        radialGlow.addColorStop(0.22, "rgba(208, 170, 126, 0.26)");
+        radialGlow.addColorStop(0.5, "rgba(192, 156, 118, 0.11)");
+        radialGlow.addColorStop(0.82, "rgba(190, 160, 126, 0.03)");
+        radialGlow.addColorStop(1, "rgba(243, 235, 222, 0)");
+      }
+
+      backgroundCtx.fillStyle = radialGlow;
+      backgroundCtx.fillRect(0, 0, width, height);
+
+      if (!darkTheme) {
+        const haze = backgroundCtx.createRadialGradient(
+          centerX,
+          centerY * 0.99,
+          0,
+          centerX,
+          centerY,
+          Math.max(width, height) * 0.42
+        );
+        haze.addColorStop(0, "rgba(240, 216, 184, 0.34)");
+        haze.addColorStop(0.3, "rgba(230, 202, 166, 0.16)");
+        haze.addColorStop(0.62, "rgba(222, 192, 157, 0.05)");
+        haze.addColorStop(1, "rgba(243, 235, 222, 0)");
+        backgroundCtx.fillStyle = haze;
+        backgroundCtx.fillRect(0, 0, width, height);
+      }
+
+      backgroundTheme = currentTheme;
+    };
 
     const setSize = () => {
       width = canvas.clientWidth || 1000;
       height = canvas.clientHeight || 560;
       const currentTheme = document.documentElement.dataset.theme || "dark";
-      dpr = Math.min(window.devicePixelRatio || 1, currentTheme === "light" ? 1.1 : 1.8);
+      dpr = Math.min(window.devicePixelRatio || 1, currentTheme === "light" ? 1 : 1.6);
+      frameInterval = currentTheme === "light" ? 1000 / 30 : 1000 / 48;
+
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
       centerX = width * 0.5;
-      centerY = height * ((document.documentElement.dataset.theme || "dark") === "light" ? 0.56 : 0.42);
+      centerY = height * (currentTheme === "light" ? 0.56 : 0.42);
+
+      backgroundCanvas = document.createElement("canvas");
+      backgroundCanvas.width = canvas.width;
+      backgroundCanvas.height = canvas.height;
+      backgroundCtx = backgroundCanvas.getContext("2d", { alpha: true, desynchronized: true });
+      paintBackground(currentTheme);
     };
 
     const syncTheme = () => {
@@ -94,8 +160,6 @@ export default function HeroSparkField() {
       if (nextTheme !== theme) {
         theme = nextTheme;
         setSize();
-      } else {
-        theme = nextTheme;
       }
     };
 
@@ -111,26 +175,32 @@ export default function HeroSparkField() {
     const drawTrail = (particle, alphaMultiplier, palette) => {
       if (particle.trail.length < 2) return;
 
+      ctx.beginPath();
       for (let i = 1; i < particle.trail.length; i += 1) {
         const point = particle.trail[i];
         const previous = particle.trail[i - 1];
         const progress = i / particle.trail.length;
         const fade = progress * alphaMultiplier;
 
-        ctx.beginPath();
         ctx.strokeStyle = `rgba(${palette.r}, ${palette.g}, ${palette.b}, ${fade.toFixed(4)})`;
         ctx.lineWidth = particle.radius * (0.3 + progress * 1.3);
         ctx.moveTo(previous.x, previous.y);
         ctx.lineTo(point.x, point.y);
-        ctx.stroke();
       }
+      ctx.stroke();
     };
 
     const render = (now) => {
       frameId = 0;
       if (!visible) return;
 
-      const delta = clamp((now - lastTime) / 16.6667, 0.8, 1.8);
+      const elapsed = now - lastTime;
+      if (elapsed < frameInterval) {
+        frameId = window.requestAnimationFrame(render);
+        return;
+      }
+
+      const delta = clamp(elapsed / 16.6667, 0.8, 1.8);
       lastTime = now;
       syncTheme();
 
@@ -143,32 +213,13 @@ export default function HeroSparkField() {
         ? { r: 184, g: 132, b: 84 }
         : { r: 198, g: 166, b: 132 };
 
-      ctx.clearRect(0, 0, width, height);
-
-      const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * (darkTheme ? 0.42 : 0.46));
-      if (darkTheme) {
-        radialGlow.addColorStop(0, "rgba(224, 154, 78, 0.18)");
-        radialGlow.addColorStop(0.28, "rgba(148, 96, 46, 0.12)");
-        radialGlow.addColorStop(0.56, "rgba(82, 56, 32, 0.05)");
-        radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
-      } else {
-        radialGlow.addColorStop(0, "rgba(219, 183, 141, 0.44)");
-        radialGlow.addColorStop(0.22, "rgba(208, 170, 126, 0.26)");
-        radialGlow.addColorStop(0.5, "rgba(192, 156, 118, 0.11)");
-        radialGlow.addColorStop(0.82, "rgba(190, 160, 126, 0.03)");
-        radialGlow.addColorStop(1, "rgba(243, 235, 222, 0)");
+      if (backgroundCanvas && backgroundTheme !== theme) {
+        paintBackground(theme);
       }
-      ctx.fillStyle = radialGlow;
-      ctx.fillRect(0, 0, width, height);
 
-      if (!darkTheme) {
-        const haze = ctx.createRadialGradient(centerX, centerY * 0.99, 0, centerX, centerY, Math.max(width, height) * 0.42);
-        haze.addColorStop(0, "rgba(240, 216, 184, 0.34)");
-        haze.addColorStop(0.3, "rgba(230, 202, 166, 0.16)");
-        haze.addColorStop(0.62, "rgba(222, 192, 157, 0.05)");
-        haze.addColorStop(1, "rgba(243, 235, 222, 0)");
-        ctx.fillStyle = haze;
-        ctx.fillRect(0, 0, width, height);
+      ctx.clearRect(0, 0, width, height);
+      if (backgroundCanvas) {
+        ctx.drawImage(backgroundCanvas, 0, 0, width, height);
       }
 
       refillParticles(targetCount);
@@ -180,9 +231,10 @@ export default function HeroSparkField() {
         const dy = centerY - particle.y;
         const dist = Math.max(Math.hypot(dx, dy), 1);
         const inward = darkTheme ? 0.015 : 0.0088;
-        const pointerPull = pointerActive && darkTheme
-          ? clamp(1 - Math.hypot(pointerX - particle.x, pointerY - particle.y) / Math.max(width, height), 0, 1) * 0.01
-          : 0;
+        const pointerPull =
+          pointerActive && darkTheme
+            ? clamp(1 - Math.hypot(pointerX - particle.x, pointerY - particle.y) / Math.max(width, height), 0, 1) * 0.01
+            : 0;
 
         particle.vx += (dx / dist) * (inward + pointerPull) * delta;
         particle.vy += (dy / dist) * (inward + pointerPull) * delta;
@@ -198,7 +250,9 @@ export default function HeroSparkField() {
         particle.life -= particle.decay * delta;
 
         particle.trail.push({ x: particle.x, y: particle.y });
-        if (particle.trail.length > (darkTheme ? TRAIL_LENGTH : 36)) particle.trail.shift();
+        if (particle.trail.length > (darkTheme ? TRAIL_LENGTH : LIGHT_TRAIL_LENGTH)) {
+          particle.trail.shift();
+        }
 
         const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.04);
         drawTrail(particle, alphaMultiplier, particle.charge > 0 ? primary : secondary);
@@ -216,13 +270,12 @@ export default function HeroSparkField() {
       }
 
       ctx.globalCompositeOperation = "source-over";
-
       frameId = window.requestAnimationFrame(render);
     };
 
     const handleResize = () => {
       setSize();
-      refillParticles();
+      refillParticles(theme !== "light" ? particleTargetBase : Math.min(LIGHT_PARTICLE_COUNT, particleTargetBase));
     };
 
     const handleVisibility = () => {
@@ -245,7 +298,7 @@ export default function HeroSparkField() {
     };
 
     setSize();
-    refillParticles();
+    refillParticles(theme !== "light" ? particleTargetBase : Math.min(LIGHT_PARTICLE_COUNT, particleTargetBase));
     frameId = window.requestAnimationFrame(render);
 
     const resizeObserver = new ResizeObserver(handleResize);
@@ -262,6 +315,8 @@ export default function HeroSparkField() {
       document.removeEventListener("visibilitychange", handleVisibility);
       canvas.removeEventListener("pointermove", handlePointerMove);
       canvas.removeEventListener("pointerleave", handlePointerLeave);
+      backgroundCanvas = null;
+      backgroundCtx = null;
       window.cancelAnimationFrame(frameId);
     };
   }, []);
