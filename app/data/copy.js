@@ -63,12 +63,6 @@ export const siteCopy = {
         company: "Nu",
         detail:
           "Designing a commuter-first transit experience focused on nearby stations, departures, and fast decision-making."
-      },
-      {
-        role: "System Builder",
-        company: "Transport-Sim",
-        detail:
-          "Shaping transport optimization and simulation into a decision-support interface instead of a model-only demonstration."
       }
     ],
     selectedTitle: "Selected projects",

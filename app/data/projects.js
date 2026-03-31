@@ -89,45 +89,6 @@ export const projectCatalog = [
       stack: ["SwiftUI", "Transit APIs", "MapKit"]
     }
   },
-  {
-    slug: "transport-sim",
-    category: "analysis",
-    year: "2026",
-    featured: true,
-    kicker: {
-      en: "Decision Support",
-      zh: "决策支持"
-    },
-    title: {
-      en: "Transport-Sim",
-      zh: "Transport-Sim"
-    },
-    summary: {
-      en: "A transport network simulation and optimization demo shaped as a decision-support surface for discussing scenarios, tradeoffs, and operations.",
-      zh: "一个交通网络仿真与优化演示，被塑造成决策支持界面，而不是单纯展示模型本身。"
-    },
-    tags: ["Optimization", "Streamlit", "Scenario Design"],
-    links: [],
-    details: {
-      challenge: {
-        en: "Optimization work is often hard to discuss with non-specialists because interfaces stay too close to the model and too far from the decision.",
-        zh: "优化工作往往难以和非专业受众沟通，因为界面离模型太近、离决策太远。"
-      },
-      approach: {
-        en: "Built the demo around scenarios, tradeoffs, and transport operations questions rather than mathematical machinery alone.",
-        zh: "围绕情景、权衡和交通运营问题组织演示，而不是只围绕数学机制本身。"
-      },
-      impact: {
-        en: "Made optimization work easier to explain, easier to evaluate with stakeholders, and easier to connect to operational decisions.",
-        zh: "让这类工作更容易解释，也更容易连接到真实运营决策。"
-      },
-      role: {
-        en: "Problem framing, simulation design, and decision-support presentation.",
-        zh: "问题定义、仿真设计与决策支持呈现。"
-      },
-      stack: ["Python", "OR", "Streamlit", "Plotly"]
-    }
-  }
 ];
 
 export const projectCategoryLabels = {
