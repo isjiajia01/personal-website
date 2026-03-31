@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const BASE_PARTICLE_COUNT = 28;
-const LIGHT_PARTICLE_COUNT = 16;
+const LIGHT_PARTICLE_COUNT = 10;
 const TRAIL_LENGTH = 72;
 const DRAG = 0.988;
 const SWIRL = 0.0034;
@@ -131,10 +131,10 @@ export default function HeroSparkField() {
       const targetCount = darkTheme ? particleTargetBase : Math.min(LIGHT_PARTICLE_COUNT, particleTargetBase);
       const primary = darkTheme
         ? { r: 248, g: 194, b: 108 }
-        : { r: 176, g: 132, b: 88 };
+        : { r: 170, g: 128, b: 86 };
       const secondary = darkTheme
         ? { r: 184, g: 132, b: 84 }
-        : { r: 204, g: 172, b: 136 };
+        : { r: 198, g: 166, b: 132 };
 
       ctx.clearRect(0, 0, width, height);
 
@@ -145,19 +145,20 @@ export default function HeroSparkField() {
         radialGlow.addColorStop(0.56, "rgba(82, 56, 32, 0.05)");
         radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
       } else {
-        radialGlow.addColorStop(0, "rgba(220, 184, 142, 0.46)");
-        radialGlow.addColorStop(0.22, "rgba(210, 171, 127, 0.28)");
-        radialGlow.addColorStop(0.5, "rgba(194, 158, 120, 0.12)");
+        radialGlow.addColorStop(0, "rgba(219, 183, 141, 0.54)");
+        radialGlow.addColorStop(0.22, "rgba(208, 170, 126, 0.34)");
+        radialGlow.addColorStop(0.5, "rgba(192, 156, 118, 0.15)");
+        radialGlow.addColorStop(0.82, "rgba(190, 160, 126, 0.04)");
         radialGlow.addColorStop(1, "rgba(243, 235, 222, 0)");
       }
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
 
       if (!darkTheme) {
-        const haze = ctx.createRadialGradient(centerX, centerY * 0.98, 0, centerX, centerY, Math.max(width, height) * 0.4);
-        haze.addColorStop(0, "rgba(240, 216, 184, 0.34)");
-        haze.addColorStop(0.36, "rgba(230, 202, 166, 0.16)");
-        haze.addColorStop(0.72, "rgba(222, 192, 157, 0.05)");
+        const haze = ctx.createRadialGradient(centerX, centerY * 0.98, 0, centerX, centerY, Math.max(width, height) * 0.46);
+        haze.addColorStop(0, "rgba(240, 216, 184, 0.42)");
+        haze.addColorStop(0.3, "rgba(230, 202, 166, 0.22)");
+        haze.addColorStop(0.62, "rgba(222, 192, 157, 0.08)");
         haze.addColorStop(1, "rgba(243, 235, 222, 0)");
         ctx.fillStyle = haze;
         ctx.fillRect(0, 0, width, height);
@@ -171,7 +172,7 @@ export default function HeroSparkField() {
         const dx = centerX - particle.x;
         const dy = centerY - particle.y;
         const dist = Math.max(Math.hypot(dx, dy), 1);
-        const inward = darkTheme ? 0.015 : 0.0095;
+        const inward = darkTheme ? 0.015 : 0.0088;
         const pointerPull = pointerActive
           ? clamp(1 - Math.hypot(pointerX - particle.x, pointerY - particle.y) / Math.max(width, height), 0, 1) * 0.01
           : 0;
@@ -179,7 +180,7 @@ export default function HeroSparkField() {
         particle.vx += (dx / dist) * (inward + pointerPull) * delta;
         particle.vy += (dy / dist) * (inward + pointerPull) * delta;
 
-        const swirlStrength = SWIRL * particle.charge * (darkTheme ? 1 : 0.6) * delta;
+        const swirlStrength = SWIRL * particle.charge * (darkTheme ? 1 : 0.46) * delta;
         const nextVx = particle.vx + -dy * swirlStrength;
         const nextVy = particle.vy + dx * swirlStrength;
         particle.vx = nextVx * DRAG;
@@ -192,7 +193,7 @@ export default function HeroSparkField() {
         particle.trail.push({ x: particle.x, y: particle.y });
         if (particle.trail.length > TRAIL_LENGTH) particle.trail.shift();
 
-        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.135);
+        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.082);
         drawTrail(particle, alphaMultiplier, particle.charge > 0 ? primary : secondary);
 
         if (
