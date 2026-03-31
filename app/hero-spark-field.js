@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const BASE_PARTICLE_COUNT = 28;
-const LIGHT_PARTICLE_COUNT = 10;
+const LIGHT_PARTICLE_COUNT = 6;
 const TRAIL_LENGTH = 72;
 const DRAG = 0.988;
 const SWIRL = 0.0034;
@@ -80,7 +80,8 @@ export default function HeroSparkField() {
     const setSize = () => {
       width = canvas.clientWidth || 1000;
       height = canvas.clientHeight || 560;
-      dpr = Math.min(window.devicePixelRatio || 1, 1.8);
+      const currentTheme = document.documentElement.dataset.theme || "dark";
+      dpr = Math.min(window.devicePixelRatio || 1, currentTheme === "light" ? 1.1 : 1.8);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -89,7 +90,13 @@ export default function HeroSparkField() {
     };
 
     const syncTheme = () => {
-      theme = document.documentElement.dataset.theme || "dark";
+      const nextTheme = document.documentElement.dataset.theme || "dark";
+      if (nextTheme !== theme) {
+        theme = nextTheme;
+        setSize();
+      } else {
+        theme = nextTheme;
+      }
     };
 
     const refillParticles = (targetCount) => {
@@ -173,7 +180,7 @@ export default function HeroSparkField() {
         const dy = centerY - particle.y;
         const dist = Math.max(Math.hypot(dx, dy), 1);
         const inward = darkTheme ? 0.015 : 0.0088;
-        const pointerPull = pointerActive
+        const pointerPull = pointerActive && darkTheme
           ? clamp(1 - Math.hypot(pointerX - particle.x, pointerY - particle.y) / Math.max(width, height), 0, 1) * 0.01
           : 0;
 
@@ -191,9 +198,9 @@ export default function HeroSparkField() {
         particle.life -= particle.decay * delta;
 
         particle.trail.push({ x: particle.x, y: particle.y });
-        if (particle.trail.length > TRAIL_LENGTH) particle.trail.shift();
+        if (particle.trail.length > (darkTheme ? TRAIL_LENGTH : 36)) particle.trail.shift();
 
-        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.06);
+        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.04);
         drawTrail(particle, alphaMultiplier, particle.charge > 0 ? primary : secondary);
 
         if (

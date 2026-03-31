@@ -46,8 +46,9 @@ body {
 
 :root[data-theme="light"] body {
   background-image:
-    radial-gradient(circle at 50% -10%, rgba(226, 196, 158, 0.16) 0%, rgba(243, 235, 222, 0) 58%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 24%);
+    radial-gradient(circle at 50% -8%, rgba(226, 196, 158, 0.18) 0%, rgba(243, 235, 222, 0) 62%),
+    radial-gradient(circle at 50% 18%, rgba(240, 220, 192, 0.08) 0%, rgba(243, 235, 222, 0) 48%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 26%);
 }
 
 body.menu-open {
@@ -81,18 +82,7 @@ pre {
 }
 
 :root[data-theme="light"] .site-shell::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 100vw;
-  height: min(110vh, 980px);
-  transform: translateX(-50%);
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(circle at 50% 22%, rgba(226, 196, 158, 0.18) 0%, rgba(220, 188, 150, 0.12) 22%, rgba(216, 184, 148, 0.06) 40%, rgba(243, 235, 222, 0) 70%),
-    radial-gradient(circle at 50% 42%, rgba(240, 220, 192, 0.1) 0%, rgba(243, 235, 222, 0) 62%);
+  content: none;
 }
 
 .topbar {
@@ -103,14 +93,7 @@ pre {
 }
 
 :root[data-theme="light"] .topbar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(225, 194, 156, 0.12) 0%, rgba(243, 235, 222, 0) 72%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 80%);
+  content: none;
 }
 
 .nav {
@@ -128,6 +111,11 @@ pre {
 .topbar.is-compact .nav {
   background: color-mix(in srgb, var(--bg) 97%, transparent 3%);
   backdrop-filter: blur(8px);
+}
+
+:root[data-theme="light"] .topbar.is-compact .nav {
+  background: color-mix(in srgb, var(--bg) 88%, rgba(255, 255, 255, 0.42) 12%);
+  backdrop-filter: blur(10px);
 }
 
 .editorial-nav {
@@ -313,8 +301,8 @@ pre {
 }
 
 :root[data-theme="light"] .hero-spark-field {
-  opacity: 0.82;
-  filter: blur(0.46px) saturate(0.82);
+  opacity: 0.72;
+  filter: blur(0.42px) saturate(0.8);
   mix-blend-mode: multiply;
 }
 
