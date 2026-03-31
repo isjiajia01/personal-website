@@ -44,6 +44,12 @@ body {
     linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.015));
 }
 
+:root[data-theme="light"] body {
+  background-image:
+    radial-gradient(circle at 50% -10%, rgba(226, 196, 158, 0.16) 0%, rgba(243, 235, 222, 0) 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 24%);
+}
+
 body.menu-open {
   overflow: hidden;
 }
@@ -85,8 +91,8 @@ pre {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(circle at 50% 26%, rgba(226, 196, 158, 0.20) 0%, rgba(220, 188, 150, 0.14) 20%, rgba(216, 184, 148, 0.08) 38%, rgba(243, 235, 222, 0) 68%),
-    radial-gradient(circle at 50% 42%, rgba(240, 220, 192, 0.12) 0%, rgba(243, 235, 222, 0) 62%);
+    radial-gradient(circle at 50% 22%, rgba(226, 196, 158, 0.18) 0%, rgba(220, 188, 150, 0.12) 22%, rgba(216, 184, 148, 0.06) 40%, rgba(243, 235, 222, 0) 70%),
+    radial-gradient(circle at 50% 42%, rgba(240, 220, 192, 0.1) 0%, rgba(243, 235, 222, 0) 62%);
 }
 
 .topbar {
@@ -94,6 +100,17 @@ pre {
   top: 0;
   z-index: 20;
   padding: 0.25rem 1.1rem 0;
+}
+
+:root[data-theme="light"] .topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(225, 194, 156, 0.12) 0%, rgba(243, 235, 222, 0) 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 80%);
 }
 
 .nav {
