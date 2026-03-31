@@ -269,8 +269,9 @@ pre {
 }
 
 :root[data-theme="light"] .hero-spark-field {
-  opacity: 0.52;
-  filter: blur(0.28px) saturate(0.78);
+  opacity: 0.82;
+  filter: blur(0.45px) saturate(0.82);
+  mix-blend-mode: multiply;
 }
 
 .hero-label,

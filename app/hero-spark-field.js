@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const BASE_PARTICLE_COUNT = 28;
+const LIGHT_PARTICLE_COUNT = 12;
 const TRAIL_LENGTH = 72;
 const DRAG = 0.988;
 const SWIRL = 0.0034;
@@ -74,7 +75,7 @@ export default function HeroSparkField() {
     let pointerY = 0;
     let pointerActive = false;
 
-    const particleTarget = prefersReducedMotion ? 0 : compact ? 14 : BASE_PARTICLE_COUNT;
+    const particleTargetBase = prefersReducedMotion ? 0 : compact ? 14 : BASE_PARTICLE_COUNT;
 
     const setSize = () => {
       width = canvas.clientWidth || 1000;
@@ -91,9 +92,12 @@ export default function HeroSparkField() {
       theme = document.documentElement.dataset.theme || "dark";
     };
 
-    const refillParticles = () => {
-      while (particles.length < particleTarget) {
+    const refillParticles = (targetCount) => {
+      while (particles.length < targetCount) {
         particles.push(createParticle(width, height, centerX, centerY, compact));
+      }
+      while (particles.length > targetCount) {
+        particles.shift();
       }
     };
 
@@ -124,38 +128,49 @@ export default function HeroSparkField() {
       syncTheme();
 
       const darkTheme = theme !== "light";
+      const targetCount = darkTheme ? particleTargetBase : Math.min(LIGHT_PARTICLE_COUNT, particleTargetBase);
       const primary = darkTheme
         ? { r: 248, g: 194, b: 108 }
-        : { r: 164, g: 118, b: 68 };
+        : { r: 188, g: 149, b: 106 };
       const secondary = darkTheme
         ? { r: 184, g: 132, b: 84 }
-        : { r: 184, g: 150, b: 112 };
+        : { r: 211, g: 186, b: 152 };
 
       ctx.clearRect(0, 0, width, height);
 
-      const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * 0.42);
+      const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * (darkTheme ? 0.42 : 0.46));
       if (darkTheme) {
         radialGlow.addColorStop(0, "rgba(224, 154, 78, 0.18)");
         radialGlow.addColorStop(0.28, "rgba(148, 96, 46, 0.12)");
         radialGlow.addColorStop(0.56, "rgba(82, 56, 32, 0.05)");
         radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
       } else {
-        radialGlow.addColorStop(0, "rgba(186, 136, 74, 0.08)");
-        radialGlow.addColorStop(0.4, "rgba(186, 136, 74, 0.03)");
-        radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+        radialGlow.addColorStop(0, "rgba(226, 195, 156, 0.30)");
+        radialGlow.addColorStop(0.22, "rgba(214, 179, 139, 0.20)");
+        radialGlow.addColorStop(0.48, "rgba(199, 170, 138, 0.08)");
+        radialGlow.addColorStop(1, "rgba(243, 235, 222, 0)");
       }
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
 
-      refillParticles();
-      ctx.globalCompositeOperation = "lighter";
+      if (!darkTheme) {
+        const haze = ctx.createRadialGradient(centerX, centerY * 0.98, 0, centerX, centerY, Math.max(width, height) * 0.34);
+        haze.addColorStop(0, "rgba(244, 225, 197, 0.24)");
+        haze.addColorStop(0.4, "rgba(234, 210, 178, 0.11)");
+        haze.addColorStop(1, "rgba(243, 235, 222, 0)");
+        ctx.fillStyle = haze;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      refillParticles(targetCount);
+      ctx.globalCompositeOperation = darkTheme ? "lighter" : "multiply";
 
       for (let i = particles.length - 1; i >= 0; i -= 1) {
         const particle = particles[i];
         const dx = centerX - particle.x;
         const dy = centerY - particle.y;
         const dist = Math.max(Math.hypot(dx, dy), 1);
-        const inward = darkTheme ? 0.015 : 0.01;
+        const inward = darkTheme ? 0.015 : 0.0085;
         const pointerPull = pointerActive
           ? clamp(1 - Math.hypot(pointerX - particle.x, pointerY - particle.y) / Math.max(width, height), 0, 1) * 0.01
           : 0;
@@ -163,7 +178,7 @@ export default function HeroSparkField() {
         particle.vx += (dx / dist) * (inward + pointerPull) * delta;
         particle.vy += (dy / dist) * (inward + pointerPull) * delta;
 
-        const swirlStrength = SWIRL * particle.charge * (darkTheme ? 1 : 0.75) * delta;
+        const swirlStrength = SWIRL * particle.charge * (darkTheme ? 1 : 0.52) * delta;
         const nextVx = particle.vx + -dy * swirlStrength;
         const nextVy = particle.vy + dx * swirlStrength;
         particle.vx = nextVx * DRAG;
@@ -176,7 +191,7 @@ export default function HeroSparkField() {
         particle.trail.push({ x: particle.x, y: particle.y });
         if (particle.trail.length > TRAIL_LENGTH) particle.trail.shift();
 
-        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.075);
+        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.11);
         drawTrail(particle, alphaMultiplier, particle.charge > 0 ? primary : secondary);
 
         if (
