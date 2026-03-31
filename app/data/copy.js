@@ -89,9 +89,9 @@ export const siteCopy = {
       },
       {
         years: "2026",
-        role: "Operational clarity",
+        role: "Planning systems",
         detail:
-          "In transport simulation work, I shifted the conversation from model complexity toward scenarios, tradeoffs, and the decisions operators actually need to make."
+          "In planning and optimization work, I focus on turning complex models into scenario comparisons, tradeoffs, and decision-support tools that operators can actually use."
       }
     ],
     principles: [
