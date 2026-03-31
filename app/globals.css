@@ -46,9 +46,8 @@ body {
 
 :root[data-theme="light"] body {
   background-image:
-    radial-gradient(circle at 50% -8%, rgba(226, 196, 158, 0.18) 0%, rgba(243, 235, 222, 0) 62%),
-    radial-gradient(circle at 50% 18%, rgba(240, 220, 192, 0.08) 0%, rgba(243, 235, 222, 0) 48%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 26%);
+    radial-gradient(circle at 50% -12%, rgba(226, 196, 158, 0.14) 0%, rgba(243, 235, 222, 0) 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 24%);
 }
 
 body.menu-open {
@@ -114,7 +113,7 @@ pre {
 }
 
 :root[data-theme="light"] .topbar.is-compact .nav {
-  background: color-mix(in srgb, var(--bg) 88%, rgba(255, 255, 255, 0.42) 12%);
+  background: color-mix(in srgb, var(--bg) 90%, rgba(255, 255, 255, 0.32) 10%);
   backdrop-filter: blur(10px);
 }
 

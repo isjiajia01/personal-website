@@ -86,7 +86,7 @@ export default function HeroSparkField() {
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       centerX = width * 0.5;
-      centerY = height * 0.42;
+      centerY = height * ((document.documentElement.dataset.theme || "dark") === "light" ? 0.56 : 0.42);
     };
 
     const syncTheme = () => {
@@ -145,7 +145,7 @@ export default function HeroSparkField() {
 
       ctx.clearRect(0, 0, width, height);
 
-      const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * (darkTheme ? 0.42 : 0.5));
+      const radialGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * (darkTheme ? 0.42 : 0.46));
       if (darkTheme) {
         radialGlow.addColorStop(0, "rgba(224, 154, 78, 0.18)");
         radialGlow.addColorStop(0.28, "rgba(148, 96, 46, 0.12)");
@@ -162,7 +162,7 @@ export default function HeroSparkField() {
       ctx.fillRect(0, 0, width, height);
 
       if (!darkTheme) {
-        const haze = ctx.createRadialGradient(centerX, centerY * 0.98, 0, centerX, centerY, Math.max(width, height) * 0.46);
+        const haze = ctx.createRadialGradient(centerX, centerY * 0.99, 0, centerX, centerY, Math.max(width, height) * 0.42);
         haze.addColorStop(0, "rgba(240, 216, 184, 0.34)");
         haze.addColorStop(0.3, "rgba(230, 202, 166, 0.16)");
         haze.addColorStop(0.62, "rgba(222, 192, 157, 0.05)");
