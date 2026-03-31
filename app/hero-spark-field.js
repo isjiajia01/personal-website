@@ -145,10 +145,10 @@ export default function HeroSparkField() {
         radialGlow.addColorStop(0.56, "rgba(82, 56, 32, 0.05)");
         radialGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
       } else {
-        radialGlow.addColorStop(0, "rgba(219, 183, 141, 0.54)");
-        radialGlow.addColorStop(0.22, "rgba(208, 170, 126, 0.34)");
-        radialGlow.addColorStop(0.5, "rgba(192, 156, 118, 0.15)");
-        radialGlow.addColorStop(0.82, "rgba(190, 160, 126, 0.04)");
+        radialGlow.addColorStop(0, "rgba(219, 183, 141, 0.44)");
+        radialGlow.addColorStop(0.22, "rgba(208, 170, 126, 0.26)");
+        radialGlow.addColorStop(0.5, "rgba(192, 156, 118, 0.11)");
+        radialGlow.addColorStop(0.82, "rgba(190, 160, 126, 0.03)");
         radialGlow.addColorStop(1, "rgba(243, 235, 222, 0)");
       }
       ctx.fillStyle = radialGlow;
@@ -156,9 +156,9 @@ export default function HeroSparkField() {
 
       if (!darkTheme) {
         const haze = ctx.createRadialGradient(centerX, centerY * 0.98, 0, centerX, centerY, Math.max(width, height) * 0.46);
-        haze.addColorStop(0, "rgba(240, 216, 184, 0.42)");
-        haze.addColorStop(0.3, "rgba(230, 202, 166, 0.22)");
-        haze.addColorStop(0.62, "rgba(222, 192, 157, 0.08)");
+        haze.addColorStop(0, "rgba(240, 216, 184, 0.34)");
+        haze.addColorStop(0.3, "rgba(230, 202, 166, 0.16)");
+        haze.addColorStop(0.62, "rgba(222, 192, 157, 0.05)");
         haze.addColorStop(1, "rgba(243, 235, 222, 0)");
         ctx.fillStyle = haze;
         ctx.fillRect(0, 0, width, height);
@@ -193,7 +193,7 @@ export default function HeroSparkField() {
         particle.trail.push({ x: particle.x, y: particle.y });
         if (particle.trail.length > TRAIL_LENGTH) particle.trail.shift();
 
-        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.082);
+        const alphaMultiplier = clamp(particle.life, 0, 1) * (darkTheme ? 0.19 : 0.06);
         drawTrail(particle, alphaMultiplier, particle.charge > 0 ? primary : secondary);
 
         if (
