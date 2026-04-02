@@ -95,8 +95,8 @@ pre {
   pointer-events: none;
   z-index: 0;
   background:
-    linear-gradient(180deg, rgba(243, 235, 222, 0.08) 0%, rgba(243, 235, 222, 0.03) 26%, rgba(243, 235, 222, 0) 58%),
-    radial-gradient(circle at 50% 8%, rgba(226, 196, 158, 0.12) 0%, rgba(226, 196, 158, 0.05) 22%, rgba(243, 235, 222, 0) 58%);
+    linear-gradient(180deg, rgba(243, 235, 222, 0.06) 0%, rgba(243, 235, 222, 0.02) 24%, rgba(243, 235, 222, 0) 54%),
+    radial-gradient(circle at 50% 8%, rgba(226, 196, 158, 0.09) 0%, rgba(226, 196, 158, 0.035) 20%, rgba(243, 235, 222, 0) 54%);
 }
 
 :root[data-theme="light"] .editorial-main > * {
