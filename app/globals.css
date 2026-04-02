@@ -108,13 +108,13 @@ pre {
 }
 
 .topbar.is-compact .nav {
-  background: color-mix(in srgb, var(--bg) 97%, transparent 3%);
-  backdrop-filter: blur(8px);
+  background: transparent;
+  backdrop-filter: none;
 }
 
 :root[data-theme="light"] .topbar.is-compact .nav {
-  background: color-mix(in srgb, var(--bg) 90%, rgba(255, 255, 255, 0.32) 10%);
-  backdrop-filter: blur(10px);
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .editorial-nav {
