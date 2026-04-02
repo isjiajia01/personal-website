@@ -279,16 +279,7 @@ pre {
 }
 
 :root[data-theme="light"] .hero-section::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  width: 100vw;
-  transform: translateX(-50%);
-  bottom: -7rem;
-  height: 12rem;
-  pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(180deg, rgba(243, 235, 222, 0.14) 0%, rgba(243, 235, 222, 0.04) 42%, rgba(243, 235, 222, 0) 100%);
+  content: none;
 }
 
 :root[data-theme="light"] #work.section {
@@ -301,11 +292,11 @@ pre {
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
-  top: -8rem;
-  height: 14rem;
+  top: -6rem;
+  height: 10rem;
   pointer-events: none;
   z-index: 0;
-  background: linear-gradient(180deg, rgba(243, 235, 222, 0) 0%, rgba(243, 235, 222, 0.18) 32%, rgba(243, 235, 222, 0.48) 66%, rgba(243, 235, 222, 0.76) 100%);
+  background: linear-gradient(180deg, rgba(243, 235, 222, 0) 0%, rgba(243, 235, 222, 0.12) 38%, rgba(243, 235, 222, 0.28) 72%, rgba(243, 235, 222, 0.46) 100%);
 }
 
 :root[data-theme="light"] #work.section > * {
