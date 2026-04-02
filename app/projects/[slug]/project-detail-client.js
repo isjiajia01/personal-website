@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { detailPageCopy, resolveLocale } from "../../data/copy";
+import { projectCategoryLabels } from "../../data/projects";
 
 function localize(locale, value) {
   if (typeof value === "string") {
@@ -49,18 +50,34 @@ export default function ProjectDetailClient({ project, relatedProjects }) {
             </div>
           </div>
 
-          <article className="project-card" style={{ marginBottom: "1rem" }}>
+          <article className="project-card project-detail-card" style={{ marginBottom: "1rem" }}>
             <span className="card-kicker">{localize(locale, project.kicker)}</span>
             <h3>{copy.summaryLabel}</h3>
             <p>{localize(locale, project.summary)}</p>
+            <dl className="project-meta-grid project-detail-meta-grid">
+              <div>
+                <dt>{copy.typeLabel}</dt>
+                <dd>{localize(locale, projectCategoryLabels[project.category])}</dd>
+              </div>
+              <div>
+                <dt>{copy.roleLabel}</dt>
+                <dd>{project.role}</dd>
+              </div>
+              <div>
+                <dt>{copy.platformLabel}</dt>
+                <dd>{project.platform}</dd>
+              </div>
+              <div>
+                <dt>{copy.contributionLabel}</dt>
+                <dd>{project.contribution.join(" · ")}</dd>
+              </div>
+            </dl>
             <div className="tag-row">
               <span>{project.year}</span>
               {project.tags.map((tag) => (
                 <span key={tag}>{tag}</span>
               ))}
             </div>
-            <h3 style={{ marginTop: "1rem" }}>{copy.roleLabel}</h3>
-            <p>{localize(locale, project.details.role)}</p>
             <h3 style={{ marginTop: "1rem" }}>{copy.stackLabel}</h3>
             <div className="tag-row">
               {project.details.stack.map((stackItem) => (
@@ -81,7 +98,7 @@ export default function ProjectDetailClient({ project, relatedProjects }) {
             ) : null}
           </article>
 
-          <div className="capability-grid">
+          <div className="capability-grid project-detail-outcome-grid">
             <article className="capability-card">
               <h3>{copy.challengeTitle}</h3>
               <p>{localize(locale, project.details.challenge)}</p>

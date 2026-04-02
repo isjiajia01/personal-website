@@ -274,8 +274,8 @@ pre {
 
 .hero-ambient-layer {
   position: absolute;
-  top: -12vh;
-  bottom: -12vh;
+  top: -18vh;
+  bottom: -10vh;
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
@@ -292,11 +292,11 @@ pre {
   opacity: 0.96;
   filter: blur(0.15px) saturate(1.02);
   -webkit-mask-image:
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 8%, rgba(0, 0, 0, 0.94) 20%, rgba(0, 0, 0, 1) 34%, rgba(0, 0, 0, 1) 76%, rgba(0, 0, 0, 0.4) 90%, transparent 100%),
-    radial-gradient(circle at 36% 28%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.96) 18%, rgba(0, 0, 0, 0.7) 42%, rgba(0, 0, 0, 0.16) 68%, transparent 88%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.72) 10%, rgba(0, 0, 0, 0.98) 22%, rgba(0, 0, 0, 1) 36%, rgba(0, 0, 0, 1) 78%, rgba(0, 0, 0, 0.44) 90%, transparent 100%),
+    radial-gradient(circle at 38% 24%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.98) 18%, rgba(0, 0, 0, 0.74) 42%, rgba(0, 0, 0, 0.18) 68%, transparent 88%);
   mask-image:
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 8%, rgba(0, 0, 0, 0.94) 20%, rgba(0, 0, 0, 1) 34%, rgba(0, 0, 0, 1) 76%, rgba(0, 0, 0, 0.4) 90%, transparent 100%),
-    radial-gradient(circle at 36% 28%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.96) 18%, rgba(0, 0, 0, 0.7) 42%, rgba(0, 0, 0, 0.16) 68%, transparent 88%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.72) 10%, rgba(0, 0, 0, 0.98) 22%, rgba(0, 0, 0, 1) 36%, rgba(0, 0, 0, 1) 78%, rgba(0, 0, 0, 0.44) 90%, transparent 100%),
+    radial-gradient(circle at 38% 24%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.98) 18%, rgba(0, 0, 0, 0.74) 42%, rgba(0, 0, 0, 0.18) 68%, transparent 88%);
 }
 
 :root[data-theme="light"] .cozy-window-shade {
@@ -772,6 +772,59 @@ pre {
   color: var(--text);
 }
 
+.project-detail-card {
+  gap: 0.2rem;
+}
+
+.project-detail-meta-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: 0.5rem;
+}
+
+.project-detail-outcome-grid {
+  margin-top: 0.6rem;
+}
+
+.section-heading {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 48rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-heading.compact {
+  margin-bottom: 1rem;
+}
+
+.section-projects,
+.section-capabilities {
+  padding-top: 4rem;
+}
+
+.page-glow {
+  position: fixed;
+  inset: auto;
+  width: 42rem;
+  height: 42rem;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.14;
+  filter: blur(64px);
+}
+
+.page-glow-a {
+  top: -12rem;
+  left: -10rem;
+  background: radial-gradient(circle, rgba(232, 176, 102, 0.22), transparent 68%);
+}
+
+.page-glow-b {
+  right: -12rem;
+  bottom: -14rem;
+  background: radial-gradient(circle, rgba(151, 112, 72, 0.18), transparent 70%);
+}
+
 .project-card,
 .capability-card,
 .contact-card {
@@ -928,6 +981,10 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .project-detail-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
   .section-index {
     padding-top: 0;
   }
@@ -1006,7 +1063,7 @@ pre {
   }
 
   .hero-ambient-layer {
-    top: -8vh;
+    top: -14vh;
     bottom: -8vh;
     left: 50%;
     width: 100vw;
