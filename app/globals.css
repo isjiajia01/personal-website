@@ -281,8 +281,9 @@ pre {
 :root[data-theme="light"] .hero-section::after {
   content: "";
   position: absolute;
-  left: -4vw;
-  right: -4vw;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   bottom: -8rem;
   height: 16rem;
   pointer-events: none;
@@ -300,8 +301,9 @@ pre {
 :root[data-theme="light"] #work.section::before {
   content: "";
   position: absolute;
-  left: -4vw;
-  right: -4vw;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   top: -9rem;
   height: 18rem;
   pointer-events: none;
