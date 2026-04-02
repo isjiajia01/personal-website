@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { siteCopy } from "./data/copy";
-import { getArchivedProjects, getFeaturedProjects } from "./data/projects";
-import { AboutSection, ArchiveSection, ContactSection, Header, HeroSection, WorkSection } from "./home-sections";
+import { getProjectsByGroup } from "./data/projects";
+import { AboutSection, ContactSection, Header, HeroSection, WorkSection } from "./home-sections";
 
 const themeValues = ["light", "auto", "dark"];
 
@@ -27,8 +26,7 @@ export default function SiteShell() {
   const snapFrameRef = useRef(0);
   const snapClassTimerRef = useRef(null);
 
-  const featuredProjects = useMemo(() => getFeaturedProjects(), []);
-  const archivedProjects = useMemo(() => getArchivedProjects(), []);
+  const featuredProjects = useMemo(() => getProjectsByGroup(), []);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -353,7 +351,6 @@ export default function SiteShell() {
         <WorkSection workSectionRef={workSectionRef} featuredProjects={featuredProjects} />
         <AboutSection />
         <ContactSection />
-        <ArchiveSection archivedProjects={archivedProjects} />
       </main>
     </div>
   );

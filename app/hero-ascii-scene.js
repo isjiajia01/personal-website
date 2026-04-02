@@ -116,13 +116,13 @@ function createLetterStack(buildLetter, faceMaterial, bodyMaterial) {
   return group;
 }
 
-function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFamily) {
+function drawAsciiFrame(ctx, pixels, cols, rows, cellWidth, cellHeight, fontFamily, palette) {
   ctx.clearRect(0, 0, cols * cellWidth, rows * cellHeight);
   ctx.font = `${Math.floor(cellHeight * 0.94)}px ${fontFamily}`;
   ctx.textBaseline = "top";
-  ctx.fillStyle = "#5b4429";
-  ctx.shadowColor = "rgba(232, 174, 97, 0.05)";
-  ctx.shadowBlur = 3;
+  ctx.fillStyle = palette.fill;
+  ctx.shadowColor = palette.shadow;
+  ctx.shadowBlur = palette.blur;
 
   const maxIndex = ASCII_CHARS.length - 1;
   const brightnessMap = new Float32Array(cols * rows);
@@ -447,7 +447,12 @@ export default function HeroAsciiScene() {
       renderer.readRenderTargetPixels(renderTarget, 0, 0, cols, rows, pixelBuffer);
       renderer.setRenderTarget(null);
 
-      drawAsciiFrame(outputContext, pixelBuffer, cols, rows, cellWidth, cellHeight, fontFamily);
+      const theme = document.documentElement.dataset.theme || "dark";
+      const palette = theme === "light"
+        ? { fill: "#61482c", shadow: "rgba(214, 157, 83, 0.08)", blur: 2.6 }
+        : { fill: "#d9b07a", shadow: "rgba(247, 198, 122, 0.16)", blur: 4 };
+
+      drawAsciiFrame(outputContext, pixelBuffer, cols, rows, cellWidth, cellHeight, fontFamily, palette);
       frameId = window.requestAnimationFrame(render);
     };
 

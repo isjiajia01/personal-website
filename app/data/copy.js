@@ -28,44 +28,18 @@ export const siteCopy = {
   },
   hero: {
     location: "CPH [DK]",
-    label: "Systems, products, and execution design",
+    label: "Systems, AI workflows, and internal products",
     title: "Jiajia Zhang",
+    summary: "I build product surfaces and operating systems that make complex work feel calmer, clearer, and easier to trust.",
     cta: "Email me",
     scrollPrompt: "Scroll down to learn more about my work"
   },
-  keywords: [
-    "Weather Product",
-    "Transit UX",
-    "Transport Simulation",
-    "Decision Support",
-    "SwiftUI",
-    "System Design",
-    "Product Thinking",
-    "Operational Context",
-    "Optimization",
-    "Interface Clarity"
-  ],
   work: {
     index: "(01)",
-    eyebrow: "// Current work",
+    eyebrow: "// Work by type",
     title: "Work",
     intro:
-      "Selected projects that show how I frame ambiguous problems, shape product surfaces, and turn technical depth into usable systems.",
-    current: [
-      {
-        role: "Product Builder",
-        company: "Nimbus",
-        detail:
-          "Building a weather product that combines app interface, backend aggregation, radar, and richer context modules."
-      },
-      {
-        role: "Product Builder",
-        company: "Nu",
-        detail:
-          "Designing a commuter-first transit experience focused on nearby stations, departures, and fast decision-making."
-      }
-    ],
-    selectedTitle: "Selected projects",
+      "I tend to work in three modes: shaping product surfaces, building internal systems, and translating analysis into decision support.",
     detailCta: "Open case"
   },
   about: {

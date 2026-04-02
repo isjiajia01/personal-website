@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { asciiBlocks, siteCopy } from "./data/copy";
-import { projectCategoryLabels } from "./data/projects";
+import CozyWindowShade from "./cozy-window-shade";
 import HeroAsciiScene from "./hero-ascii-scene";
-import HeroSparkField from "./hero-spark-field";
 
 export function Header({
   compact,
@@ -74,10 +73,15 @@ export function HeroSection({ heroSectionRef }) {
     <section className="hero-section hero-reset reveal-section is-visible" id="home" data-reveal ref={heroSectionRef}>
       <div className="editorial-hero">
         <div className="hero-ambient-layer" aria-hidden="true">
-          <HeroSparkField />
+          <CozyWindowShade />
         </div>
         <div className="editorial-intro">
           <HeroAsciiScene />
+          <div className="hero-copy-band reveal-item is-visible" data-reveal style={{ "--reveal-delay": "90ms" }}>
+            <p className="hero-kicker">{siteCopy.hero.label}</p>
+            <h1 className="hero-heading">{siteCopy.hero.title}</h1>
+            <p className="hero-summary">{siteCopy.hero.summary}</p>
+          </div>
           <div className="hero-cta-stack reveal-item is-visible" data-reveal style={{ "--reveal-delay": "120ms" }}>
             <a className="button button-primary editorial-cta" href="mailto:isjiajiazhang@gmail.com">
               {siteCopy.hero.cta}
@@ -113,44 +117,57 @@ export function WorkSection({ workSectionRef, featuredProjects }) {
         <p className="eyebrow reveal-item work-arrival-eyebrow" data-reveal style={{ "--reveal-delay": "80ms" }}>{siteCopy.work.eyebrow}</p>
         <h2 className="reveal-item work-arrival-title" data-reveal style={{ "--reveal-delay": "120ms" }}>{siteCopy.work.title}</h2>
         <p className="section-copy reveal-item" data-reveal style={{ "--reveal-delay": "140ms" }}>{siteCopy.work.intro}</p>
-        <div className="editorial-list">
-          {siteCopy.work.current.map((item, index) => (
-            <article
-              className="timeline-row reveal-item"
-              data-reveal
-              style={{ "--reveal-delay": `${160 + index * 70}ms` }}
-              key={`${item.role}-${item.company}`}
-            >
-              <div className="timeline-year">{item.role}</div>
-              <div className="timeline-content">
-                <h3>{item.company}</h3>
-                <p>{item.detail}</p>
-              </div>
-            </article>
-          ))}
-        </div>
 
-        <div className="project-grid project-grid-reset">
-          {featuredProjects.map((project, index) => (
-            <article
-              className={`project-card editorial-project-card reveal-item${index < 2 ? " work-arrival-card" : ""}`}
+        <div className="work-groups">
+          {featuredProjects.map((group, groupIndex) => (
+            <section
+              className="work-group reveal-item"
               data-reveal
-              style={{ "--reveal-delay": `${220 + index * 90}ms` }}
-              key={project.slug}
+              style={{ "--reveal-delay": `${180 + groupIndex * 80}ms` }}
+              key={group.key}
             >
-              <span className="card-kicker">{project.year}</span>
-              <h3>{project.title.en}</h3>
-              <p>{project.summary.en}</p>
-              <div className="tag-row">
-                <span>{projectCategoryLabels[project.category].en}</span>
-                {project.tags.slice(0, 3).map((tag) => (
-                  <span key={tag}>{tag}</span>
+              <div className="work-group-head">
+                <p className="work-group-kicker">// {String(groupIndex + 1).padStart(2, "0")}</p>
+                <h3 className="work-group-title">{group.title}</h3>
+                <p className="work-group-intro">{group.intro}</p>
+              </div>
+              <div className="project-grid project-grid-reset work-group-grid">
+                {group.projects.map((project, projectIndex) => (
+                  <article
+                    className={`project-card editorial-project-card reveal-item${groupIndex === 0 && projectIndex < 2 ? " work-arrival-card" : ""}`}
+                    data-reveal
+                    style={{ "--reveal-delay": `${220 + groupIndex * 80 + projectIndex * 70}ms` }}
+                    key={project.slug}
+                  >
+                    <span className="card-kicker">{project.kicker.en}</span>
+                    <h3>{project.title.en}</h3>
+                    <p>{project.summary.en}</p>
+                    <dl className="project-meta-grid">
+                      <div>
+                        <dt>Role</dt>
+                        <dd>{project.role}</dd>
+                      </div>
+                      <div>
+                        <dt>Platform</dt>
+                        <dd>{project.platform}</dd>
+                      </div>
+                      <div>
+                        <dt>Contribution</dt>
+                        <dd>{project.contribution.join(" · ")}</dd>
+                      </div>
+                    </dl>
+                    <div className="tag-row">
+                      {project.tags.slice(0, 3).map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                    <div className="card-actions">
+                      <Link href={`/projects/${project.slug}/`}>{siteCopy.work.detailCta}</Link>
+                    </div>
+                  </article>
                 ))}
               </div>
-              <div className="card-actions">
-                <Link href={`/projects/${project.slug}/`}>{siteCopy.work.detailCta}</Link>
-              </div>
-            </article>
+            </section>
           ))}
         </div>
       </div>
@@ -229,33 +246,3 @@ export function ContactSection() {
   );
 }
 
-export function ArchiveSection({ archivedProjects }) {
-  if (!archivedProjects.length) return null;
-
-  return (
-    <section className="section editorial-section editorial-archive reveal-section" data-reveal>
-      <div className="section-index reveal-item" data-reveal>(04)</div>
-      <div className="section-body reveal-item" data-reveal style={{ "--reveal-delay": "40ms" }}>
-        <p className="eyebrow reveal-item" data-reveal style={{ "--reveal-delay": "80ms" }}>// Archive</p>
-        <h2 className="reveal-item" data-reveal style={{ "--reveal-delay": "120ms" }}>Additional projects</h2>
-        <div className="project-grid project-grid-reset">
-          {archivedProjects.map((project, index) => (
-            <article
-              className="project-card editorial-project-card reveal-item"
-              data-reveal
-              style={{ "--reveal-delay": `${170 + index * 90}ms` }}
-              key={project.slug}
-            >
-              <span className="card-kicker">{project.year}</span>
-              <h3>{project.title.en}</h3>
-              <p>{project.summary.en}</p>
-              <div className="card-actions">
-                <Link href={`/projects/${project.slug}/`}>Open summary</Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}

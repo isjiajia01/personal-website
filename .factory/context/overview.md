@@ -24,6 +24,7 @@ This is a static-exported personal website built with `Next.js 16` App Router an
 - `app/site-shell.js` — homepage behavior/state orchestration
 - `app/home-sections.js` — homepage sections and content composition
 - `app/hero-ascii-scene.js` — Three.js ASCII hero scene with small-screen/static fallback
+- `app/cozy-window-shade.js` — canvas-based ambient window-shade light effect behind the hero
 - `app/data/copy.js` — shared copy/content strings
 - `app/data/projects.js` — project catalog and detail data
 - `app/projects/[slug]/...` — project detail pages

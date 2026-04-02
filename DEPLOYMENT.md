@@ -60,4 +60,4 @@ If the instance OS firewall also restricts SSH, mirror the same rule there or le
 
 - The workflow currently deploys on pushes to `main` or `master`, and also supports manual runs via `workflow_dispatch`.
 - If your default branch is different, update `.github/workflows/deploy.yml`.
-- This setup avoids the older `scripts/deploy-via-oracle.sh` path.
+- The only supported deployment path in this repo is the GitHub Actions workflow plus `scripts/deploy-static-on-remote.sh` and `scripts/oci-temporary-ssh-rule.sh`.
