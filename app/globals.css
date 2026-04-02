@@ -340,6 +340,11 @@ pre {
   pointer-events: none;
 }
 
+:root[data-theme="light"] .hero-ambient-layer {
+  top: -14vh;
+  bottom: -2vh;
+}
+
 .cozy-window-shade {
   position: absolute;
   inset: 0;
@@ -357,9 +362,15 @@ pre {
 }
 
 :root[data-theme="light"] .cozy-window-shade {
-  opacity: 0.94;
-  filter: blur(0.28px) saturate(0.92);
+  opacity: 0.82;
+  filter: blur(0.24px) saturate(0.88);
   mix-blend-mode: multiply;
+  -webkit-mask-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.9) 16%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0.92) 54%, rgba(0, 0, 0, 0.44) 70%, rgba(0, 0, 0, 0.1) 82%, transparent 96%),
+    radial-gradient(circle at 38% 22%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.94) 18%, rgba(0, 0, 0, 0.58) 40%, rgba(0, 0, 0, 0.1) 66%, transparent 86%);
+  mask-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.9) 16%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0.92) 54%, rgba(0, 0, 0, 0.44) 70%, rgba(0, 0, 0, 0.1) 82%, transparent 96%),
+    radial-gradient(circle at 38% 22%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.94) 18%, rgba(0, 0, 0, 0.58) 40%, rgba(0, 0, 0, 0.1) 66%, transparent 86%);
 }
 
 :root[data-theme="dark"] .cozy-window-shade {
