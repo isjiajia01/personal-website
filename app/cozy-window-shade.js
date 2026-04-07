@@ -55,7 +55,7 @@ export default function CozyWindowShade() {
     const fit = () => {
       width = canvas.clientWidth || window.innerWidth;
       height = canvas.clientHeight || Math.max(window.innerHeight * 0.72, 320);
-      dpr = Math.min(window.devicePixelRatio || 1, 1.8);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -109,7 +109,7 @@ export default function CozyWindowShade() {
       const projectX = lerp(width * 0.1, width * 0.18, easedT) + floatX;
       const projectY = lerp(height * 0.015, height * 0.06, easedT) + floatY;
       const frameThickness = lerp(10, 7, easedT);
-      const slatCount = 18;
+      const slatCount = 14;
       const innerHeight = projectHeight - frameThickness * 2;
       const spacing = innerHeight / slatCount;
       const slatThickness = spacing * lerp(0.88, 0.12, open);
@@ -219,7 +219,7 @@ export default function CozyWindowShade() {
       context.fillStyle = veil;
       context.fillRect(0, 0, width, height);
 
-      const nextFrameDelay = reducedMotion ? 1000 / 12 : darkTheme ? 1000 / 30 : 1000 / 36;
+      const nextFrameDelay = reducedMotion ? 1000 / 10 : darkTheme ? 1000 / 18 : 1000 / 24;
       if (dt * 1000 < nextFrameDelay * 0.45) {
         frameId = window.requestAnimationFrame(draw);
         return;

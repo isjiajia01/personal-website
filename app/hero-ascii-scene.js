@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const ASCII_CHARS = " .`',:;~-+=";
-const NORMAL_FRAME_INTERVAL = 1000 / 20;
-const SNAP_FRAME_INTERVAL = 1000 / 10;
+const NORMAL_FRAME_INTERVAL = 1000 / 14;
 const POSTERIZE_LEVELS = 6;
 
 function clamp(value, min, max) {
@@ -16,11 +15,11 @@ function shapeToMesh(shape, material) {
   const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: 1.1,
     bevelEnabled: true,
-    bevelSegments: 2,
+    bevelSegments: 1,
     steps: 1,
     bevelSize: 0.08,
     bevelThickness: 0.08,
-    curveSegments: 24
+    curveSegments: 12
   });
   geometry.center();
   return new THREE.Mesh(geometry, material);
@@ -295,7 +294,6 @@ export default function HeroAsciiScene() {
     let fontFamily = "ui-monospace, monospace";
     let frameId = 0;
     let isVisible = true;
-    let snapTransitionActive = false;
     let lastRenderAt = 0;
     let glitchEndsAt = 0;
     let nextGlitchAt = performance.now() + 2600;
@@ -316,14 +314,14 @@ export default function HeroAsciiScene() {
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.1);
       outputCanvas.width = Math.floor(width * dpr);
       outputCanvas.height = Math.floor(height * dpr);
       outputCanvas.style.width = `${width}px`;
       outputCanvas.style.height = `${height}px`;
       outputContext.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      cellWidth = clamp(Math.round(width / 152), 5, 7);
+      cellWidth = clamp(Math.round(width / 132), 6, 8);
       cellHeight = Math.round(cellWidth * 1.42);
       cols = Math.max(62, Math.floor(width / cellWidth));
       rows = Math.max(22, Math.floor(height / cellHeight));
@@ -355,7 +353,6 @@ export default function HeroAsciiScene() {
     visibilityObserver.observe(container);
 
     const handlePointerMove = (event) => {
-      if (snapTransitionActive) return;
       const rect = container.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       const normalizedX = (event.clientX - rect.left) / rect.width;
@@ -373,22 +370,8 @@ export default function HeroAsciiScene() {
       container.style.setProperty("--hero-pointer-y", "0");
     };
 
-    const handleSnapTransition = (event) => {
-      snapTransitionActive = Boolean(event.detail?.active);
-      if (snapTransitionActive) {
-        pointerTargetX = 0;
-        pointerTargetY = 0;
-        container.style.setProperty("--hero-pointer-x", "0");
-        container.style.setProperty("--hero-pointer-y", "0");
-      }
-      if (isVisible && !document.hidden && !frameId) {
-        frameId = window.requestAnimationFrame(render);
-      }
-    };
-
     container.addEventListener("pointermove", handlePointerMove, { passive: true });
     container.addEventListener("pointerleave", handlePointerLeave);
-    window.addEventListener("hero-snap-transition", handleSnapTransition);
 
     const handleVisibilityChange = () => {
       if (document.hidden && frameId) {
@@ -407,22 +390,21 @@ export default function HeroAsciiScene() {
       frameId = 0;
       if (!isVisible || document.hidden) return;
 
-      const frameInterval = snapTransitionActive ? SNAP_FRAME_INTERVAL : NORMAL_FRAME_INTERVAL;
-      if (time - lastRenderAt < frameInterval) {
+      if (time - lastRenderAt < NORMAL_FRAME_INTERVAL) {
         frameId = window.requestAnimationFrame(render);
         return;
       }
       lastRenderAt = time;
 
       const t = time * 0.001;
-      const isGlitching = !snapTransitionActive && time < glitchEndsAt;
+      const isGlitching = time < glitchEndsAt;
 
-      if (!snapTransitionActive && time > nextGlitchAt) {
+      if (time > nextGlitchAt) {
         glitchEndsAt = time + 140;
         nextGlitchAt = time + 3200 + Math.random() * 4200;
       }
 
-      const pointerLerp = snapTransitionActive ? 0.14 : 0.06;
+      const pointerLerp = 0.08;
       pointerCurrentX += (pointerTargetX - pointerCurrentX) * pointerLerp;
       pointerCurrentY += (pointerTargetY - pointerCurrentY) * pointerLerp;
 
@@ -465,7 +447,6 @@ export default function HeroAsciiScene() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
-      window.removeEventListener("hero-snap-transition", handleSnapTransition);
       outputCanvas.remove();
       root.traverse((node) => {
         if (node instanceof THREE.Mesh) {
