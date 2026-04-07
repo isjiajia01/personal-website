@@ -19,12 +19,7 @@ export default function SiteShell() {
   const [displayTimeLabel, setDisplayTimeLabel] = useState("");
   const heroSectionRef = useRef(null);
   const workSectionRef = useRef(null);
-  const scrollEnergyRef = useRef(0);
-  const releaseTimerRef = useRef(null);
   const touchStartYRef = useRef(null);
-  const snapLockRef = useRef(false);
-  const snapFrameRef = useRef(0);
-  const snapClassTimerRef = useRef(null);
 
   const featuredProjects = useMemo(() => getProjectsByGroup(), []);
 
@@ -177,127 +172,6 @@ export default function SiteShell() {
     return () => document.body.classList.remove("menu-open");
   }, [menuOpen]);
 
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
-
-    const heroNode = heroSectionRef.current;
-    const workNode = workSectionRef.current;
-    if (!heroNode || !workNode) return;
-
-    const releaseEnergy = () => {
-      if (releaseTimerRef.current) {
-        window.clearTimeout(releaseTimerRef.current);
-      }
-
-      releaseTimerRef.current = window.setTimeout(() => {
-        scrollEnergyRef.current = 0;
-      }, 180);
-    };
-
-    const smoothScrollTo = (targetY, duration = 860) => {
-      const startY = window.scrollY;
-      const distance = targetY - startY;
-      const startTime = performance.now();
-
-      const easeOutQuint = (value) => 1 - Math.pow(1 - value, 5);
-
-      const step = (now) => {
-        const progress = Math.min((now - startTime) / duration, 1);
-        const eased = easeOutQuint(progress);
-        window.scrollTo(0, startY + distance * eased);
-
-        if (progress < 1) {
-          snapFrameRef.current = window.requestAnimationFrame(step);
-        }
-      };
-
-      snapFrameRef.current = window.requestAnimationFrame(step);
-    };
-
-    const triggerWorkArrivalCue = () => {
-      const node = workNode;
-      node.classList.remove("is-snap-arrival");
-      void node.offsetWidth;
-      node.classList.add("is-snap-arrival");
-
-      if (snapClassTimerRef.current) {
-        window.clearTimeout(snapClassTimerRef.current);
-      }
-
-      snapClassTimerRef.current = window.setTimeout(() => {
-        node.classList.remove("is-snap-arrival");
-      }, 900);
-    };
-
-    const smoothSnapToWork = () => {
-      if (snapLockRef.current) return;
-      snapLockRef.current = true;
-      scrollEnergyRef.current = 0;
-      window.dispatchEvent(new CustomEvent("hero-snap-transition", { detail: { active: true } }));
-      const targetY = Math.max(workNode.offsetTop - 88, 0);
-      smoothScrollTo(targetY, 980);
-      triggerWorkArrivalCue();
-      window.setTimeout(() => {
-        snapLockRef.current = false;
-        window.dispatchEvent(new CustomEvent("hero-snap-transition", { detail: { active: false } }));
-      }, 1180);
-    };
-
-    const isHeroActive = () => {
-      const heroRect = heroNode.getBoundingClientRect();
-      const workRect = workNode.getBoundingClientRect();
-      return heroRect.top <= 0 && workRect.top > window.innerHeight * 0.18;
-    };
-
-    const handleWheel = (event) => {
-      if (event.deltaY <= 0 || snapLockRef.current || !isHeroActive()) return;
-
-      scrollEnergyRef.current = Math.min(scrollEnergyRef.current + event.deltaY, 220);
-      releaseEnergy();
-
-      if (scrollEnergyRef.current < 145) return;
-
-      event.preventDefault();
-      smoothSnapToWork();
-    };
-
-    const handleTouchStart = (event) => {
-      touchStartYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchEnd = (event) => {
-      if (snapLockRef.current || !isHeroActive()) return;
-      const startY = touchStartYRef.current;
-      const endY = event.changedTouches[0]?.clientY ?? null;
-      touchStartYRef.current = null;
-      if (startY === null || endY === null) return;
-
-      const swipeDistance = startY - endY;
-      if (swipeDistance < 64) return;
-      smoothSnapToWork();
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      if (releaseTimerRef.current) {
-        window.clearTimeout(releaseTimerRef.current);
-      }
-      if (snapFrameRef.current) {
-        window.cancelAnimationFrame(snapFrameRef.current);
-      }
-      if (snapClassTimerRef.current) {
-        window.clearTimeout(snapClassTimerRef.current);
-      }
-      window.dispatchEvent(new CustomEvent("hero-snap-transition", { detail: { active: false } }));
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
