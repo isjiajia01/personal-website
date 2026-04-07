@@ -293,7 +293,7 @@ export default function HeroAsciiScene() {
     let pixelBuffer = new Uint8Array(4);
     let fontFamily = "ui-monospace, monospace";
     let frameId = 0;
-    let isVisible = true;
+    let isVisible = false;
     let lastRenderAt = 0;
     let glitchEndsAt = 0;
     let nextGlitchAt = performance.now() + 2600;
@@ -343,12 +343,23 @@ export default function HeroAsciiScene() {
 
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
-        isVisible = entry?.isIntersecting ?? false;
+        const ratio = entry?.intersectionRatio ?? 0;
+        isVisible = (entry?.isIntersecting ?? false) && ratio >= 0.5;
+
+        if (!isVisible && frameId) {
+          window.cancelAnimationFrame(frameId);
+          frameId = 0;
+          return;
+        }
+
         if (isVisible && !document.hidden && !frameId) {
           frameId = window.requestAnimationFrame(render);
         }
       },
-      { threshold: 0.08 }
+      {
+        threshold: [0, 0.5, 0.75],
+        rootMargin: "-10% 0px -18% 0px"
+      }
     );
     visibilityObserver.observe(container);
 
