@@ -1,5 +1,62 @@
 export const projectCatalog = [
   {
+    slug: "opsdesk",
+    category: "system",
+    group: "internal-systems",
+    year: "2026",
+    featured: true,
+    kicker: {
+      en: "AI Workflow Control Plane",
+      zh: "AI 工作流控制台"
+    },
+    title: {
+      en: "OpsDesk",
+      zh: "OpsDesk"
+    },
+    summary: {
+      en: "A Fleet-inspired internal operations platform where workflow-specific agents turn support, finance, and integration issues into SQL-backed evidence, approval-gated actions, audit logs, replayable timelines, and feedback memory.",
+      zh: "一个受 Fleet 类产品启发的内部运营平台：用面向具体流程的 agent，把支持、财务和集成问题转成 SQL 证据、审批动作、审计日志、可复盘时间线和反馈记忆。"
+    },
+    role: "Full-stack workflow system builder",
+    platform: "Next.js + Postgres + workflow harness",
+    contribution: ["Agent workflow UX", "Safety gates", "Audit/replay system"],
+    tags: ["Next.js", "TypeScript", "AI Workflows", "Postgres"],
+    links: [
+      {
+        href: "https://jobops.zhangjiajia.me/opsdesk",
+        label: { en: "Live demo", zh: "在线演示" },
+        external: true
+      }
+    ],
+    details: {
+      challenge: {
+        en: "Most AI operations demos stop at chatbot output, while real support and finance teams need evidence, approvals, safety boundaries, replay, and a way for feedback to improve the workflow without weakening policy.",
+        zh: "很多 AI 运营演示停留在聊天输出，但真实支持和财务团队需要证据、审批、安全边界、复盘，以及一种不会削弱策略边界的反馈改进机制。"
+      },
+      approach: {
+        en: "Built a TypeScript-native workflow-agent cockpit with Finance Triage, Support Ops, and Integration Debugger agents. Each agent has channels, tools, skills, subagents, schedules, and memory notes, while execution remains bounded by schema validation, SQL safety, verifier checks, action policy, human approval, and audit/replay events.",
+        zh: "构建了一个 TypeScript 原生的 workflow-agent 控制台，包含 Finance Triage、Support Ops 和 Integration Debugger 三类 agent。每个 agent 都有 channels、tools、skills、subagents、schedules 和 memory notes，同时执行层仍由 schema 校验、SQL 安全、verifier、action policy、人工审批和审计复盘事件约束。"
+      },
+      impact: {
+        en: "Created an interview-ready portfolio system that can show the product UX, the workflow harness, the LangChain/Fleet-inspired design process, the safe-claims boundaries, screenshots, exported context, and a verification gate covering seeded scenarios and negative safety cases.",
+        zh: "形成了一个可用于面试展示的 portfolio 系统：既能展示产品 UX，也能展示 workflow harness、LangChain/Fleet 启发的设计过程、安全边界、截图、可导出的 context，以及覆盖种子场景和负面安全用例的验证门。"
+      },
+      role: {
+        en: "Product framing, full-stack implementation, workflow-agent UX, deterministic demo AI, SQL/action safety, approval and audit/replay design, verification scripts, documentation, and deployment packaging.",
+        zh: "产品定义、全栈实现、workflow-agent UX、确定性 demo AI、SQL/action 安全、审批与审计复盘设计、验证脚本、文档和部署打包。"
+      },
+      stack: [
+        "Next.js 16",
+        "TypeScript",
+        "PostgreSQL",
+        "Prisma",
+        "Zod",
+        "Docker",
+        "Workflow Evals"
+      ]
+    }
+  },
+  {
     slug: "nimbus",
     category: "product",
     group: "product-surfaces",
@@ -210,7 +267,7 @@ export const projectGroups = [
   {
     key: "internal-systems",
     title: "Internal Systems",
-    intro: "Operating layers, workflows, and internal tools that reduce coordination overhead and make repeat work easier to run well."
+    intro: "Operating layers, workflow-agent control planes, and internal tools that reduce coordination overhead and make repeat work easier to run well."
   },
   {
     key: "decision-support",
