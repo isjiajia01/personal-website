@@ -18,7 +18,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 const themeBootstrapScript = `
 (() => {
   const stored = window.localStorage.getItem("theme-preference");
-  const mode = stored === "light" || stored === "dark" || stored === "auto" ? stored : "auto";
+  const mode = stored === "light" || stored === "dark" || stored === "auto" ? stored : "light";
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const resolved = mode === "auto" ? (prefersDark ? "dark" : "light") : mode;
   document.documentElement.dataset.theme = resolved;
@@ -80,7 +80,7 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#09111d"
+  themeColor: "#f4eadb"
 };
 
 export default function RootLayout({ children }) {

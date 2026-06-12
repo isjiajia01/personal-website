@@ -28,26 +28,35 @@ export const siteCopy = {
   },
   hero: {
     location: "CPH [DK]",
-    label: "Systems, AI workflows, and internal products",
+    label: "Product systems · AI workflow · Internal tools",
     title: "Jiajia Zhang",
-    summary: "I build product surfaces and operating systems that make complex work feel calmer, clearer, and easier to trust.",
+    summary: "I build the operating layer for complex work: product surfaces, workflow systems, and decision tools that make ambiguity easier to act on.",
     cta: "Email me",
+    secondaryCta: "See work",
     scrollPrompt: "Scroll down to learn more about my work"
   },
   work: {
     index: "(01)",
-    eyebrow: "// Work by type",
-    title: "Work",
+    eyebrow: "// Selected work",
+    title: "Work that turns complexity into operating systems",
     intro:
-      "I tend to work in three modes: shaping product surfaces, building internal systems, and translating analysis into decision support.",
+      "The strongest through-line is practical systems work: AI workflow control planes, optimization-backed decision support, and polished product surfaces that stay legible under real constraints.",
+    fastLaneLabel: "Hiring fast lane",
+    fastLaneLinks: [
+      { href: "#opsdesk", label: "OpsDesk" },
+      { href: "#mover-planning-thesis", label: "Mover thesis" },
+      { href: "#nimbus", label: "Nimbus" }
+    ],
     detailCta: "Open case"
   },
   about: {
     index: "(02)",
-    eyebrow: "// The path so far",
-    title: "About",
+    eyebrow: "// How I work",
+    title: "Between product judgment and system depth",
     intro:
-      "My work sits between product direction and system depth. I like turning fuzzy operating problems into tools, workflows, and interfaces that teams can trust under real conditions.",
+      "I am most useful where teams need to turn messy operations, data, or AI-assisted work into tools people can actually trust. My background in industrial engineering, optimization, product interfaces, and full-stack prototypes helps me move from problem framing to working systems without losing the operational context.",
+    workingStyle:
+      "I like collaboration that is concrete: define the workflow, expose the tradeoffs, build the smallest reliable system, and leave behind evidence that makes the next decision easier.",
     timeline: [
       {
         years: "2026",
@@ -69,16 +78,16 @@ export const siteCopy = {
       }
     ],
     principles: [
-      "I work comfortably across interface, architecture, and workflow design when the problem demands end-to-end ownership.",
-      "I care about systems that remain legible after launch, especially where reliability, fallback behavior, and operational clarity matter.",
-      "I am most energized by products and internal tools that reduce ambiguity and make hard work easier to execute."
+      "Workflow-first: start from the operating problem, not the feature list.",
+      "Evidence-aware: make safety, fallback behavior, and verification visible.",
+      "Product-minded: keep the interface calm enough for real decisions."
     ]
   },
   contact: {
     index: "(03)",
     eyebrow: "// Say hello",
-    title: "Contact",
-    lead: "Open to product systems, AI workflow, and internal tooling work where clarity, reliability, and execution quality matter.",
+    title: "Open to full-time product systems, AI workflow, and internal tooling roles",
+    lead: "Available for full-time start from July 2026 after completing my current academic obligations. Based in Copenhagen and open to roles where clarity, reliability, and execution quality matter.",
     cta: "Email me",
     secondaryCta: "View GitHub",
     footer: "© 2026 Jiajia Zhang  Copenhagen, Denmark"

@@ -13,12 +13,13 @@ function resolveTheme(mode, prefersDark) {
 export default function SiteShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [compact, setCompact] = useState(false);
-  const [themeMode, setThemeMode] = useState("auto");
-  const [resolvedTheme, setResolvedTheme] = useState("dark");
+  const [themeMode, setThemeMode] = useState("light");
+  const [resolvedTheme, setResolvedTheme] = useState("light");
   const [timeLabel, setTimeLabel] = useState("");
   const [displayTimeLabel, setDisplayTimeLabel] = useState("");
   const heroSectionRef = useRef(null);
   const workSectionRef = useRef(null);
+  const timeScramblePlayedRef = useRef(false);
   const touchStartYRef = useRef(null);
 
   const featuredProjects = useMemo(() => getProjectsByGroup(), []);
@@ -26,13 +27,13 @@ export default function SiteShell() {
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const storedTheme = window.localStorage.getItem("theme-preference");
-    const nextTheme = themeValues.includes(storedTheme) ? storedTheme : "auto";
+    const nextTheme = themeValues.includes(storedTheme) ? storedTheme : "light";
     setThemeMode(nextTheme);
     setResolvedTheme(resolveTheme(nextTheme, media.matches));
 
     const syncTheme = (event) => {
       const persistedMode = window.localStorage.getItem("theme-preference");
-      const activeMode = themeValues.includes(persistedMode) ? persistedMode : "auto";
+      const activeMode = themeValues.includes(persistedMode) ? persistedMode : "light";
       setResolvedTheme(resolveTheme(activeMode, event.matches));
     };
 
@@ -134,11 +135,12 @@ export default function SiteShell() {
     if (!timeLabel) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) {
+    if (reducedMotion || timeScramblePlayedRef.current) {
       setDisplayTimeLabel(timeLabel);
       return;
     }
 
+    timeScramblePlayedRef.current = true;
     const scrambleChars = "0123456789:APM ";
     let frame = 0;
     const extraFrames = 6;

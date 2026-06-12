@@ -83,9 +83,14 @@ export function HeroSection({ heroSectionRef }) {
             <p className="hero-summary">{siteCopy.hero.summary}</p>
           </div>
           <div className="hero-cta-stack reveal-item is-visible" data-reveal style={{ "--reveal-delay": "120ms" }}>
-            <a className="button button-primary editorial-cta" href="mailto:isjiajiazhang@gmail.com">
-              {siteCopy.hero.cta}
-            </a>
+            <div className="hero-actions-row">
+              <a className="button button-primary editorial-cta" href="mailto:isjiajiazhang@gmail.com">
+                {siteCopy.hero.cta}
+              </a>
+              <a className="button button-secondary editorial-cta" href="#work">
+                {siteCopy.hero.secondaryCta}
+              </a>
+            </div>
             <p className="hero-scroll">
               <span
                 className="hero-scroll-copy"
@@ -117,6 +122,12 @@ export function WorkSection({ workSectionRef, featuredProjects }) {
         <p className="eyebrow reveal-item work-arrival-eyebrow" data-reveal style={{ "--reveal-delay": "80ms" }}>{siteCopy.work.eyebrow}</p>
         <h2 className="reveal-item work-arrival-title" data-reveal style={{ "--reveal-delay": "120ms" }}>{siteCopy.work.title}</h2>
         <p className="section-copy reveal-item" data-reveal style={{ "--reveal-delay": "140ms" }}>{siteCopy.work.intro}</p>
+        <div className="fast-lane reveal-item" data-reveal style={{ "--reveal-delay": "165ms" }}>
+          <span>{siteCopy.work.fastLaneLabel}</span>
+          {siteCopy.work.fastLaneLinks.map((link) => (
+            <a href={link.href} key={link.href}>{link.label}</a>
+          ))}
+        </div>
 
         <div className="work-groups">
           {featuredProjects.map((group, groupIndex) => (
@@ -139,9 +150,12 @@ export function WorkSection({ workSectionRef, featuredProjects }) {
                     style={{ "--reveal-delay": `${220 + groupIndex * 80 + projectIndex * 70}ms` }}
                     key={project.slug}
                   >
-                    <span className="card-kicker">{project.kicker.en}</span>
+                    <span className="card-kicker" id={project.slug}>{project.kicker.en}</span>
                     <h3>{project.title.en}</h3>
                     <p>{project.summary.en}</p>
+                    {project.outcome ? (
+                      <p className="project-outcome"><span>→ Outcome</span>{project.outcome}</p>
+                    ) : null}
                     <dl className="project-meta-grid">
                       <div>
                         <dt>Role</dt>
@@ -185,6 +199,7 @@ export function AboutSection() {
         <p className="eyebrow reveal-item" data-reveal style={{ "--reveal-delay": "80ms" }}>{siteCopy.about.eyebrow}</p>
         <h2 className="reveal-item" data-reveal style={{ "--reveal-delay": "120ms" }}>{siteCopy.about.title}</h2>
         <p className="section-copy reveal-item" data-reveal style={{ "--reveal-delay": "140ms" }}>{siteCopy.about.intro}</p>
+        <p className="section-copy about-working-style reveal-item" data-reveal style={{ "--reveal-delay": "155ms" }}>{siteCopy.about.workingStyle}</p>
         <div className="editorial-list">
           {siteCopy.about.timeline.map((item, index) => (
             <article

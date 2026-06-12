@@ -19,6 +19,7 @@ export const projectCatalog = [
     },
     role: "Full-stack workflow system builder",
     platform: "Next.js + Postgres + workflow harness",
+    outcome: "Turns scattered support, finance, and integration issues into evidence-backed triage, approval-gated actions, and replayable audit trails.",
     contribution: ["Agent workflow UX", "Safety gates", "Audit/replay system"],
     tags: ["Next.js", "TypeScript", "AI Workflows", "Postgres"],
     links: [
@@ -76,6 +77,7 @@ export const projectCatalog = [
     },
     role: "End-to-end builder",
     platform: "iOS + backend",
+    outcome: "Shows polished iOS product ownership across interface, data aggregation, fallback behavior, and TestFlight-ready release discipline.",
     contribution: ["Product framing", "App architecture", "Fallback logic"],
     tags: ["SwiftUI", "Cloud Run", "Weather APIs"],
     links: [
@@ -125,6 +127,7 @@ export const projectCatalog = [
     },
     role: "Product builder",
     platform: "iOS",
+    outcome: "Compresses nearby stops, departures, journey context, and map cues into a faster commuter decision flow.",
     contribution: ["Decision-first UX", "Native architecture", "Interface design"],
     tags: ["SwiftUI", "Transit", "MapKit"],
     links: [
@@ -174,6 +177,7 @@ export const projectCatalog = [
     },
     role: "System designer",
     platform: "Docs + scripts + agent workflows",
+    outcome: "Reduces context loss across projects by making memory, prompts, workflows, and follow-up execution restartable.",
     contribution: ["Workflow design", "Knowledge structure", "Automation"],
     tags: ["Systems", "Automation", "Knowledge"],
     details: {
@@ -216,6 +220,7 @@ export const projectCatalog = [
     },
     role: "Research + product translator",
     platform: "Optimization + decision tools",
+    outcome: "Translates rolling logistics optimization into scenario comparisons, tradeoff language, and operator-facing planning evidence.",
     contribution: ["Model framing", "Scenario design", "Operational translation"],
     tags: ["Optimization", "Planning", "Decision Support"],
     details: {
@@ -260,11 +265,6 @@ export function getFeaturedProjects() {
 
 export const projectGroups = [
   {
-    key: "product-surfaces",
-    title: "Product Surfaces",
-    intro: "Interfaces, apps, and user-facing systems where the job is to make a fast decision feel obvious and trustworthy."
-  },
-  {
     key: "internal-systems",
     title: "Internal Systems",
     intro: "Operating layers, workflow-agent control planes, and internal tools that reduce coordination overhead and make repeat work easier to run well."
@@ -273,6 +273,11 @@ export const projectGroups = [
     key: "decision-support",
     title: "Decision Support",
     intro: "Planning and optimization work shaped into scenario comparisons, tradeoffs, and outputs that can support a real operating decision."
+  },
+  {
+    key: "product-surfaces",
+    title: "Product Surfaces",
+    intro: "Interfaces, apps, and user-facing systems where the job is to make a fast decision feel obvious and trustworthy."
   }
 ];
 

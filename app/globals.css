@@ -594,8 +594,10 @@ pre {
 }
 
 .hero-heading {
-  font-size: clamp(1.05rem, 1.9vw, 1.4rem);
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
   line-height: 1.06;
+  font-weight: 300;
+  letter-spacing: -0.02em;
 }
 
 .hero-summary {
@@ -612,6 +614,13 @@ pre {
   gap: 1.2rem;
   margin-top: 0;
   padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
+}
+
+.hero-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .hero-scroll {
@@ -749,6 +758,37 @@ pre {
   margin-top: 0.9rem;
 }
 
+.fast-lane {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fast-lane span {
+  color: color-mix(in srgb, var(--muted) 82%, var(--text) 18%);
+}
+
+.fast-lane a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.58rem 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent 18%);
+  border-radius: 0.35rem;
+  color: var(--text);
+}
+
+.fast-lane a:hover {
+  background: var(--surface-strong);
+}
+
 .work-groups {
   display: grid;
   gap: 2.6rem;
@@ -805,6 +845,22 @@ pre {
 
 .work-group:first-child .editorial-project-card:first-child .card-kicker {
   color: color-mix(in srgb, var(--text) 72%, #d7b38a 28%);
+}
+
+.project-outcome {
+  margin-top: 0.85rem !important;
+  color: color-mix(in srgb, var(--muted) 72%, var(--text) 28%) !important;
+  font-size: 0.95rem;
+}
+
+.project-outcome span {
+  display: inline;
+  margin-right: 0.42rem;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .project-meta-grid {
@@ -962,6 +1018,10 @@ pre {
   gap: 0.7rem;
   margin-top: 1rem;
   padding-top: 0.2rem;
+}
+
+.about-working-style {
+  color: color-mix(in srgb, var(--muted) 76%, var(--text) 24%);
 }
 
 .capability-grid {
