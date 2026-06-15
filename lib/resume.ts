@@ -207,7 +207,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     ],
     education: {
       school: "Technical University of Denmark (DTU)",
-      degree: "MSc, Mathematical Modelling and Computation / Operations-oriented thesis with Mover context",
+      degree: "MSc, Mathematical Modelling and Computation",
       location: "Denmark",
       period: "2024 - 2026",
     },
@@ -359,7 +359,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     ],
     education: {
       school: "Technical University of Denmark (DTU)",
-      degree: "MSc, Mathematical Modelling and Computation / Operations-oriented thesis with Mover context",
+      degree: "MSc, Mathematical Modelling and Computation",
       location: "Denmark",
       period: "2024 - 2026",
     },
