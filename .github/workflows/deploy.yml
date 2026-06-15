@@ -118,14 +118,14 @@ jobs:
           set -euo pipefail
           remote="${DEPLOY_USER}@${DEPLOY_HOST}"
           ssh -p "$DEPLOY_PORT" "$remote" "mkdir -p ~/${REMOTE_BUILD_DIR}/scripts"
-          scp -P "$DEPLOY_PORT" -r app public "$remote:${REMOTE_BUILD_DIR}/"
-          scp -P "$DEPLOY_PORT" \
-            package.json \
-            package-lock.json \
-            next.config.mjs \
-            .gitignore \
-            scripts/deploy-static-on-remote.sh \
-            "$remote:${REMOTE_BUILD_DIR}/"
+          rsync -az --delete \
+            -e "ssh -p ${DEPLOY_PORT}" \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.next/' \
+            --exclude 'node_modules/' \
+            --exclude 'out/' \
+            ./ "$remote:${REMOTE_BUILD_DIR}/"
 
       - name: Build and publish on remote host
         shell: bash
