@@ -14,70 +14,23 @@ import {
   RiSunLine as SunIcon,
 } from "@remixicon/react";
 
-const FEED_PX = 82;
-const PAPER_FEED_DURATION_MS = 760;
-const PAPER_FEED_ACTIVE_MS = PAPER_FEED_DURATION_MS + 140;
-const PAPER_FEED_VERSION = "v0.79.3";
+const FEED_PX = 34;
+const PAPER_FEED_DURATION_MS = 380;
+const PAPER_FEED_VERSION = "v0.79.4";
 
 function generatePaperFeedKeyframes(): Keyframe[] {
-  const catchOffset = 0.32 + Math.random() * 0.05;
-  const finalCatchOffset = 0.77 + Math.random() * 0.04;
-  const smallJitter = 1 + Math.random() * 2.5;
-
   return [
     {
       offset: 0,
-      transform: `translate3d(0, -${FEED_PX}px, 0) scaleY(0.996)`,
-      opacity: 0.97,
-      easing: "cubic-bezier(0.2, 0, 0, 1)",
+      transform: `translate3d(0, -${FEED_PX}px, 0)`,
     },
     {
-      offset: 0.08,
-      transform: `translate3d(0, -${FEED_PX - 2}px, 0) scaleY(1.002)`,
-      opacity: 1,
-      easing: "linear",
-    },
-    {
-      offset: 0.24,
-      transform: "translate3d(0, -42px, 0) scaleY(1.006)",
-      opacity: 1,
-      easing: "cubic-bezier(0.33, 0, 0.2, 1)",
-    },
-    {
-      offset: catchOffset,
-      transform: "translate3d(0, -48px, 0) scaleY(0.998)",
-      opacity: 1,
-      easing: "steps(1, end)",
-    },
-    {
-      offset: 0.52,
-      transform: "translate3d(0, -21px, 0) scaleY(1.004)",
-      opacity: 1,
-      easing: "cubic-bezier(0.33, 0, 0.2, 1)",
-    },
-    {
-      offset: 0.62,
-      transform: "translate3d(0, -26px, 0) scaleY(0.998)",
-      opacity: 1,
-      easing: "steps(1, end)",
-    },
-    {
-      offset: finalCatchOffset,
-      transform: `translate3d(0, -${8 + smallJitter}px, 0) scaleY(1.002)`,
-      opacity: 1,
-      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-    },
-    {
-      offset: 0.9,
-      transform: "translate3d(0, -3px, 0) scaleY(0.999)",
-      opacity: 1,
-      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+      offset: 0.72,
+      transform: "translate3d(0, 1px, 0)",
     },
     {
       offset: 1,
-      transform: "translate3d(0, 0, 0) scaleY(1)",
-      opacity: 1,
-      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+      transform: "translate3d(0, 0, 0)",
     },
   ];
 }
@@ -113,7 +66,7 @@ function usePaperFeedAnimation() {
   const paperRef = useRef<HTMLDivElement>(null);
   const prevPathRef = useRef(pathname);
   const isLangSwitch = useRef(false);
-  const cleanupTimerRef = useRef<number | null>(null);
+  const cleanupRafRef = useRef<number | null>(null);
 
   useEffect(() => {
     try {
@@ -135,43 +88,39 @@ function usePaperFeedAnimation() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
 
-    if (cleanupTimerRef.current !== null) {
-      window.clearTimeout(cleanupTimerRef.current);
-      cleanupTimerRef.current = null;
+    if (cleanupRafRef.current !== null) {
+      window.cancelAnimationFrame(cleanupRafRef.current);
+      cleanupRafRef.current = null;
     }
 
-    el.classList.remove("is-feeding");
     el.getAnimations().forEach((animation) => animation.cancel());
-    document.documentElement.dataset.paperFeed = "active";
-    el.style.willChange = "transform, opacity";
-
-    const restartClass = window.requestAnimationFrame(() => {
-      el.classList.add("is-feeding");
-    });
+    el.style.willChange = "transform";
 
     const animation = el.animate(generatePaperFeedKeyframes(), {
       duration: PAPER_FEED_DURATION_MS,
-      easing: "linear",
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
       fill: "backwards",
+      composite: "replace",
     });
 
-    cleanupTimerRef.current = window.setTimeout(() => {
-      el.classList.remove("is-feeding");
-      el.style.willChange = "auto";
-      delete document.documentElement.dataset.paperFeed;
-      cleanupTimerRef.current = null;
-    }, PAPER_FEED_ACTIVE_MS);
+    animation.finished
+      .then(() => {
+        cleanupRafRef.current = window.requestAnimationFrame(() => {
+          el.style.willChange = "auto";
+          cleanupRafRef.current = null;
+        });
+      })
+      .catch(() => {
+        el.style.willChange = "auto";
+      });
 
     return () => {
-      window.cancelAnimationFrame(restartClass);
       animation.cancel();
-      if (cleanupTimerRef.current !== null) {
-        window.clearTimeout(cleanupTimerRef.current);
-        cleanupTimerRef.current = null;
+      if (cleanupRafRef.current !== null) {
+        window.cancelAnimationFrame(cleanupRafRef.current);
+        cleanupRafRef.current = null;
       }
-      el.classList.remove("is-feeding");
       el.style.willChange = "auto";
-      delete document.documentElement.dataset.paperFeed;
     };
   }, [pathname]);
 
