@@ -1140,7 +1140,7 @@ export default function PrinterShell({
                   <div className="font-mono text-[10px] tracking-widest uppercase order-2 sm:order-1">© {new Date().getFullYear()} Jiajia</div>
                   <div className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-4 order-1 sm:order-2">
                     <a href="https://github.com/isjiajia01" target="_blank" rel="noopener" className="hover:text-printer-accent transition-colors">GitHub</a>
-                    <a href="https://github.com/isjiajia01" target="_blank" rel="noopener" className="hover:text-printer-accent transition-colors">X</a>
+                    <a href="https://www.linkedin.com/in/jiajia-zhang-0a8a40289" target="_blank" rel="noopener" className="hover:text-printer-accent transition-colors">LinkedIn</a>
                     <a href="mailto:isjiajiazhang@gmail.com" className="hover:text-printer-accent transition-colors">Email</a>
                   </div>
                 </div>
