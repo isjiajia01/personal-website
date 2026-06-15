@@ -87,6 +87,52 @@
     color: theme('colors.printer.paper-dark');
   }
 
+  .printer-output-slot::after {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%) scaleX(0.15);
+    transform-origin: left center;
+    opacity: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.52), transparent);
+    pointer-events: none;
+  }
+
+  [data-paper-feed="active"] .printer-output-slot::after {
+    animation: printer-scanline 760ms linear both;
+  }
+
+  .printer-paper-run {
+    position: relative;
+    transform: translate3d(0, 0, 0);
+    transform-origin: 50% 0%;
+    backface-visibility: hidden;
+    contain: paint;
+  }
+
+  .printer-paper-run::before {
+    content: '';
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    top: 0;
+    height: 28px;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(0, -12px, 0) scaleX(0.86);
+    border-radius: 999px;
+    background: radial-gradient(80% 100% at 50% 0%, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.08) 58%, transparent 100%);
+    filter: blur(6px);
+  }
+
+  .printer-paper-run.is-feeding::before {
+    animation: printer-grip-shadow 760ms linear both;
+  }
+
   /* Top inner shadow to simulate printer head blocking some light */
   .paper-top-occlusion {
     position: absolute;
@@ -118,10 +164,86 @@
     mix-blend-mode: normal;
   }
 
+  .printer-paper-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(0, -22%, 0);
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.36) 18%,
+      rgba(255, 255, 255, 0.09) 32%,
+      transparent 48%
+    );
+    mix-blend-mode: screen;
+  }
+
+  :is(.dark) .printer-paper-area::before {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(180, 196, 255, 0.16) 18%,
+      rgba(180, 196, 255, 0.05) 34%,
+      transparent 50%
+    );
+    mix-blend-mode: plus-lighter;
+  }
+
+  .printer-paper-area::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.34;
+    background-image:
+      repeating-linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.018) 0,
+        rgba(0, 0, 0, 0.018) 1px,
+        transparent 1px,
+        transparent 7px
+      );
+  }
+
+  :is(.dark) .printer-paper-area::after {
+    opacity: 0.2;
+    background-image:
+      repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.022) 0,
+        rgba(255, 255, 255, 0.022) 1px,
+        transparent 1px,
+        transparent 7px
+      );
+  }
+
+  .printer-paper-run.is-feeding .printer-paper-area::before {
+    animation: printer-print-head-sheen 760ms linear both;
+  }
+
   /* Flatten all corner radii inside the printed content area */
   .printer-content-area,
   .printer-content-area * {
     border-radius: 0 !important;
+  }
+
+  .printer-content-area,
+  .printer-paper-footer {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  .printer-paper-run.is-feeding .printer-content-area {
+    animation: printed-content-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  }
+
+  .printer-paper-run.is-feeding .printer-paper-footer {
+    animation: printed-content-reveal 440ms cubic-bezier(0.22, 1, 0.36, 1) 260ms both;
   }
 
   /* Keep borders on visual assets, but make them very subtle */
@@ -227,6 +349,26 @@
     background-image: 
       radial-gradient(circle, rgba(0,0,0,0.04) 0.6px, transparent 0.6px);
     background-size: 5px 5px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .printer-paper-run,
+    .printer-paper-run::before,
+    .printer-paper-area::before,
+    .printer-content-area,
+    .printer-paper-footer,
+    .printer-output-slot::after {
+      animation: none !important;
+      transform: none !important;
+      opacity: 1;
+      will-change: auto !important;
+    }
+
+    .printer-paper-run::before,
+    .printer-paper-area::before,
+    .printer-output-slot::after {
+      opacity: 0 !important;
+    }
   }
   :is(.dark) .thermal-texture {
     background-image: 

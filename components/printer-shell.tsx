@@ -13,40 +13,73 @@ import {
   RiMoonLine as MoonIcon,
   RiSunLine as SunIcon,
 } from "@remixicon/react";
-/**
- * Generate random keyframes that simulate a subtle printer paper-jam stutter.
- * Only the top portion of the paper slides in (small fixed px offset),
- * with minor speed variations to hint at the mechanical feel.
- */
-const FEED_PX = 60; // how many pixels the paper slides down
 
-function generatePaperFeedKeyframes(): { offset: number; transform: string; easing: string }[] {
-  const keyframes: { offset: number; transform: string; easing: string }[] = [];
+const FEED_PX = 82;
+const PAPER_FEED_DURATION_MS = 760;
+const PAPER_FEED_ACTIVE_MS = PAPER_FEED_DURATION_MS + 140;
+const PAPER_FEED_VERSION = "v0.79.3";
 
-  // Start: paper shifted up by FEED_PX
-  keyframes.push({ offset: 0, transform: `translateY(-${FEED_PX}px)`, easing: "ease-out" });
+function generatePaperFeedKeyframes(): Keyframe[] {
+  const catchOffset = 0.32 + Math.random() * 0.05;
+  const finalCatchOffset = 0.77 + Math.random() * 0.04;
+  const smallJitter = 1 + Math.random() * 2.5;
 
-  // 2-3 subtle stutter points
-  const stutterCount = 2 + Math.floor(Math.random() * 2);
-  const offsets: number[] = [];
-  for (let i = 0; i < stutterCount; i++) {
-    offsets.push(0.15 + Math.random() * 0.6);
-  }
-  offsets.sort((a, b) => a - b);
-
-  for (const offset of offsets) {
-    const linearPx = FEED_PX * (1 - offset); // remaining distance
-    const jitter = (Math.random() - 0.4) * 8; // small random deviation
-    const y = -Math.max(0, Math.min(FEED_PX, linearPx + jitter));
-    const easings = ["ease-in", "ease-out", "ease-in-out", "linear"];
-    const easing = easings[Math.floor(Math.random() * easings.length)];
-    keyframes.push({ offset, transform: `translateY(${y}px)`, easing });
-  }
-
-  // End: paper at rest
-  keyframes.push({ offset: 1, transform: "translateY(0px)", easing: "ease-out" });
-
-  return keyframes;
+  return [
+    {
+      offset: 0,
+      transform: `translate3d(0, -${FEED_PX}px, 0) scaleY(0.996)`,
+      opacity: 0.97,
+      easing: "cubic-bezier(0.2, 0, 0, 1)",
+    },
+    {
+      offset: 0.08,
+      transform: `translate3d(0, -${FEED_PX - 2}px, 0) scaleY(1.002)`,
+      opacity: 1,
+      easing: "linear",
+    },
+    {
+      offset: 0.24,
+      transform: "translate3d(0, -42px, 0) scaleY(1.006)",
+      opacity: 1,
+      easing: "cubic-bezier(0.33, 0, 0.2, 1)",
+    },
+    {
+      offset: catchOffset,
+      transform: "translate3d(0, -48px, 0) scaleY(0.998)",
+      opacity: 1,
+      easing: "steps(1, end)",
+    },
+    {
+      offset: 0.52,
+      transform: "translate3d(0, -21px, 0) scaleY(1.004)",
+      opacity: 1,
+      easing: "cubic-bezier(0.33, 0, 0.2, 1)",
+    },
+    {
+      offset: 0.62,
+      transform: "translate3d(0, -26px, 0) scaleY(0.998)",
+      opacity: 1,
+      easing: "steps(1, end)",
+    },
+    {
+      offset: finalCatchOffset,
+      transform: `translate3d(0, -${8 + smallJitter}px, 0) scaleY(1.002)`,
+      opacity: 1,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    },
+    {
+      offset: 0.9,
+      transform: "translate3d(0, -3px, 0) scaleY(0.999)",
+      opacity: 1,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    },
+    {
+      offset: 1,
+      transform: "translate3d(0, 0, 0) scaleY(1)",
+      opacity: 1,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    },
+  ];
 }
 
 /**
@@ -80,8 +113,8 @@ function usePaperFeedAnimation() {
   const paperRef = useRef<HTMLDivElement>(null);
   const prevPathRef = useRef(pathname);
   const isLangSwitch = useRef(false);
+  const cleanupTimerRef = useRef<number | null>(null);
 
-  // On mount, check if we arrived via a language switch
   useEffect(() => {
     try {
       if (sessionStorage.getItem(LANG_SWITCH_KEY)) {
@@ -95,24 +128,51 @@ function usePaperFeedAnimation() {
     const el = paperRef.current;
     if (!el) return;
 
-    // Skip animation on true initial page load (not a language switch remount)
     if (prevPathRef.current === pathname && !isLangSwitch.current) return;
     prevPathRef.current = pathname;
     isLangSwitch.current = false;
 
-    const kf = generatePaperFeedKeyframes();
-    const duration = 350 + Math.random() * 200; // 350-550ms, snappy
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
 
-    const animation = el.animate(
-      kf.map(({ offset, transform }) => ({ offset, transform })),
-      {
-        duration,
-        easing: "linear",
-        fill: "backwards",
-      },
-    );
+    if (cleanupTimerRef.current !== null) {
+      window.clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = null;
+    }
 
-    return () => animation.cancel();
+    el.classList.remove("is-feeding");
+    el.getAnimations().forEach((animation) => animation.cancel());
+    document.documentElement.dataset.paperFeed = "active";
+    el.style.willChange = "transform, opacity";
+
+    const restartClass = window.requestAnimationFrame(() => {
+      el.classList.add("is-feeding");
+    });
+
+    const animation = el.animate(generatePaperFeedKeyframes(), {
+      duration: PAPER_FEED_DURATION_MS,
+      easing: "linear",
+      fill: "backwards",
+    });
+
+    cleanupTimerRef.current = window.setTimeout(() => {
+      el.classList.remove("is-feeding");
+      el.style.willChange = "auto";
+      delete document.documentElement.dataset.paperFeed;
+      cleanupTimerRef.current = null;
+    }, PAPER_FEED_ACTIVE_MS);
+
+    return () => {
+      window.cancelAnimationFrame(restartClass);
+      animation.cancel();
+      if (cleanupTimerRef.current !== null) {
+        window.clearTimeout(cleanupTimerRef.current);
+        cleanupTimerRef.current = null;
+      }
+      el.classList.remove("is-feeding");
+      el.style.willChange = "auto";
+      delete document.documentElement.dataset.paperFeed;
+    };
   }, [pathname]);
 
   return paperRef;
@@ -1107,7 +1167,7 @@ export default function PrinterShell({
             <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/[0.05] to-transparent dark:from-black/[0.2]" />
             <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/[0.05] to-transparent dark:from-black/[0.2]" />
             {/* Paper exit slit */}
-            <div className="absolute left-2 right-2 sm:left-8 sm:right-8 h-[6px] bg-black/60 dark:bg-black/90 rounded-[1px] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)] dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.9)]" />
+            <div className="printer-output-slot absolute left-2 right-2 sm:left-8 sm:right-8 h-[6px] bg-black/60 dark:bg-black/90 rounded-[1px] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)] dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.9)]" />
           </div>
         </div>
         {/* Cast shadow outside the printer shell bottom edge */}
@@ -1117,7 +1177,7 @@ export default function PrinterShell({
         {/* Printed paper output area — clipped so paper slides in from the slit */}
         <div className="printer-paper-wrap relative mx-3 sm:mx-10 -mt-[12px] z-20" style={{ clipPath: 'inset(0 -20px -56px -20px)' }}>
           <div className="paper-top-occlusion" aria-hidden="true" />
-          <div ref={paperRef}>
+          <div ref={paperRef} className="printer-paper-run" data-paper-feed-version={PAPER_FEED_VERSION}>
             <div className="printer-paper-area bg-printer-paper dark:bg-printer-paper-dark dark:border dark:border-white/[0.04] thermal-texture min-h-[60vh] shadow-[0_4px_12px_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4),0_1px_3px_rgba(0,0,0,0.3)] relative z-0 flex flex-col overflow-hidden">
               <div className="absolute -top-1 left-0 right-0 h-1 bg-printer-paper dark:bg-printer-paper-dark" />
 
@@ -1135,7 +1195,7 @@ export default function PrinterShell({
 
               <div className="printer-content-area flex-1 px-6 sm:px-10 py-8 relative z-10">{children}</div>
 
-              <div className="px-6 sm:px-10 py-6 mt-4 border-t border-dashed border-printer-ink/10 dark:border-printer-ink-dark/10 relative z-10">
+              <div className="printer-paper-footer px-6 sm:px-10 py-6 mt-4 border-t border-dashed border-printer-ink/10 dark:border-printer-ink-dark/10 relative z-10">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-printer-ink-light dark:text-printer-ink-dark/40">
                   <div className="font-mono text-[10px] tracking-widest uppercase order-2 sm:order-1">© {new Date().getFullYear()} Jiajia</div>
                   <div className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-4 order-1 sm:order-2">
