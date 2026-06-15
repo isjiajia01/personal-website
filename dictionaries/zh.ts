@@ -67,7 +67,6 @@ const dictionary = {
     stack: "技术/方法",
     openProject: "打开",
     contactMe: "联系",
-    productProof: "产品工程证据",
     analyticalProof: "规划 / 分析证据",
     icon(label: string) {
       return `${label} 的图标`;
@@ -76,11 +75,11 @@ const dictionary = {
   homepage: {
     headline: "我做 internal tools 和 workflow systems：让团队更容易看清证据、安全自动化、做出决策。",
     subline:
-      "最匹配 junior product/full-stack 方向，尤其是 internal tools、support automation 和 operational decision support。Data quality 和 iOS 产品是相邻证据，不是分散主线。",
+      "最匹配 junior product/full-stack 方向，尤其是 internal tools、support automation 和 operational decision support。iOS 产品和优化研究是相邻证据，不是分散主线。",
     proofPoints: [
       "OpsDesk：线上 support/operations demo，包含 evidence package、draft action、approval gate、feedback memory 和 audit replay。",
-      "Cargo Guard：数据质量 cockpit，把物流事件问题转成 contract、severity、owner 和 next action。",
       "Nimbus：SwiftUI/iOS 产品，实现天气数据流、widget/shared settings、fallback 行为和产品细节。",
+      "DTU × Mover Thesis：真实物流规划项目，把路线约束转成可解释的决策支持证据。",
     ],
     roleTargets: [
       "Junior Product / Full-stack Engineer",
@@ -108,17 +107,17 @@ const dictionary = {
     {
       name: "Cargo Guard",
       summary:
-        "一个轻量级物流数据质量 cockpit：数据契约、freshness/completeness 检查、ETA drift、severity routing 和 owner action。",
-      roleFit: "Data-quality workflows · logistics operations · governance tooling",
+        "一个小型 Python demo，用来检查物流数据是否完整、新鲜、有效，是否值得团队继续使用。",
+      roleFit: "Data quality · operational checks · supporting evidence",
       evidence: [
-        "把 shipment-event 问题转成 contract、severity、owner 和 next action",
-        "定位是 data-quality / governance 方向的作品集证据，不包装成虚假的企业生产经验",
-        "体现 data-product thinking：检查、路由、dashboard 和业务语言",
+        "本地检查缺失字段、重复 ID、无效值、过期记录和异常物流数据",
+        "输出 JSON run 和简单 HTML report，让问题能被 review，而不是藏在表格里",
+        "适合作为 data-quality thinking 的补充证据，但不是作品集主线",
       ],
-      stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard", "Logistics data"],
+      stack: ["Python", "JSON contracts", "Data validation", "HTML report", "Logistics demo data"],
       link: "#",
       color: "yellow",
-      primary: true,
+      primary: false,
     },
     {
       name: "Nimbus Weather Journal",
@@ -138,17 +137,17 @@ const dictionary = {
     {
       name: "DTU × Mover Thesis",
       summary:
-        "围绕 multi-day last-mile vehicle routing 的 depot-aware rolling decomposition 和 guarded search 框架。",
-      roleFit: "Decision support · logistics analytics · optimization research",
+        "一个有 Mover 场景背景的真实物流规划项目：决定多日配送如何接单、排路线，并在 depot 压力下做恢复。",
+      roleFit: "Logistics planning · optimization · operational decision support",
       evidence: [
-        "把学术建模和实际运营约束、runtime budget、fallback decision 连起来",
-        "强调 evidence、safety guard 和 benchmark family，而不是黑箱式地说算法更强",
-        "适合 planning、supply-chain、analytics 和 decision-support 相关岗位",
+        "把路线约束、depot pressure、服务可行性和 runtime limit 转成决策支持系统",
+        "用 guardrail 和实验解释什么时候可以安全接受一个搜索改进",
+        "强项是分析能力、复杂系统理解，以及面向运营场景的产品/工具思维",
       ],
-      stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Data analysis"],
+      stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
       link: "#",
       color: "orange",
-      primary: false,
+      primary: true,
     },
     {
       name: "This Website",
@@ -205,7 +204,7 @@ const dictionary = {
 
 ### 我最适合什么团队
 
-我会最适合正在做 internal tools、support/operations workflows、data-quality processes 或 decision-support products 的团队。OpsDesk 和 Cargo Guard 是最好的起点；Nimbus 补充产品工程证据；DTU × Mover thesis 补充 planning 和 analytics 深度。
+我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Nimbus 和 DTU × Mover thesis 是最好的起点；Cargo Guard 只是 data-quality thinking 的补充证据。
 
 这个 portfolio 本身也是一个 Next.js static export 的内容和部署小项目。可以通过 [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com)、[LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289) 或 [GitHub](https://github.com/isjiajia01) 联系我。
   `,

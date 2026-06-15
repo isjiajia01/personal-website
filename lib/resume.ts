@@ -64,7 +64,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "简历索引",
     name: "Jiajia Zhang",
     summary:
-      "DTU 硕士，面向 junior product/full-stack 角色，主线是 internal tools、workflow automation with human review 和 operational decision support。最强证据是 OpsDesk、Cargo Guard 和 Nimbus；优化 thesis 作为 planning/analytics 深度补充。",
+      "DTU 硕士，面向 junior product/full-stack 角色，主线是 internal tools、workflow automation with human review 和 operational decision support。最强证据是 OpsDesk、Nimbus 和 DTU × Mover thesis；Cargo Guard 只是数据质量补充证据。",
     imageDescription:
       "Jiajia Zhang，做 internal tools、workflow automation、data-quality workflows、SwiftUI 产品和决策支持。",
     highlights: [],
@@ -138,8 +138,8 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
             name: "Cargo Guard",
             note: "Data quality cockpit",
             description:
-              "用物流 shipment-event 合成数据展示数据契约、freshness/completeness/range/duplicate 检查、ETA drift 和 owner/severity/action routing。",
-            stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard"],
+              "小型 Python 数据检查 demo：检查物流记录是否缺字段、重复、过期或包含无效值，并输出 JSON run 和 HTML report 方便 review。",
+            stack: ["Python", "JSON contracts", "Data validation", "HTML report"],
           },
           {
             name: "Nimbus Weather Journal",
@@ -216,7 +216,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "Resume Index",
     name: "Jiajia Zhang",
     summary:
-      "DTU MSc student targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, Cargo Guard, and Nimbus; optimization thesis adds planning/analytics depth.",
+      "DTU MSc student targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, Nimbus, and the DTU × Mover thesis; Cargo Guard is supporting data-quality evidence.",
     imageDescription:
       "Jiajia Zhang building internal tools, workflow automation, data-quality workflows, SwiftUI products, and decision support.",
     highlights: [],
@@ -290,8 +290,8 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
             name: "Cargo Guard",
             note: "Data quality cockpit",
             description:
-              "Created a lightweight data-quality cockpit for synthetic logistics shipment events: contracts, freshness/completeness/range/duplicate checks, ETA drift, and owner/severity/action routing.",
-            stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard"],
+              "Built a small Python data-checking demo for logistics records: missing fields, duplicates, stale records, invalid values, JSON run output, and an HTML report for review.",
+            stack: ["Python", "JSON contracts", "Data validation", "HTML report"],
           },
           {
             name: "Nimbus Weather Journal",

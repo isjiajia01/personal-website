@@ -67,7 +67,6 @@ My strongest work sits around internal tools, workflow automation with human rev
     stack: "Stack",
     openProject: "Open",
     contactMe: "Contact",
-    productProof: "Product Engineering Proof",
     analyticalProof: "Planning / Analytics Proof",
     icon(label: string) {
       return `Icon for ${label}`;
@@ -77,11 +76,11 @@ My strongest work sits around internal tools, workflow automation with human rev
     headline:
       "I build internal tools and workflow systems for teams that need clearer evidence, safer automation, and better decisions.",
     subline:
-      "Best fit: junior product/full-stack roles around internal tools, support automation, and operational decision support. Data quality and iOS product work are adjacent proof, not separate directions.",
+      "Best fit: junior product/full-stack roles around internal tools, support automation, and operational decision support. iOS product work and optimization research are adjacent proof, not separate directions.",
     proofPoints: [
       "OpsDesk: a deployed support/operations demo with evidence packages, draft actions, approval gates, feedback memory, and audit replay.",
-      "Cargo Guard: a data-quality cockpit that turns logistics event issues into contracts, severity, owners, and next actions.",
       "Nimbus: SwiftUI/iOS product implementation with weather data flows, widgets, fallback behavior, and feature-level polish.",
+      "DTU × Mover Thesis: a real logistics planning project that turns routing constraints into decision-support evidence.",
     ],
     roleTargets: [
       "Junior Product / Full-stack Engineer",
@@ -109,17 +108,17 @@ My strongest work sits around internal tools, workflow automation with human rev
     {
       name: "Cargo Guard",
       summary:
-        "A lightweight data-quality cockpit for logistics events: contracts, freshness/completeness checks, ETA drift, severity routing, and owner actions.",
-      roleFit: "Data-quality workflows · logistics operations · governance tooling",
+        "A small Python demo that checks whether logistics data is complete, fresh, valid, and ready to trust before teams use it.",
+      roleFit: "Data quality · operational checks · supporting evidence",
       evidence: [
-        "Turns raw shipment-event issues into contracts, severity, owners, and next actions",
-        "Designed as portfolio proof for data-quality and governance roles, not as fake enterprise production",
-        "Shows practical data-product thinking: checks, routing, dashboard, and operational language",
+        "Runs local checks for missing fields, duplicate IDs, invalid values, stale records, and unusual shipment data",
+        "Exports a JSON run and simple HTML report so issues can be reviewed instead of hidden in a spreadsheet",
+        "Useful as supporting proof for data-quality thinking, but not the main portfolio story",
       ],
-      stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard", "Logistics data"],
+      stack: ["Python", "JSON contracts", "Data validation", "HTML report", "Logistics demo data"],
       link: "#",
       color: "yellow",
-      primary: true,
+      primary: false,
     },
     {
       name: "Nimbus Weather Journal",
@@ -139,17 +138,17 @@ My strongest work sits around internal tools, workflow automation with human rev
     {
       name: "DTU × Mover Thesis",
       summary:
-        "A depot-aware rolling decomposition and guarded search framework for multi-day last-mile vehicle routing under operational stress.",
-      roleFit: "Decision support · logistics analytics · optimization research",
+        "A real logistics planning project with Mover context: decide how multi-day deliveries should be admitted, routed, and recovered when depots are under stress.",
+      roleFit: "Logistics planning · optimization · operational decision support",
       evidence: [
-        "Connects academic modeling with operational constraints, runtime budgets, and fallback decisions",
-        "Frames solver behavior through evidence, safety guards, and benchmark families rather than black-box claims",
-        "Useful for planning, supply-chain, analytics, and decision-support roles",
+        "Turns routing constraints, depot pressure, service feasibility, and runtime limits into a decision-support system",
+        "Uses guardrails and experiments to explain when a search improvement is safe to accept",
+        "Strong proof for analytical thinking, complex systems, and operations-facing product work",
       ],
-      stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Data analysis"],
+      stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
       link: "#",
       color: "orange",
-      primary: false,
+      primary: true,
     },
     {
       name: "This Website",
@@ -206,7 +205,7 @@ I usually start from the operating problem. What is the queue? What does a revie
 
 ### Where I fit first
 
-I would be most useful on teams building internal tools, support/operations workflows, data-quality processes, or decision-support products. OpsDesk and Cargo Guard are the best starting points; Nimbus adds product-engineering proof; the DTU × Mover thesis adds planning and analytics depth.
+I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Nimbus, and the DTU × Mover thesis are the best starting points; Cargo Guard is supporting proof for data-quality thinking.
 
 This portfolio itself is also a small content-and-deployment project built with Next.js static export. You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
   `,

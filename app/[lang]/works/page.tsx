@@ -9,7 +9,6 @@ import {
   RiArchiveLine as ArchiveBoxIcon,
   RiApps2Line as BriefcaseIcon,
   RiExternalLinkLine as ExternalLinkIcon,
-  RiLineChartLine as AnalyticsIcon,
   RiShieldCheckLine as EvidenceIcon,
   RiStarLine as StarIcon,
   RiToolsLine as StackIcon,
@@ -76,7 +75,7 @@ function WorkCard({
   const isPlaceholder = work.link === "#";
 
   const body = (
-    <div className="group rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
+    <div className="portfolio-card-motion group rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
       <div className="flex items-start gap-3">
         <WorkMark name={work.name} />
         <div className="min-w-0 flex-1">
@@ -155,10 +154,9 @@ export default async function WorksPage(
   const byName = new Map(dictionary.works.map((work) => [work.name, work]));
   const isWork = (work: (typeof dictionary.works)[number] | undefined): work is (typeof dictionary.works)[number] =>
     Boolean(work);
-  const coreWorks = ["OpsDesk", "Cargo Guard", "Nimbus Weather Journal"].map((name) => byName.get(name)).filter(isWork);
-  const analyticalWorks = ["DTU × Mover Thesis"].map((name) => byName.get(name)).filter(isWork);
+  const coreWorks = ["OpsDesk", "Nimbus Weather Journal", "DTU × Mover Thesis"].map((name) => byName.get(name)).filter(isWork);
   const supportingWorks = dictionary.works.filter(
-    (work) => !["OpsDesk", "Cargo Guard", "Nimbus Weather Journal", "DTU × Mover Thesis"].includes(work.name),
+    (work) => !["OpsDesk", "Nimbus Weather Journal", "DTU × Mover Thesis"].includes(work.name),
   );
 
   return (
@@ -182,23 +180,6 @@ export default async function WorksPage(
       >
         <div className="flex flex-col gap-4">
           {coreWorks.map((work) => (
-            <WorkCard key={work!.name} work={work!} dictionary={dictionary} />
-          ))}
-        </div>
-      </PrintedSection>
-
-      <PrintedDivider style="dashed" />
-
-      <PrintedSection
-        label={
-          <span className="inline-flex items-center gap-1.5">
-            <AnalyticsIcon className="h-2.5 w-2.5" />
-            <span className="label-text">{dictionary.labels.analyticalProof}</span>
-          </span>
-        }
-      >
-        <div className="flex flex-col gap-4">
-          {analyticalWorks.map((work) => (
             <WorkCard key={work!.name} work={work!} dictionary={dictionary} />
           ))}
         </div>
