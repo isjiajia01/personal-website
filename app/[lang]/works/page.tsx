@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "zh" }];
 }
@@ -10,12 +8,16 @@ import { getAlternateLanguages } from "@/lib/metadata";
 import {
   RiArchiveLine as ArchiveBoxIcon,
   RiApps2Line as BriefcaseIcon,
+  RiExternalLinkLine as ExternalLinkIcon,
+  RiShieldCheckLine as EvidenceIcon,
   RiStarLine as StarIcon,
+  RiToolsLine as StackIcon,
 } from "@remixicon/react";
 import {
-  PrintedSection,
   PrintedDivider,
+  PrintedLabel,
   PrintedPageTitle,
+  PrintedSection,
 } from "@/components/printed-elements";
 
 export async function generateMetadata(
@@ -30,7 +32,7 @@ export async function generateMetadata(
     metadataBase: new URL(dictionary.meta.baseUrl),
     title: `${dictionary.labels.works} - ${dictionary.meta.websiteName}`,
     description: dictionary.labels.noocWorks,
-    keywords: dictionary.meta.fillKeywords([]),
+    keywords: dictionary.meta.fillKeywords(["portfolio", "projects", "work evidence"]),
     openGraph: {
       type: "website",
       url: new URL(dictionary.urls.works, dictionary.meta.baseUrl).href,
@@ -53,6 +55,88 @@ export async function generateMetadata(
   };
 }
 
+function WorkCard({
+  work,
+  dictionary,
+  compact = false,
+}: {
+  work: Awaited<ReturnType<typeof getDictionary>>["works"][number];
+  dictionary: Awaited<ReturnType<typeof getDictionary>>;
+  compact?: boolean;
+}) {
+  const isPlaceholder = work.link === "#";
+
+  const body = (
+    <div className="group rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-lg font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
+          {work.name[0]}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-mono text-sm font-semibold text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
+              {work.name}
+            </h2>
+            {!isPlaceholder && (
+              <ExternalLinkIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
+            )}
+          </div>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-printer-ink-light dark:text-printer-ink-dark/40">
+            {work.roleFit}
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-4 font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+        {work.summary}
+      </p>
+
+      {!compact && (
+        <>
+          <div className="mt-4">
+            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink-light dark:text-printer-ink-dark/45">
+              <EvidenceIcon className="h-2.5 w-2.5" />
+              {dictionary.labels.evidence}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {work.evidence.map((item) => (
+                <div key={item} className="flex items-start gap-2">
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-printer-accent dark:bg-printer-accent-dark" />
+                  <span className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink-light dark:text-printer-ink-dark/45">
+              <StackIcon className="h-2.5 w-2.5" />
+              {dictionary.labels.stack}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {work.stack.map((item) => (
+                <PrintedLabel key={item} variant="default">
+                  {item}
+                </PrintedLabel>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+
+  if (isPlaceholder) return body;
+
+  return (
+    <a href={work.link} target="_blank" rel="noopener" className="block">
+      {body}
+    </a>
+  );
+}
+
 export default async function WorksPage(
   props: {
     params: Promise<{ lang: string }>;
@@ -61,113 +145,53 @@ export default async function WorksPage(
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
 
-  const primaryWorks = dictionary.works.filter((w) => w.primary);
-  const otherWorks = dictionary.works.filter((w) => !w.primary);
+  const primaryWorks = dictionary.works.filter((work) => work.primary);
+  const otherWorks = dictionary.works.filter((work) => !work.primary);
 
   return (
     <div>
-      {/* Header */}
       <PrintedSection>
         <PrintedPageTitle icon={BriefcaseIcon}>
           {dictionary.labels.works}
         </PrintedPageTitle>
-        <p className="font-serif text-xs text-printer-ink-light dark:text-printer-ink-dark/50">
+        <p className="max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/50">
           {dictionary.labels.noocWorks}
         </p>
       </PrintedSection>
 
-      {/* Primary works */}
       <PrintedSection
         label={
           <span className="inline-flex items-center gap-1.5">
-            <StarIcon className="w-2.5 h-2.5" />
+            <StarIcon className="h-2.5 w-2.5" />
             <span className="label-text">{dictionary.labels.featured}</span>
           </span>
         }
       >
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-4">
           {primaryWorks.map((work) => (
-            <a
-              key={work.name}
-              href={work.link}
-              target="_blank"
-              rel="noopener"
-              className="group flex items-center gap-3 py-3 -mx-2 px-2 rounded-md hover:bg-printer-ink/3 dark:hover:bg-printer-ink-dark/3 transition-colors"
-            >
-              {work.image ? (
-                <Image
-                  className="h-10 w-10 rounded-lg border border-printer-ink/10 dark:border-printer-ink-dark/10 shrink-0"
-                  src={work.image}
-                  alt={dictionary.labels.icon(work.name)}
-                />
-              ) : (
-                <div className="h-10 w-10 rounded-lg bg-printer-accent/10 dark:bg-printer-accent-dark/10 flex items-center justify-center font-mono text-lg font-bold text-printer-accent dark:text-printer-accent-dark shrink-0">
-                  {work.name[0]}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="font-mono text-sm font-medium text-printer-ink dark:text-printer-ink-dark group-hover:text-printer-accent dark:group-hover:text-printer-accent-dark transition-colors">
-                  {work.name}
-                </div>
-                <div className="font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/40 mt-0.5 line-clamp-1">
-                  {work.summary}
-                </div>
-              </div>
-              <span className="font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/30 group-hover:text-printer-accent dark:group-hover:text-printer-accent-dark transition-colors shrink-0">
-                →
-              </span>
-            </a>
+            <WorkCard key={work.name} work={work} dictionary={dictionary} />
           ))}
         </div>
       </PrintedSection>
 
-      <PrintedDivider style="dashed" />
-
-      {/* Other works */}
       {otherWorks.length > 0 && (
-        <PrintedSection
-          label={
-            <span className="inline-flex items-center gap-1.5">
-              <ArchiveBoxIcon className="w-2.5 h-2.5" />
-              <span className="label-text">{dictionary.labels.archive}</span>
-            </span>
-          }
-        >
-          <div className="flex flex-col gap-1">
-            {otherWorks.map((work) => (
-              <a
-                key={work.name}
-                href={work.link}
-                target="_blank"
-                rel="noopener"
-                className="group flex items-center gap-3 py-2.5 -mx-2 px-2 rounded-md hover:bg-printer-ink/3 dark:hover:bg-printer-ink-dark/3 transition-colors"
-              >
-                {work.image ? (
-                  <Image
-                    className="h-8 w-8 rounded-lg border border-printer-ink/10 dark:border-printer-ink-dark/10 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity"
-                    src={work.image}
-                    alt={dictionary.labels.icon(work.name)}
-                  />
-                ) : (
-                  <div className="h-8 w-8 rounded-lg bg-printer-ink/5 dark:bg-printer-ink-dark/5 flex items-center justify-center font-mono text-sm font-bold text-printer-ink-light dark:text-printer-ink-dark/40 shrink-0">
-                    {work.name[0]}
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="font-mono text-xs text-printer-ink/70 dark:text-printer-ink-dark/70 group-hover:text-printer-accent dark:group-hover:text-printer-accent-dark transition-colors">
-                    {work.name}
-                  </div>
-                  <div className="font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/30 mt-0.5 line-clamp-1">
-                    {work.summary}
-                  </div>
-                </div>
-                <span className="font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/30 group-hover:text-printer-accent dark:group-hover:text-printer-accent-dark transition-colors shrink-0">
-                  →
-                </span>
-              </a>
-            ))}
-          </div>
-        </PrintedSection>
+        <>
+          <PrintedDivider style="dashed" />
+          <PrintedSection
+            label={
+              <span className="inline-flex items-center gap-1.5">
+                <ArchiveBoxIcon className="h-2.5 w-2.5" />
+                <span className="label-text">{dictionary.labels.archive}</span>
+              </span>
+            }
+          >
+            <div className="grid gap-3 sm:grid-cols-2">
+              {otherWorks.map((work) => (
+                <WorkCard key={work.name} work={work} dictionary={dictionary} compact />
+              ))}
+            </div>
+          </PrintedSection>
+        </>
       )}
     </div>
   );

@@ -8,18 +8,16 @@ export default async function RootPage() {
   const printerShellProps = {
     labels: {
       home: dictionary.labels.home,
-      posts: dictionary.labels.posts,
-      life: dictionary.labels.life,
       works: dictionary.labels.works,
+      resume: dictionary.labels.resume,
       about: dictionary.labels.about,
       brandName: dictionary.labels.brandName,
       brandTagline: dictionary.labels.brandTagline,
     },
     urls: {
       home: dictionary.urls.home,
-      posts: dictionary.urls.posts,
-      life: dictionary.urls.life,
       works: dictionary.urls.works,
+      resume: dictionary.urls.resume,
       about: dictionary.urls.about,
     },
   };

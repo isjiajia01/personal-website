@@ -1,5 +1,5 @@
 export interface ResumeContact {
-  kind: "website" | "email" | "github";
+  kind: "website" | "email" | "github" | "linkedin";
   label: string;
   value: string;
   href: string;
@@ -59,19 +59,19 @@ export interface ResumeContent {
   education: ResumeEducation;
 }
 
-export const resumeContent = {
+export const resumeContent: Record<"zh" | "en", ResumeContent> = {
   zh: {
-    pageTitle: "简历",
+    pageTitle: "简历索引",
     name: "Jiajia Zhang",
     summary:
-      "初中开始了解代码，大学学了计算机科学与技术专业，毕业后一直从事 web 前后端开发相关工作；做过 Web 端 SaaS、iOS 应用、Electron 桌面端应用；用过 TypeScript、Next.js、SwiftUI、Electron、MongoDB、Docker 等相关技术和工具；热衷于探索 AI 编程，尝试过使用 AI 不写一行代码做出完整产品；",
+      "DTU 硕士，面向 junior/graduate 角色的 product-minded builder。项目集中在 internal tools、AI workflow control plane、iOS/SwiftUI 产品、数据质量 cockpit 和优化驱动的决策支持。适合需要工程实现、产品判断、运营流程理解和证据化沟通的岗位。",
     imageDescription:
-      "Web 开发者，做过 SaaS、iOS 和 Electron 产品，常用 Codex、Claude Code、TypeScript、Next.js 和 SwiftUI。",
+      "Jiajia Zhang，做 internal tools、AI workflows、SwiftUI 产品、数据质量和优化决策支持。",
     highlights: [],
     sectionLabels: {
-      preferences: "求职偏好",
-      experience: "工作经历",
-      skills: "技能",
+      preferences: "求职方向",
+      experience: "项目/经历证据",
+      skills: "能力栈",
       education: "教育",
     },
     contacts: [
@@ -93,157 +93,137 @@ export const resumeContent = {
         value: "github.com/isjiajia01",
         href: "https://github.com/isjiajia01",
       },
+      {
+        kind: "linkedin",
+        label: "LinkedIn",
+        value: "Jiajia Zhang",
+        href: "https://www.linkedin.com/in/jiajia-zhang-0a8a40289",
+      },
     ],
     preferenceGroups: [
       {
         kind: "cities",
-        label: "偏好城市",
-        items: ["深圳", "成都", "杭州", "上海"],
+        label: "地点",
+        items: ["Denmark", "Copenhagen", "Hybrid/Remote", "EU-facing teams"],
       },
       {
         kind: "industries",
-        label: "行业偏好",
-        items: ["AI", "互联网", "影视", "音乐", "教育"],
+        label: "业务场景",
+        items: ["Internal tools", "Operations", "Support automation", "Logistics", "Data quality"],
       },
       {
         kind: "roles",
-        label: "偏好职位",
-        items: ["Web 前端开发", "Web 全栈开发", "群众演员"],
+        label: "岗位",
+        items: ["Junior Full-stack", "AI Workflow", "Data/Operations Analyst", "Technical Graduate"],
       },
     ],
     experiences: [
       {
-        role: "独立开发",
-        organization: "个人项目",
-        period: "2022 - 现在",
-        summary: "自己在折腾独立开发，主要聚焦于 iOS 端应用和网站应用。",
+        role: "Portfolio Builder / Product-minded Engineer",
+        organization: "Personal Projects",
+        location: "Copenhagen",
+        period: "2025 - 现在",
+        summary:
+          "围绕真实岗位场景做可打开、可解释的作品：支持自动化、AI 工作流、数据质量、iOS 产品和个人 workflow systems。重点不是堆功能，而是让招聘方面试时能看到问题定义、证据、边界和落地方式。",
         projects: [
           {
-            name: "回声铃",
-            note: "echobell.one",
-            href: "https://echobell.one",
-            description: "通过 Webhook / Email 向手机发送通知或电话提醒。",
-            stack: ["Swift", "TypeScript", "Cloudflare"],
-          },
-          {
-            name: "Dippod",
-            note: "dippod.com",
-            href: "https://dippod.com",
+            name: "OpsDesk",
+            note: "AI support / operations workflow demo",
+            href: "https://jobops.zhangjiajia.me/opsdesk",
             description:
-              "将任何内容转成清晰、结构化的知识点，帮助你快速学习，并在合适的时间复习。",
-            stack: ["TypeScript", "Next.js"],
+              "构建支持/运营工作台：队列、证据包、草稿回复、审批门、反馈记忆、审计 replay。体现 bounded AI、human-in-the-loop、可复盘和评估思路。",
+            stack: ["Next.js", "TypeScript", "Postgres", "Docker", "AI workflow design"],
           },
           {
-            name: "星火记",
-            note: "sparkmemos.com",
-            href: "https://sparkmemos.com",
-            description: "iOS 端本地优先的短笔记应用。",
-            stack: ["Swift", "SwiftUI"],
+            name: "Cargo Guard",
+            note: "Data quality cockpit",
+            description:
+              "用物流 shipment-event 合成数据展示数据契约、freshness/completeness/range/duplicate 检查、ETA drift 和 owner/severity/action routing。",
+            stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard"],
           },
           {
-            name: "CassetteOne",
-            note: "cassette.one",
-            href: "https://cassette.one",
-            description: "iOS 端磁带机风格的白噪音 / 音乐播放器。",
-            stack: ["Swift", "SwiftUI"],
-          },
-          {
-            name: "游民 CO",
-            note: "youmin.co",
-            href: "https://youmin.co",
-            description: "数字游民线上社区。",
-            stack: ["TypeScript", "Next.js", "Cloudflare"],
-          },
-          {
-            name: "onei.ai",
-            href: "https://onei.ai",
-            description: "AI 导航网站。",
-            stack: ["TypeScript", "Next.js", "Cloudflare"],
+            name: "Nimbus Weather Journal",
+            note: "SwiftUI / iOS product",
+            href: "https://github.com/isjiajia01/10.01_Nimbus",
+            description:
+              "SwiftUI 天气日记项目，覆盖天气数据、widget/shared settings、radar/wind features、月相/illumination 和 fallback 行为。",
+            stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets"],
           },
         ],
       },
       {
-        role: "Web 前端工程师",
-        organization: "成都木帆科技有限公司",
-        location: "成都",
-        period: "2018 - 2022",
+        role: "MSc Thesis / Optimization Research",
+        organization: "DTU × Mover",
+        location: "Denmark",
+        period: "2025 - 2026",
         summary:
-          "参与公司的 Web 前后端程序开发，也简单接触过 iOS 和 Android 端应用开发。",
+          "与 Mover 场景相关的 depot-aware rolling decomposition 研究，关注多日末端配送规划在 operational stress 下的可行性、runtime budget、fallback 和 guarded search。",
         projects: [
           {
-            name: "Makeflow",
-            note: "makeflow.com",
-            href: "https://makeflow.com",
+            name: "Depot-aware rolling decision support",
+            note: "Last-mile planning",
+            href: undefined,
             description:
-              "基于流程的项目协作工具，参与 Web 前后端开发、移动端应用包装与线上部署。",
-            stack: ["TypeScript", "React", "MongoDB"],
+              "设计并评估面向多日配送规划的 rolling architecture、Pareto guard、SDAP runtime framing 和 depot-pressure search，用实验区分 operational feasibility、repeatability 和 academic search-depth evidence。",
+            stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design"],
           },
+        ],
+      },
+      {
+        role: "Industry / Coursework Foundation",
+        organization: "Dehui, Deloitte, DTU, GDUT",
+        location: "China / Denmark",
+        period: "2018 - 2026",
+        summary:
+          "早期开发和课程背景支撑：Java/Spring 后端、JavaScript/Vue 前端、计算机与工业工程基础，以及 DTU 期间的数据、优化和系统建模训练。",
+        projects: [
           {
-            name: "Todostack",
+            name: "Backend / frontend foundation",
+            href: undefined,
             description:
-              "键盘友好的桌面端 Todo 应用，可在线分配任务给其他用户，独立完成桌面端和后端的需求开发与部署。",
-            stack: ["TypeScript", "React", "Electron", "MongoDB"],
-          },
-          {
-            name: "饭碗警告",
-            note: "fwalert.com",
-            href: "https://fwalert.com",
-            description:
-              "通过 Webhook / Email 向用户发送电话、短信等通知，独立完成大部分需求开发，并完成 iOS / Android 端应用开发。",
-            stack: ["TypeScript", "React", "Swift", "Kotlin", "MongoDB"],
-          },
-          {
-            name: "盯梢",
-            note: "dingshao.cn",
-            href: "https://dingshao.cn",
-            description:
-              "社区驱动的消息推送平台，参与 Web 前后端开发与移动端应用包装。",
-            stack: ["TypeScript", "React", "Capacitor", "MongoDB"],
+              "有 Java/Spring、JavaScript/Vue、SQL/API 和工程课程基础，可用于 junior full-stack、internal tools 和 business systems 方向。",
+            stack: ["Java", "Spring", "JavaScript", "Vue", "SQL", "REST APIs"],
           },
         ],
       },
     ],
     skillGroups: [
       {
-        label: "常用",
-        items: [
-          "TypeScript",
-          "React",
-          "Next.js",
-          "Swift",
-          "SwiftUI",
-          "Cloudflare",
-          "GitHub",
-        ],
+        label: "工程",
+        items: ["TypeScript", "Next.js", "React", "Node.js", "Python", "Java/Spring", "SQL", "REST APIs"],
       },
       {
-        label: "用过",
-        items: ["Docker", "Figma", "Electron", "MongoDB"],
+        label: "产品/系统",
+        items: ["Internal tools", "Workflow design", "Approval gates", "Audit/replay", "Feedback loops"],
       },
       {
-        label: "了解",
-        items: ["Kotlin", "Go"],
+        label: "数据/优化",
+        items: ["Data quality", "JSON contracts", "Logistics data", "Julia", "Vehicle routing", "Experiment design"],
+      },
+      {
+        label: "移动/交付",
+        items: ["Swift", "SwiftUI", "WeatherKit", "Docker", "GitHub Actions", "Oracle deploy"],
       },
     ],
     education: {
-      school: "四川理工学院",
-      degree: "本科学士",
-      location: "四川",
-      period: "2014 - 2018",
+      school: "Technical University of Denmark (DTU)",
+      degree: "MSc, Mathematical Modelling and Computation / Operations-oriented thesis with Mover context",
+      location: "Denmark",
+      period: "2024 - 2026",
     },
   },
   en: {
-    pageTitle: "Resume",
+    pageTitle: "Resume Index",
     name: "Jiajia Zhang",
     summary:
-      "I started learning about code in middle school, majored in Computer Science and Technology in college, and have been working on web frontend and backend development since graduation. I have built web SaaS products, iOS apps, and Electron desktop apps, and have worked with technologies and tools such as TypeScript, Next.js, SwiftUI, Electron, MongoDB, and Docker. I am enthusiastic about exploring AI-assisted programming and have even tried building complete products with AI without writing a single line of code.",
+      "DTU MSc student and product-minded builder targeting junior/graduate roles around internal tools, AI workflow control planes, iOS/SwiftUI products, data-quality cockpits, and optimization-backed decision support. Strongest fit: teams that need engineering implementation, product judgment, operational thinking, and evidence-based communication.",
     imageDescription:
-      "Web developer building SaaS, iOS, and Electron products with Codex, Claude Code, TypeScript, Next.js, and SwiftUI.",
+      "Jiajia Zhang building internal tools, AI workflows, SwiftUI products, data quality systems, and optimization decision support.",
     highlights: [],
     sectionLabels: {
-      preferences: "Preferences",
-      experience: "Experience",
-      skills: "Skills",
+      preferences: "Target Roles",
+      experience: "Project Evidence",
+      skills: "Capability Stack",
       education: "Education",
     },
     contacts: [
@@ -265,150 +245,123 @@ export const resumeContent = {
         value: "github.com/isjiajia01",
         href: "https://github.com/isjiajia01",
       },
+      {
+        kind: "linkedin",
+        label: "LinkedIn",
+        value: "Jiajia Zhang",
+        href: "https://www.linkedin.com/in/jiajia-zhang-0a8a40289",
+      },
     ],
     preferenceGroups: [
       {
         kind: "cities",
-        label: "Preferred Cities",
-        items: ["Shenzhen", "Chengdu", "Hangzhou", "Shanghai"],
+        label: "Location",
+        items: ["Denmark", "Copenhagen", "Hybrid/Remote", "EU-facing teams"],
       },
       {
         kind: "industries",
-        label: "Preferred Industries",
-        items: ["AI", "Internet", "Film & TV", "Music", "Education"],
+        label: "Work Context",
+        items: ["Internal tools", "Operations", "Support automation", "Logistics", "Data quality"],
       },
       {
         kind: "roles",
-        label: "Preferred Roles",
-        items: [
-          "Web Frontend Developer",
-          "Web Full-stack Developer",
-          "Background Actor",
-        ],
+        label: "Roles",
+        items: ["Junior Full-stack", "AI Workflow", "Data/Operations Analyst", "Technical Graduate"],
       },
     ],
     experiences: [
       {
-        role: "Independent Developer",
+        role: "Portfolio Builder / Product-minded Engineer",
         organization: "Personal Projects",
-        period: "2022 - Present",
+        location: "Copenhagen",
+        period: "2025 - Present",
         summary:
-          "Working on independent products, mainly focused on iOS apps and web applications.",
+          "Built job-facing portfolio systems around support automation, AI workflows, data quality, iOS products, and personal workflow systems. The emphasis is not feature volume, but clear problem framing, evidence, boundaries, and deployable artifacts.",
         projects: [
           {
-            name: "Echobell",
-            note: "echobell.one",
-            href: "https://echobell.one",
+            name: "OpsDesk",
+            note: "AI support / operations workflow demo",
+            href: "https://jobops.zhangjiajia.me/opsdesk",
             description:
-              "Sends notifications or phone reminders to mobile devices through Webhook / Email.",
-            stack: ["Swift", "TypeScript", "Cloudflare"],
+              "Built a support/operations desk with queues, evidence packages, draft replies, approval gates, feedback memory, and audit replay. Demonstrates bounded AI, human-in-the-loop workflow, traceability, and evaluation thinking.",
+            stack: ["Next.js", "TypeScript", "Postgres", "Docker", "AI workflow design"],
           },
           {
-            name: "Dippod",
-            note: "dippod.com",
-            href: "https://dippod.com",
+            name: "Cargo Guard",
+            note: "Data quality cockpit",
             description:
-              "Turn anything into clear, structured knowledge points. Learn them fast and review them at the right time.",
-            stack: ["TypeScript", "Next.js"],
+              "Created a lightweight data-quality cockpit for synthetic logistics shipment events: contracts, freshness/completeness/range/duplicate checks, ETA drift, and owner/severity/action routing.",
+            stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard"],
           },
           {
-            name: "Spark Memos",
-            note: "sparkmemos.com",
-            href: "https://sparkmemos.com",
-            description: "A local-first short notes app for iOS.",
-            stack: ["Swift", "SwiftUI"],
-          },
-          {
-            name: "CassetteOne",
-            note: "cassette.one",
-            href: "https://cassette.one",
+            name: "Nimbus Weather Journal",
+            note: "SwiftUI / iOS product",
+            href: "https://github.com/isjiajia01/10.01_Nimbus",
             description:
-              "A cassette-style white noise and music player for iOS.",
-            stack: ["Swift", "SwiftUI"],
-          },
-          {
-            name: "Youmin CO",
-            note: "youmin.co",
-            href: "https://youmin.co",
-            description: "An online community for digital nomads.",
-            stack: ["TypeScript", "Next.js", "Cloudflare"],
-          },
-          {
-            name: "onei.ai",
-            href: "https://onei.ai",
-            description: "An AI directory website.",
-            stack: ["TypeScript", "Next.js", "Cloudflare"],
+              "Built and structured SwiftUI weather-journal features across weather data, widget/shared settings, radar/wind features, moon illumination, and fallback behavior.",
+            stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets"],
           },
         ],
       },
       {
-        role: "Web Frontend Engineer",
-        organization: "Chengdu Mufan Tech",
-        location: "Chengdu",
-        period: "2018 - 2022",
+        role: "MSc Thesis / Optimization Research",
+        organization: "DTU × Mover",
+        location: "Denmark",
+        period: "2025 - 2026",
         summary:
-          "Worked on web frontend and backend development, with some exposure to iOS and Android app development.",
+          "Worked on a Mover-context depot-aware rolling decomposition thesis for multi-day last-mile planning under operational stress, focusing on feasibility, runtime budgets, fallback behavior, and guarded search.",
         projects: [
           {
-            name: "Makeflow",
-            note: "makeflow.com",
-            href: "https://makeflow.com",
+            name: "Depot-aware rolling decision support",
+            note: "Last-mile planning",
+            href: undefined,
             description:
-              "A workflow-based project collaboration tool. Contributed to the web frontend/backend, mobile packaging, and production deployment.",
-            stack: ["TypeScript", "React", "MongoDB"],
+              "Designed and evaluated rolling architecture, Pareto guards, SDAP runtime framing, and depot-pressure search, separating operational feasibility, repeatability, and academic search-depth evidence.",
+            stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design"],
           },
+        ],
+      },
+      {
+        role: "Industry / Coursework Foundation",
+        organization: "Dehui, Deloitte, DTU, GDUT",
+        location: "China / Denmark",
+        period: "2018 - 2026",
+        summary:
+          "Earlier development and coursework foundation: Java/Spring backend, JavaScript/Vue frontend, computer-science and industrial-engineering background, plus DTU training in data, optimization, and systems modeling.",
+        projects: [
           {
-            name: "Todostack",
+            name: "Backend / frontend foundation",
+            href: undefined,
             description:
-              "A keyboard-friendly desktop Todo app with online task assignment. Built the desktop app features and backend requirements independently.",
-            stack: ["TypeScript", "React", "Electron", "MongoDB"],
-          },
-          {
-            name: "FWAlert",
-            note: "fwalert.com",
-            href: "https://fwalert.com",
-            description:
-              "A notification product that sends phone calls, SMS, and other alerts through Webhook / Email. Delivered most of the feature work and built the iOS / Android apps.",
-            stack: ["TypeScript", "React", "Swift", "Kotlin", "MongoDB"],
-          },
-          {
-            name: "Dingshao",
-            note: "dingshao.cn",
-            href: "https://dingshao.cn",
-            description:
-              "A community-driven push notification platform. Contributed to the web frontend/backend and mobile app packaging.",
-            stack: ["TypeScript", "React", "Capacitor", "MongoDB"],
+              "Practical foundation across Java/Spring, JavaScript/Vue, SQL/API work, and engineering coursework for junior full-stack, internal-tools, and business-systems roles.",
+            stack: ["Java", "Spring", "JavaScript", "Vue", "SQL", "REST APIs"],
           },
         ],
       },
     ],
     skillGroups: [
       {
-        label: "Used Often",
-        items: [
-          "TypeScript",
-          "React",
-          "Next.js",
-          "Swift",
-          "SwiftUI",
-          "Cloudflare",
-          "GitHub",
-        ],
+        label: "Engineering",
+        items: ["TypeScript", "Next.js", "React", "Node.js", "Python", "Java/Spring", "SQL", "REST APIs"],
       },
       {
-        label: "Worked With",
-        items: ["Docker", "Figma", "Electron", "MongoDB"],
+        label: "Product / Systems",
+        items: ["Internal tools", "Workflow design", "Approval gates", "Audit/replay", "Feedback loops"],
       },
       {
-        label: "Familiar With",
-        items: ["Kotlin", "Go"],
+        label: "Data / Optimization",
+        items: ["Data quality", "JSON contracts", "Logistics data", "Julia", "Vehicle routing", "Experiment design"],
+      },
+      {
+        label: "Mobile / Delivery",
+        items: ["Swift", "SwiftUI", "WeatherKit", "Docker", "GitHub Actions", "Oracle deploy"],
       },
     ],
     education: {
-      school: "Sichuan University of Science and Engineering",
-      degree: "Bachelor's Degree",
-      location: "Sichuan",
-      period: "2014 - 2018",
+      school: "Technical University of Denmark (DTU)",
+      degree: "MSc, Mathematical Modelling and Computation / Operations-oriented thesis with Mover context",
+      location: "Denmark",
+      period: "2024 - 2026",
     },
   },
-} satisfies Record<"zh" | "en", ResumeContent>;
+};

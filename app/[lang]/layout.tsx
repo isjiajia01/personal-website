@@ -23,8 +23,6 @@ export async function generateMetadata(
   if (!dictionaryKeys.includes(params.lang as any)) return {};
   const dictionary = await getDictionary(params.lang);
 
-  const feedBase = params.lang === "zh" ? "/feed/zh" : "/feed";
-
   return {
     metadataBase: new URL(dictionary.meta.baseUrl),
     title: dictionary.meta.websiteName,
@@ -58,13 +56,6 @@ export async function generateMetadata(
     },
     alternates: {
       canonical: new URL(dictionary.urls.home, dictionary.meta.baseUrl).href,
-      types: {
-        "application/rss+xml": [
-          { url: `${feedBase}`, title: `${dictionary.meta.websiteName} - All` },
-          { url: `${feedBase}/tech`, title: `${dictionary.meta.websiteName} - Tech` },
-          { url: `${feedBase}/life`, title: `${dictionary.meta.websiteName} - Life` },
-        ],
-      },
       languages: await getAlternateLanguages(
         (dictionary) => dictionary.urls.home,
       ),
@@ -92,18 +83,16 @@ export default async function RootLayout(
   const printerShellProps = {
     labels: {
       home: dictionary.labels.home,
-      posts: dictionary.labels.posts,
-      life: dictionary.labels.life,
       works: dictionary.labels.works,
+      resume: dictionary.labels.resume,
       about: dictionary.labels.about,
       brandName: dictionary.labels.brandName,
       brandTagline: dictionary.labels.brandTagline,
     },
     urls: {
       home: dictionary.urls.home,
-      posts: dictionary.urls.posts,
-      life: dictionary.urls.life,
       works: dictionary.urls.works,
+      resume: dictionary.urls.resume,
       about: dictionary.urls.about,
     },
   };

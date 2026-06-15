@@ -11,6 +11,7 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import {
   RiApps2Line as BriefcaseIcon,
   RiBookOpenLine as BookOpenIcon,
+  RiLinkedinBoxLine as LinkedInIcon,
   RiMailLine as MailIcon,
   RiPriceTag3Line as TagIcon,
   RiSendPlaneLine as SendPlaneIcon,
@@ -30,6 +31,7 @@ const contactIcons = {
   website: WindowIcon,
   email: MailIcon,
   github: SiGithub,
+  linkedin: LinkedInIcon,
 } as const;
 
 export async function generateMetadata(

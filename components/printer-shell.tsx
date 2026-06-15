@@ -651,18 +651,16 @@ interface PrinterShellProps {
   dictionary: {
     labels: {
       home: string;
-      posts: string;
-      life: string;
       works: string;
+      resume: string;
       about: string;
       brandName: string;
       brandTagline: string;
     };
     urls: {
       home: string;
-      posts: string;
-      life: string;
       works: string;
+      resume: string;
       about: string;
     };
   };
@@ -700,9 +698,8 @@ export default function PrinterShell({
 
   const navItems = [
     { label: dictionary.labels.home, href: dictionary.urls.home },
-    { label: dictionary.labels.life, href: dictionary.urls.life },
-    { label: dictionary.labels.posts, href: dictionary.urls.posts },
     { label: dictionary.labels.works, href: dictionary.urls.works },
+    { label: dictionary.labels.resume, href: dictionary.urls.resume },
     { label: dictionary.labels.about, href: dictionary.urls.about },
   ];
 

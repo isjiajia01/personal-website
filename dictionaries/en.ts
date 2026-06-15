@@ -1,64 +1,38 @@
 import {
-  RiCameraLine as CameraIcon,
-  RiGamepadLine as GamepadIcon,
+  RiLinkedinBoxLine as LinkedInIcon,
   RiMailLine as EnvelopeIcon,
   RiSendPlaneLine as PaperAirplaneIcon,
 } from "@remixicon/react";
-import {
-  SiBlender,
-  SiGithub,
-  SiSketch,
-  SiSwift,
-  SiTypescript,
-  SiX,
-} from "@icons-pack/react-simple-icons";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 
-import AssisChat from "../public/static/assischat.webp";
-import lofyee from "../public/static/lofyee.webp";
-import subnooc from "../public/static/subnooc.webp";
-import youminco from "../public/static/youminco.webp";
-import SparkMemosLogo from "../public/static/sparkmemos.webp";
-import CassetteOneLogo from "../public/static/cassette-one.webp";
-import echobellLogo from "../public/static/echobell.webp";
-import dippodLogo from "../public/static/dippod.webp";
-import raycast from "../public/images/tools/raycast.webp";
-import orbstack from "../public/images/tools/orbstack.webp";
-import cleanshot from "../public/images/tools/cleanshot.webp";
-import tableplus from "../public/images/tools/tableplus.webp";
-import httpie from "../public/images/tools/httpie.webp";
-import shots from "../public/images/tools/shots.webp";
-import astro from "../public/images/tools/astro.webp";
-import wise from "../public/images/tools/wise.webp";
 
 const dictionary = {
   meta: {
     baseUrl: "https://me.zhangjiajia.me",
     websiteName: "Jiajia Zhang",
-    motto: "Systems, AI workflows, and internal products.",
+    motto: "Junior product-minded builder for internal tools, AI workflows, and decision systems.",
     mottos: [
-      "I build the operating layer for complex work.",
-      "Product systems, AI workflows, and decision tools that make ambiguity easier to act on.",
+      "I turn messy operations into reviewable tools.",
+      "Internal products, AI workflow guardrails, and decision support — with evidence, not hype.",
+      "A portfolio for roles around full-stack products, support automation, data quality, and operations systems.",
     ],
     bio: `
-A systems-minded product builder based in Copenhagen.
+A Copenhagen-based MSc student at DTU, building practical systems for complex work.
 
-I work across internal tools,
-AI workflow control planes,
-iOS product surfaces,
-and optimization-backed decision support.
-
-I like small systems with visible evidence,
-safety gates, and calm interfaces.
+My strongest work sits between software engineering, product judgment, operations, data quality, and AI-assisted workflows.
     `,
     fillKeywords(keywords?: string[]): string[] {
       return [
         "Jiajia Zhang",
-        "AI workflows",
+        "full-stack developer",
         "internal tools",
-        "product systems",
-        "decision support",
+        "AI workflows",
+        "support automation",
+        "data quality",
+        "operations systems",
+        "iOS SwiftUI",
+        "optimization",
         "portfolio",
-        "personal website",
         ...(keywords ?? []),
       ];
     },
@@ -66,238 +40,144 @@ safety gates, and calm interfaces.
   urls: {
     home: "/en",
     works: "/en/works",
-    posts: "/en/posts",
-    life: "/en/life",
+    resume: "/en/resume",
     about: "/en/about",
-
-    shareToX(title: string, postLink: string) {
-      return `https://twitter.com/share?text=${encodeURIComponent(
-        `I am reading ${title.toLocaleUpperCase()} @isjiajia01`,
-      )}&url=${encodeURIComponent(`https://me.zhangjiajia.me${postLink}`)}`;
-    },
   },
   labels: {
     home: "Home",
-    works: "Works",
-    posts: "Tech",
-    life: "Life",
+    works: "Work",
+    resume: "Resume",
     about: "About",
-    latestPosts: "Latest",
-    latestTech: "Tech",
-    latestLife: "Life",
-    noocWorks: "Jiajia's Works",
-    recommended: "Recommended",
-    activity: "Activity",
-    doing: "Doing",
-    playing: "Playing",
-    contactMe: "Contact Me",
-    toc: "Table of Contents",
-    categories: "Categories",
-    featured: "Featured",
-    archive: "Archive",
-    shareTo: "Share to: ",
-    subnooc: "Notes",
+    featured: "Role Evidence",
+    archive: "Supporting Proof",
     brandName: "JIAJIA",
-    brandTagline: "Jiajia Zhang",
+    brandTagline: "Work Portfolio",
     notFoundStatus: "Paper Tray Empty",
     notFoundTitle: "Out of Paper",
     notFoundSubtitle: "Please insert paper correctly to print content.",
-    notFoundButton: "\u2190 Print Home",
-    notFoundError: "ERR 404 \u00b7 PAPER_NOT_FOUND",
+    notFoundButton: "← Print Home",
+    notFoundError: "ERR 404 · PAPER_NOT_FOUND",
     printedOn: "Printed on",
-    reading: "Recent Reading",
-    films: "Recent Films",
-    music: "Recent Listening",
-    suggestions: "Suggestions",
+    noocWorks: "Selected work, organized by the roles it helps me explain.",
     aboutTitle: "About",
-    aboutSubtitle: "Systems, AI workflows, and internal products",
-    entries(count: number) {
-      return `${count} ${count === 1 ? "entry" : "entries"}`;
-    },
+    aboutSubtitle: "Product-minded full-stack builder for internal tools and workflow systems",
+    focus: "Current Focus",
+    evidence: "Evidence",
+    roleFit: "Role Fit",
+    stack: "Stack",
+    openProject: "Open",
+    contactMe: "Contact",
     icon(label: string) {
       return `Icon for ${label}`;
     },
   },
-  tools: [
-    {
-      name: "Raycast",
-      summary:
-        "Raycast is a blazingly fast, totally extendable launcher for macOS.",
-      link: "https://raycast.com/?via=nooc",
-      color: "orange",
-      icon: raycast,
-      rating: 5,
-      platform: "macOS",
-      pricing: "freemium",
-    },
-    {
-      name: "OrbStack",
-      summary:
-        "OrbStack is the fast, light, and easy way to run Docker containers and Linux.",
-      link: "https://orbstack.dev",
-      color: "indigo",
-      icon: orbstack,
-      rating: 5,
-      platform: "macOS",
-      pricing: "freemium",
-    },
-    {
-      name: "CleanShot",
-      summary:
-        "CleanShot X provides over 50 features making it the ultimate screen capturing tool.",
-      link: "https://cleanshot.sjv.io/9LxN54",
-      color: "blue",
-      icon: cleanshot,
-      rating: 4.5,
-      platform: "macOS",
-      pricing: "paid",
-    },
-    {
-      name: "Wise",
-      summary:
-        "Wise is a cross-border payment/transfer tool with favorable exchange rates and a user-friendly app interface.",
-      link: "https://wise.com/invite/ihpc/1q2ntua",
-      color: "green",
-      icon: wise,
-      rating: 5,
-      platform: "Web, iOS, Android",
-      pricing: "free",
-    },
-    {
-      name: "HTTPie",
-      summary:
-        "HTTPie is a command-line HTTP client that makes APIs simple and intuitive.",
-      link: "https://httpie.io",
-      color: "green",
-      icon: httpie,
-      rating: 4.5,
-      platform: "Desktop, Web",
-      pricing: "free",
-    },
-    {
-      name: "Shots",
-      summary:
-        "Shots helps you create beautiful presentations from screen captures.",
-      link: "https://shots.so",
-      color: "pink",
-      icon: shots,
-      rating: 4.5,
-      platform: "Web",
-      pricing: "free",
-    },
-    {
-      name: "TablePlus",
-      summary: "TablePlus is a powerful GUI tool for database management.",
-      link: "https://tableplus.com",
-      image: AssisChat,
-      color: "yellow",
-      icon: tableplus,
-      rating: 4,
-      platform: "Desktop, iOS",
-      pricing: "freemium",
-    },
-    {
-      name: "Astro",
-      summary: "Astro is an ASO keywords tool for App Store optimization.",
-      link: "https://tryastro.app?aff=kMo5R",
-      image: SparkMemosLogo,
-      color: "purple",
-      icon: astro,
-      rating: 3.5,
-      platform: "macOS",
-      pricing: "paid",
-    },
-  ],
-  playingItems: [
-    {
-      name: "TypeScript",
-      icon: SiTypescript,
-      summary:
-        "My most commonly used programming language, often used with Node / React / Tailwind, etc.",
-      color: "blue",
-    },
-    {
-      name: "Swift",
-      icon: SiSwift,
-      summary:
-        "Recently learning Apple's ecosystem programming, commonly used with SwiftUI.",
-      color: "amber",
-    },
-    {
-      name: "Sketch",
-      icon: SiSketch,
-      summary:
-        "Occasionally dabble in design, but not very proficient. Now using Figma more often.",
-      color: "yellow",
-    },
-    {
-      name: "Blender",
-      icon: SiBlender,
-      summary:
-        "Tried learning many times, but always gave up after following tutorials.",
-      color: "orange",
-    },
-    {
-      name: "Switch",
-      icon: GamepadIcon,
-      summary:
-        "I have a Switch, but it has a lot of dust on it, and I also have a PS4 with even more dust.",
-      color: "rose",
-    },
-    {
-      name: "Photography",
-      icon: CameraIcon,
-      summary:
-        "I have a Sony a7c, but I don't know if the battery still has power.",
-      color: "cyan",
-    },
-  ],
+  homepage: {
+    headline: "I build small, grounded systems for teams that need better workflow, evidence, and decisions.",
+    subline:
+      "Looking for junior/graduate roles around full-stack product engineering, AI workflow adoption, operations tooling, data quality, and analytical internal systems.",
+    proofPoints: [
+      "Full-stack portfolio with deployed internal-tool demos",
+      "AI workflow control plane with approval, audit, feedback memory, and replay",
+      "SwiftUI/iOS product work with backend-facing weather data features",
+      "Optimization thesis with Mover context for last-mile planning decisions",
+    ],
+    roleTargets: [
+      "Junior Full-stack / Backend-leaning Product Engineer",
+      "AI Workflow / Internal Tools Builder",
+      "Data / Operations Analyst with engineering depth",
+      "Technical Graduate / Business Systems role",
+    ],
+    note:
+      "The site stays a little playful because I like tools with personality — but the content is organized for hiring conversations.",
+  },
   works: [
     {
       name: "OpsDesk",
-      summary: "AI workflow control plane for support, finance, approvals, audit replay, and feedback memory.",
+      summary:
+        "An AI-native support and operations desk that turns customer cases into reviewable evidence, decisions, drafts, approvals, and audit trails.",
+      roleFit: "Internal tools · AI workflow adoption · support automation · product engineering",
+      evidence: [
+        "Deployed demo with support queue, review packages, approval gates, feedback memory, and replay",
+        "Shows how I think about safe AI: bounded suggestions, human approval, auditability, and evaluation loops",
+        "Useful for explaining customer-support automation and fintech/operations guardrails",
+      ],
+      stack: ["Next.js", "TypeScript", "Postgres", "Docker", "AI workflow design", "Oracle deploy"],
       link: "https://jobops.zhangjiajia.me/opsdesk",
-      image: CassetteOneLogo,
       color: "blue",
       primary: true,
     },
     {
-      name: "Nimbus",
-      summary: "Weather journal product across SwiftUI, backend aggregation, radar, and fallback behavior.",
+      name: "Nimbus Weather Journal",
+      summary:
+        "A polished iOS weather-journal product with SwiftUI surfaces, widget/shared settings, weather data flows, radar/wind features, and fallback behavior.",
+      roleFit: "iOS · product engineering · API-backed consumer app · quality/release discipline",
+      evidence: [
+        "TestFlight/release-lane style project with CI-quality-gate thinking",
+        "Moon/illumination and weather features show feature separation, service layers, and UI state handling",
+        "Good proof for SwiftUI, product polish, and backend/API integration discussions",
+      ],
+      stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets", "Backend APIs"],
       link: "https://github.com/isjiajia01/10.01_Nimbus",
-      image: echobellLogo,
       color: "cyan",
       primary: true,
     },
     {
-      name: "Mover Thesis",
-      summary: "Depot-aware rolling decomposition and guarded search for multi-day last-mile planning.",
+      name: "DTU × Mover Thesis",
+      summary:
+        "A depot-aware rolling decomposition and guarded search framework for multi-day last-mile vehicle routing under operational stress.",
+      roleFit: "Optimization · decision support · logistics analytics · operations research",
+      evidence: [
+        "Connects academic modeling with operational constraints, runtime budgets, and fallback decisions",
+        "Frames solver behavior through evidence, safety guards, and benchmark families rather than black-box claims",
+        "Useful for analytics, planning, supply-chain, and decision-support roles",
+      ],
+      stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Data analysis"],
       link: "#",
-      image: dippodLogo,
       color: "orange",
-      primary: true,
-    },
-    {
-      name: "Life OS",
-      summary: "Personal operating system for memory, workflows, project tracking, and automation.",
-      link: "#",
-      image: youminco,
-      color: "green",
       primary: true,
     },
     {
       name: "Cargo Guard",
-      summary: "Data quality cockpit for logistics events, contracts, checks, and owner routing.",
+      summary:
+        "A lightweight data-quality cockpit for logistics events: contracts, freshness/completeness checks, ETA drift, severity routing, and owner actions.",
+      roleFit: "Data quality · DataOps · logistics analytics · governance tooling",
+      evidence: [
+        "Turns raw shipment-event issues into contracts, severity, owners, and next actions",
+        "Designed as portfolio proof for data quality and AI governance roles, not as fake enterprise production",
+        "Shows practical data-product thinking: checks, routing, dashboard, and operational language",
+      ],
+      stack: ["Python", "JSON contracts", "Data validation", "HTML dashboard", "Logistics data"],
       link: "#",
-      image: AssisChat,
       color: "yellow",
+      primary: true,
+    },
+    {
+      name: "Life-OS / Personal Workflow System",
+      summary:
+        "A personal operating system for project memory, application tracking, workflow routing, and AI-assisted work with verification habits.",
+      roleFit: "Operations systems · knowledge management · AI-assisted workflows",
+      evidence: [
+        "Shows how I structure work across job applications, projects, thesis evidence, and deployment notes",
+        "Relevant for roles that need systematic execution, not just coding tasks",
+        "Keeps source-of-truth documents, logs, and reusable workflows instead of scattered notes",
+      ],
+      stack: ["Markdown", "Automation", "AI agents", "Workflow design", "Git"],
+      link: "#",
+      color: "green",
       primary: false,
     },
     {
-      name: "Personal Website",
-      summary: "This printed personal index, rebuilt from the nooc.me codebase with permission.",
+      name: "This Website",
+      summary:
+        "A printer-paper portfolio adapted from the nooc.me codebase and reshaped into a compact, job-facing personal index.",
+      roleFit: "Frontend polish · content systems · deployment hygiene",
+      evidence: [
+        "Preserves a distinctive visual shell while reorganizing the content around hiring conversations",
+        "Static-export Next.js site deployed through GitHub Actions to a personal Oracle host",
+        "Shows taste, speed, and willingness to iterate from feedback",
+      ],
+      stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
       link: "https://me.zhangjiajia.me",
-      image: SparkMemosLogo,
       color: "rose",
       primary: false,
     },
@@ -308,6 +188,12 @@ safety gates, and calm interfaces.
       name: "@isjiajia01",
       link: "https://github.com/isjiajia01",
       icon: SiGithub,
+    },
+    {
+      label: "LinkedIn",
+      name: "Jiajia Zhang",
+      link: "https://www.linkedin.com/in/jiajia-zhang-0a8a40289",
+      icon: LinkedInIcon,
     },
     {
       label: "Email",
@@ -322,179 +208,23 @@ safety gates, and calm interfaces.
       icon: PaperAirplaneIcon,
     },
   ],
-  postAdvertisements: [
-    {
-      title: "OpsDesk",
-      description: "AI workflow control plane with evidence, approval gates, audit replay, and feedback memory.",
-      icon: echobellLogo,
-      link: "https://jobops.zhangjiajia.me/opsdesk",
-    },
-    {
-      title: "Nimbus",
-      description: "Weather journal product built across SwiftUI, backend aggregation, radar, and fallback behavior.",
-      icon: SparkMemosLogo,
-      link: "https://github.com/isjiajia01/10.01_Nimbus",
-    },
-  ],
-  archive: {
-    reading: [
-      {
-        title: "The Unbearable Lightness of Being",
-        summary: "When existence is light, how should we face it?",
-      },
-      {
-        title: "The Master and Margarita",
-        summary: "What is good, and what is evil?",
-      },
-      { title: "Life is Elsewhere", summary: "When poetry becomes a danger." },
-      {
-        title: "The Neapolitan Novels",
-        summary: "An epic novel about growth, friendship and love.",
-      },
-      {
-        title: "The Brothers Karamazov",
-        summary: "If we end evil by evil means, are we still good?",
-      },
-      {
-        title: "Netochka Nezvanova",
-        summary: "Some people drift further into fantasy, becoming dreamers.",
-      },
-      {
-        title: "Strait Is the Gate",
-        summary: "When faith collides with the secular world.",
-      },
-      {
-        title: "The Death of Ivan Ilyich",
-        summary: "A Tolstoy novella from his later years.",
-      },
-      { title: "Kon-Tiki", summary: "A wild journey to prove oneself." },
-      {
-        title: "The Submarine at Night",
-        summary: "A short story collection in a Borges-like style.",
-      },
-      {
-        title: "Make Something Wonderful",
-        summary: "A collection of Steve Jobs\' speeches and letters.",
-      },
-    ],
-    films: [
-      {
-        title: "When Life Gives You Tangerines",
-        summary: "A very good Korean drama.",
-      },
-      {
-        title: "Adventure Time",
-        summary: "The best way to learn English through a show.",
-      },
-      {
-        title: "Art of the Cosmos",
-        summary: "A long journey to the West seeking truth.",
-      },
-      {
-        title: "Monster",
-        summary: "A work by one of my favorite directors, Hirokazu Kore-eda.",
-      },
-      {
-        title: "The Simpsons",
-        summary: "Re-watching this animation that\'s older than me.",
-      },
-      {
-        title: "The Long Season",
-        summary: "My favorite Chinese drama in recent years.",
-      },
-      {
-        title: "Deep Sea",
-        summary: "Childlike wonder — I love this colorful art style.",
-      },
-    ],
-    music: [
-      {
-        title: "Sunset Rollercoaster",
-        summary: "A band with a strong vibe, perfect for vibe coding.",
-      },
-      {
-        title: "Chen Jingfei",
-        summary:
-          "Retro tunes and vocals paired with not monotonous arrangements.",
-      },
-      {
-        title: "Low Roar",
-        summary: "Ethereal and lonely sounds from Iceland.",
-      },
-      {
-        title: "Hedgehog",
-        summary: "Somehow manages to move me.",
-      },
-      {
-        title: "Sufjan Stevens",
-        summary: "Gentle and full of stories.",
-      },
-      {
-        title: "The Chairs",
-        summary: "Soft and flowing vocals and lyrics.",
-      },
-    ],
-    suggest: [
-      {
-        title: "Jiajia Zhang",
-        link: "https://nooc.me",
-        summary: "My personal website.",
-        advertisement: true,
-      },
-      {
-        title: "YouminCO",
-        link: "https://youmin.co",
-        summary: "A digital nomad community I built.",
-        advertisement: true,
-      },
-      {
-        title: "OneiAI",
-        link: "https://onei.ai",
-        summary: "An AI navigation site I built.",
-        advertisement: true,
-      },
-      {
-        title: "CassetteOne",
-        link: "https://cassette.one",
-        summary: "A retro cassette player I built.",
-        advertisement: true,
-      },
-      {
-        title: "Spark Memos",
-        link: "https://sparkmemos.com",
-        summary: "A short-note-taking app I built.",
-        advertisement: true,
-      },
-      {
-        title: "Echobell",
-        link: "https://echobell.one",
-        summary: "A notification app I built.",
-        advertisement: true,
-      },
-      {
-        title: "Dippod",
-        link: "https://dippod.com",
-        summary: "A podcast English-learning app I\'m building.",
-        advertisement: false,
-      },
-    ],
-  },
   aboutContent: `
-This is [Jiajia Zhang](https://me.zhangjiajia.me)'s personal index.
+This is a job-facing personal index for [Jiajia Zhang](https://me.zhangjiajia.me), based in Copenhagen and finishing an MSc at DTU.
 
-Updated around systems, products, AI workflows, decision support, and small tools that make work easier to operate.
+### What I am looking for
 
-### About Me
+Junior or graduate roles where product sense and engineering depth both matter: full-stack internal tools, AI workflow adoption, operations systems, data quality, planning analytics, and technical business systems.
 
-I am based in Copenhagen and work between product judgment and system depth.
+### How I work
 
-My strongest projects are practical systems: OpsDesk as an AI workflow control plane, Nimbus as a weather product surface, Cargo Guard as a data-quality cockpit, and my DTU/Mover thesis as optimization-backed decision support.
+I like starting from an operating problem rather than a technology label. What is the queue? What evidence does a human need? Where should automation stop? What needs to be logged, reviewed, replayed, or measured?
 
-I like work that starts from an operating problem, exposes evidence and tradeoffs, and leaves behind a calmer tool or workflow.
+### What this portfolio proves
 
-You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com) or on [GitHub](https://github.com/isjiajia01).
+OpsDesk shows AI workflow and support-automation thinking. Nimbus shows product polish and iOS/API implementation. Cargo Guard shows data-quality and governance language. My DTU/Mover thesis shows optimization-backed decision support. This site keeps the presentation light, but the project framing is intentionally practical.
+
+You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
   `,
-
 };
 
 export default dictionary;
