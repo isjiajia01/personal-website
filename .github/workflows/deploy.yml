@@ -133,12 +133,12 @@ jobs:
           set -euo pipefail
           remote="${DEPLOY_USER}@${DEPLOY_HOST}"
           ssh -p "$DEPLOY_PORT" "$remote" \
-            "chmod +x ~/${REMOTE_BUILD_DIR}/deploy-static-on-remote.sh && \
+            "chmod +x ~/${REMOTE_BUILD_DIR}/scripts/deploy-static-on-remote.sh && \
              REMOTE_BUILD_DIR='${REMOTE_BUILD_DIR}' \
              REMOTE_WEB_ROOT='${REMOTE_WEB_ROOT}' \
              SITE_HOST='${DEPLOY_SITE_HOST}' \
              DOCKER_IMAGE='node:20-bookworm' \
-             bash ~/${REMOTE_BUILD_DIR}/deploy-static-on-remote.sh"
+             bash ~/${REMOTE_BUILD_DIR}/scripts/deploy-static-on-remote.sh"
 
       - name: Verify deployed site
         shell: bash
