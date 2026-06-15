@@ -9,6 +9,7 @@ import {
   RiArchiveLine as ArchiveBoxIcon,
   RiApps2Line as BriefcaseIcon,
   RiExternalLinkLine as ExternalLinkIcon,
+  RiLineChartLine as AnalyticsIcon,
   RiShieldCheckLine as EvidenceIcon,
   RiStarLine as StarIcon,
   RiToolsLine as StackIcon,
@@ -55,6 +56,14 @@ export async function generateMetadata(
   };
 }
 
+function WorkMark({ name }: { name: string }) {
+  return (
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-lg font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
+      {name[0]}
+    </div>
+  );
+}
+
 function WorkCard({
   work,
   dictionary,
@@ -69,9 +78,7 @@ function WorkCard({
   const body = (
     <div className="group rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
       <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-lg font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
-          {work.name[0]}
-        </div>
+        <WorkMark name={work.name} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-mono text-sm font-semibold text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
@@ -145,8 +152,14 @@ export default async function WorksPage(
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
 
-  const primaryWorks = dictionary.works.filter((work) => work.primary);
-  const otherWorks = dictionary.works.filter((work) => !work.primary);
+  const byName = new Map(dictionary.works.map((work) => [work.name, work]));
+  const isWork = (work: (typeof dictionary.works)[number] | undefined): work is (typeof dictionary.works)[number] =>
+    Boolean(work);
+  const coreWorks = ["OpsDesk", "Cargo Guard", "Nimbus Weather Journal"].map((name) => byName.get(name)).filter(isWork);
+  const analyticalWorks = ["DTU × Mover Thesis"].map((name) => byName.get(name)).filter(isWork);
+  const supportingWorks = dictionary.works.filter(
+    (work) => !["OpsDesk", "Cargo Guard", "Nimbus Weather Journal", "DTU × Mover Thesis"].includes(work.name),
+  );
 
   return (
     <div>
@@ -168,13 +181,30 @@ export default async function WorksPage(
         }
       >
         <div className="flex flex-col gap-4">
-          {primaryWorks.map((work) => (
-            <WorkCard key={work.name} work={work} dictionary={dictionary} />
+          {coreWorks.map((work) => (
+            <WorkCard key={work!.name} work={work!} dictionary={dictionary} />
           ))}
         </div>
       </PrintedSection>
 
-      {otherWorks.length > 0 && (
+      <PrintedDivider style="dashed" />
+
+      <PrintedSection
+        label={
+          <span className="inline-flex items-center gap-1.5">
+            <AnalyticsIcon className="h-2.5 w-2.5" />
+            <span className="label-text">{dictionary.labels.analyticalProof}</span>
+          </span>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          {analyticalWorks.map((work) => (
+            <WorkCard key={work!.name} work={work!} dictionary={dictionary} />
+          ))}
+        </div>
+      </PrintedSection>
+
+      {supportingWorks.length > 0 && (
         <>
           <PrintedDivider style="dashed" />
           <PrintedSection
@@ -186,7 +216,7 @@ export default async function WorksPage(
             }
           >
             <div className="grid gap-3 sm:grid-cols-2">
-              {otherWorks.map((work) => (
+              {supportingWorks.map((work) => (
                 <WorkCard key={work.name} work={work} dictionary={dictionary} compact />
               ))}
             </div>

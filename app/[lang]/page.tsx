@@ -34,7 +34,9 @@ export default async function Home(
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
   const motto = getRandomMotto(dictionary);
-  const featuredWorks = dictionary.works.filter((work) => work.primary).slice(0, 4);
+  const featuredWorks = ["OpsDesk", "Cargo Guard", "Nimbus Weather Journal"]
+    .map((name) => dictionary.works.find((work) => work.name === name))
+    .filter((work): work is (typeof dictionary.works)[number] => Boolean(work));
 
   return (
     <div>
@@ -130,33 +132,39 @@ export default async function Home(
           </span>
         }
       >
-        <div className="grid gap-3 sm:grid-cols-2">
-          {featuredWorks.map((work) => (
-            <a
-              key={work.name}
-              href={work.link}
-              target="_blank"
-              rel="noopener"
-              className="group flex min-h-[132px] flex-col gap-3 rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-3 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-sm font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
-                  {work.name[0]}
-                </div>
-                <div className="min-w-0">
-                  <div className="font-mono text-sm font-medium text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
-                    {work.name}
+        <div className="grid gap-3">
+          {featuredWorks.map((work) => {
+            const card = (
+              <div className="group flex min-h-[132px] flex-col gap-3 rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-3 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-sm font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
+                    {work.name[0]}
                   </div>
-                  <div className="mt-0.5 line-clamp-1 font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/40">
-                    {work.roleFit}
+                  <div className="min-w-0">
+                    <div className="font-mono text-sm font-medium text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
+                      {work.name}
+                    </div>
+                    <div className="mt-0.5 line-clamp-1 font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/40">
+                      {work.roleFit}
+                    </div>
                   </div>
                 </div>
+                <p className="line-clamp-3 font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+                  {work.summary}
+                </p>
               </div>
-              <p className="line-clamp-3 font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
-                {work.summary}
-              </p>
-            </a>
-          ))}
+            );
+
+            if (work.link === "#") {
+              return <div key={work.name}>{card}</div>;
+            }
+
+            return (
+              <a key={work.name} href={work.link} target="_blank" rel="noopener" className="block">
+                {card}
+              </a>
+            );
+          })}
         </div>
         <Link
           href={dictionary.urls.works}

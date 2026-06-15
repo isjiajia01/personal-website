@@ -64,9 +64,9 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "简历索引",
     name: "Jiajia Zhang",
     summary:
-      "DTU 硕士，面向 junior/graduate 角色的 product-minded builder。项目集中在 internal tools、AI workflow control plane、iOS/SwiftUI 产品、数据质量 cockpit 和优化驱动的决策支持。适合需要工程实现、产品判断、运营流程理解和证据化沟通的岗位。",
+      "DTU 硕士，面向 junior product/full-stack 角色，主线是 internal tools、workflow automation with human review 和 operational decision support。最强证据是 OpsDesk、Cargo Guard 和 Nimbus；优化 thesis 作为 planning/analytics 深度补充。",
     imageDescription:
-      "Jiajia Zhang，做 internal tools、AI workflows、SwiftUI 产品、数据质量和优化决策支持。",
+      "Jiajia Zhang，做 internal tools、workflow automation、data-quality workflows、SwiftUI 产品和决策支持。",
     highlights: [],
     sectionLabels: {
       preferences: "求职方向",
@@ -109,12 +109,12 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       {
         kind: "industries",
         label: "业务场景",
-        items: ["Internal tools", "Operations", "Support automation", "Logistics", "Data quality"],
+        items: ["Internal tools", "Workflow automation", "Support operations", "Data quality"],
       },
       {
         kind: "roles",
         label: "岗位",
-        items: ["Junior Full-stack", "AI Workflow", "Data/Operations Analyst", "Technical Graduate"],
+        items: ["Junior Product Engineer", "Junior Full-stack", "Internal Tools Builder"],
       },
     ],
     experiences: [
@@ -124,14 +124,14 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
         location: "Copenhagen",
         period: "2025 - 现在",
         summary:
-          "围绕真实岗位场景做可打开、可解释的作品：支持自动化、AI 工作流、数据质量、iOS 产品和个人 workflow systems。重点不是堆功能，而是让招聘方面试时能看到问题定义、证据、边界和落地方式。",
+          "围绕真实岗位场景做可打开、可解释的作品：support automation、workflow systems、data-quality checks 和 iOS 产品实现。重点不是堆功能，而是让招聘方面试时能看到问题定义、证据、边界和实现选择。",
         projects: [
           {
             name: "OpsDesk",
             note: "AI support / operations workflow demo",
             href: "https://jobops.zhangjiajia.me/opsdesk",
             description:
-              "构建支持/运营工作台：队列、证据包、草稿回复、审批门、反馈记忆、审计 replay。体现 bounded AI、human-in-the-loop、可复盘和评估思路。",
+              "构建支持/运营工作台：队列、证据包、草稿回复、审批门、反馈记忆、审计 replay。体现 workflow automation with human review、可复盘和评估思路。",
             stack: ["Next.js", "TypeScript", "Postgres", "Docker", "AI workflow design"],
           },
           {
@@ -170,7 +170,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
         ],
       },
       {
-        role: "Industry / Coursework Foundation",
+        role: "Earlier Engineering Foundation",
         organization: "Dehui, Deloitte, DTU, GDUT",
         location: "China / Denmark",
         period: "2018 - 2026",
@@ -216,9 +216,9 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "Resume Index",
     name: "Jiajia Zhang",
     summary:
-      "DTU MSc student and product-minded builder targeting junior/graduate roles around internal tools, AI workflow control planes, iOS/SwiftUI products, data-quality cockpits, and optimization-backed decision support. Strongest fit: teams that need engineering implementation, product judgment, operational thinking, and evidence-based communication.",
+      "DTU MSc student targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, Cargo Guard, and Nimbus; optimization thesis adds planning/analytics depth.",
     imageDescription:
-      "Jiajia Zhang building internal tools, AI workflows, SwiftUI products, data quality systems, and optimization decision support.",
+      "Jiajia Zhang building internal tools, workflow automation, data-quality workflows, SwiftUI products, and decision support.",
     highlights: [],
     sectionLabels: {
       preferences: "Target Roles",
@@ -261,12 +261,12 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       {
         kind: "industries",
         label: "Work Context",
-        items: ["Internal tools", "Operations", "Support automation", "Logistics", "Data quality"],
+        items: ["Internal tools", "Workflow automation", "Support operations", "Data quality"],
       },
       {
         kind: "roles",
         label: "Roles",
-        items: ["Junior Full-stack", "AI Workflow", "Data/Operations Analyst", "Technical Graduate"],
+        items: ["Junior Product Engineer", "Junior Full-stack", "Internal Tools Builder"],
       },
     ],
     experiences: [
@@ -276,14 +276,14 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
         location: "Copenhagen",
         period: "2025 - Present",
         summary:
-          "Built job-facing portfolio systems around support automation, AI workflows, data quality, iOS products, and personal workflow systems. The emphasis is not feature volume, but clear problem framing, evidence, boundaries, and deployable artifacts.",
+          "Built job-facing portfolio systems around support automation, workflow systems, data-quality checks, and iOS product implementation. The emphasis is not feature volume, but clear problem framing, evidence, boundaries, and explainable implementation choices.",
         projects: [
           {
             name: "OpsDesk",
             note: "AI support / operations workflow demo",
             href: "https://jobops.zhangjiajia.me/opsdesk",
             description:
-              "Built a support/operations desk with queues, evidence packages, draft replies, approval gates, feedback memory, and audit replay. Demonstrates bounded AI, human-in-the-loop workflow, traceability, and evaluation thinking.",
+              "Built a support/operations desk with queues, evidence packages, draft replies, approval gates, feedback memory, and audit replay. Demonstrates workflow automation with human review, traceability, and evaluation thinking.",
             stack: ["Next.js", "TypeScript", "Postgres", "Docker", "AI workflow design"],
           },
           {
@@ -322,7 +322,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
         ],
       },
       {
-        role: "Industry / Coursework Foundation",
+        role: "Earlier Engineering Foundation",
         organization: "Dehui, Deloitte, DTU, GDUT",
         location: "China / Denmark",
         period: "2018 - 2026",
