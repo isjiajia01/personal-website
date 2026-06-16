@@ -1,5 +1,4 @@
 import { getDictionary } from "@/dictionaries";
-import Image from "next/image";
 import Link from "next/link";
 import {
   RiApps2Line as BriefcaseIcon,
@@ -43,35 +42,20 @@ export default async function Home(
     <div>
       <PrintedSection>
         <div className="flex flex-col gap-5">
-          <div className="relative">
-            <div className="max-w-2xl pr-0 sm:pr-24">
-              <PrintedLabel variant="accent">{dictionary.labels.roleFit}</PrintedLabel>
-              <h1 className="mt-4 font-serif text-2xl font-bold leading-tight tracking-tight text-printer-ink dark:text-printer-ink-dark sm:text-3xl">
-                Jiajia Zhang
-              </h1>
-              <p className="mt-3 font-serif text-sm leading-relaxed text-printer-ink dark:text-printer-ink-dark/80">
-                {dictionary.homepage.headline}
-              </p>
-              <p className="mt-2 font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
-                {dictionary.homepage.subline}
-              </p>
-              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-printer-ink-light dark:text-printer-ink-dark/40">
-                {motto}
-              </p>
-            </div>
-            <div className="mt-4 w-fit rotate-[3deg] border border-printer-ink/10 bg-white p-1.5 shadow-[0_2px_0_rgba(0,0,0,0.06)] sm:absolute sm:right-0 sm:top-1 sm:mt-0 sm:w-[86px] dark:border-white/10 dark:bg-printer-ink/80 dark:shadow-[0_2px_0_rgba(255,255,255,0.03)]">
-              <Image
-                src="/images/cat-sticker.jpg"
-                alt="Cat photo sticker"
-                width={86}
-                height={96}
-                className="block h-24 w-[86px] object-cover grayscale-[18%] sm:h-[96px]"
-                priority
-              />
-              <div className="pt-1 text-center font-mono text-[7px] uppercase tracking-[0.18em] text-printer-ink-light dark:text-printer-ink-dark/45">
-                tiny guard
-              </div>
-            </div>
+          <div>
+            <PrintedLabel variant="accent">{dictionary.labels.roleFit}</PrintedLabel>
+            <h1 className="mt-4 font-serif text-2xl font-bold leading-tight tracking-tight text-printer-ink dark:text-printer-ink-dark sm:text-3xl">
+              Jiajia Zhang
+            </h1>
+            <p className="mt-3 max-w-2xl font-serif text-sm leading-relaxed text-printer-ink dark:text-printer-ink-dark/80">
+              {dictionary.homepage.headline}
+            </p>
+            <p className="mt-2 max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+              {dictionary.homepage.subline}
+            </p>
+            <p className="mt-3 max-w-2xl font-mono text-[10px] uppercase tracking-[0.22em] text-printer-ink-light dark:text-printer-ink-dark/40">
+              {motto}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">

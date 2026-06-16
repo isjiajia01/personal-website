@@ -1120,6 +1120,21 @@ export default function PrinterShell({
         <div className="relative h-0 pointer-events-none" aria-hidden="true">
           <div className="printer-shell-bottom-shadow" />
         </div>
+        {/* Cat cutout sticker — floats outside the receipt paper in the side whitespace */}
+        <div className="pointer-events-none absolute -right-4 top-[126px] z-40 hidden translate-x-1/2 rotate-[7deg] select-none lg:block xl:-right-12" aria-hidden="true">
+          <Image
+            src="/images/cat-sticker-cutout.png"
+            alt=""
+            width={180}
+            height={203}
+            className="h-auto w-[150px] xl:w-[180px] [filter:drop-shadow(0_10px_16px_rgba(0,0,0,0.18))_drop-shadow(0_1px_0_rgba(255,255,255,0.7))] dark:[filter:drop-shadow(0_12px_18px_rgba(0,0,0,0.55))]"
+            priority
+          />
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-printer-ink-light shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark/45">
+            tiny guard
+          </div>
+        </div>
+
         {/* Printed paper output area — clipped so paper slides in from the slit */}
         <div className="printer-paper-wrap relative mx-3 sm:mx-10 -mt-[12px] z-20" style={{ clipPath: 'inset(0 -20px -56px -20px)' }}>
           <div className="paper-top-occlusion" aria-hidden="true" />
