@@ -1144,7 +1144,7 @@ export default function PrinterShell({
             priority
           />
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-printer-ink-light shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark/45">
-            floor manager
+            Ponyo
           </div>
         </div>
 
