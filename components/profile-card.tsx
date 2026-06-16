@@ -3,7 +3,7 @@
 import Card from "./card";
 import Image from "next/image";
 import { RiRefreshLine as ArrowPathRoundedSquareIcon } from "@remixicon/react";
-import avatar from "../public/static/avatar.webp";
+import profilePhoto from "../public/static/profile-photo.jpg";
 import FlippableCard from "./flippable-card";
 import { useCallback, useState } from "react";
 import classNames from "classnames";
@@ -28,7 +28,7 @@ export default function ProfileCard({
       className={classNames("relative", className)}
       front={
         <Card className="flex h-full flex-col items-center justify-center py-40 sm:py-20">
-          <Image className="h-16 w-16 rounded-full" src={avatar} alt="Avatar" />
+          <Image className="h-16 w-16 rounded-full object-cover" src={profilePhoto} alt="Jiajia Zhang" />
           <p className="relative mt-2 items-end text-xl">Jiajia</p>
           <p className="mt-2 opacity-60">{motto}</p>
 

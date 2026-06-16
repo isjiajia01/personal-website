@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import avatar from "../public/static/avatar.webp";
+import profilePhoto from "../public/static/profile-photo.jpg";
 import { usePathname, useRouter } from "next/navigation";
 import classNames from "classnames";
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -1042,8 +1042,8 @@ export default function PrinterShell({
                   <div className="absolute -inset-2 rounded-full bg-black/5 dark:bg-white/[0.08] shadow-inner" />
                   <Image
                     className="h-8 w-8 rounded-full ring-1 ring-black/10 dark:ring-white/[0.15] shadow-sm dark:shadow-[0_0_12px_rgba(100,120,255,0.1)] relative z-10"
-                    src={avatar}
-                    alt="Jiajia"
+                    src={profilePhoto}
+                    alt="Jiajia Zhang"
                     priority
                   />
                 </div>
