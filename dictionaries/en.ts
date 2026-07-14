@@ -106,6 +106,21 @@ My strongest work sits around internal tools, workflow automation with human rev
       primary: true,
     },
     {
+      name: "Denmark Flex Planner",
+      summary:
+        "A live, map-first decision-support tool for prioritizing Danish EV charging and local flexibility investments under budget, grid-zone, and regional constraints.",
+      roleFit: "Energy infrastructure · constrained optimization · data product",
+      evidence: [
+        "Combines Danish public EV, renewable, grid, and geospatial data into municipality-level planning evidence",
+        "Lets users compare scenarios and optimize a constrained investment portfolio with explainable municipality recommendations",
+        "Deployed FastAPI and Next.js product with a public interactive map, API health checks, and reproducible smoke tests",
+      ],
+      stack: ["Python", "FastAPI", "Next.js", "Public data", "Constrained optimization", "Oracle deploy"],
+      link: "https://flex.zhangjiajia.me",
+      color: "green",
+      primary: true,
+    },
+    {
       name: "Cargo Guard",
       summary:
         "A small Python demo that checks whether logistics data is complete, fresh, valid, and ready to trust before teams use it.",
@@ -205,7 +220,7 @@ I usually start from the operating problem. What is the queue? What does a revie
 
 ### Where I fit first
 
-I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Nimbus, and the DTU × Mover thesis are the best starting points; Cargo Guard is supporting proof for data-quality thinking.
+I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Nimbus, and the DTU × Mover thesis are the best starting points; Cargo Guard is supporting proof for data-quality thinking.
 
 This portfolio itself is also a small content-and-deployment project built with Next.js static export. You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
   `,

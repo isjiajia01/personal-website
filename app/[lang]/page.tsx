@@ -34,9 +34,7 @@ export default async function Home(
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
   const motto = getRandomMotto(dictionary);
-  const featuredWorks = ["OpsDesk", "Nimbus Weather Journal", "DTU × Mover Thesis"]
-    .map((name) => dictionary.works.find((work) => work.name === name))
-    .filter((work): work is (typeof dictionary.works)[number] => Boolean(work));
+  const featuredWorks = dictionary.works.filter((work) => work.primary);
 
   return (
     <div>

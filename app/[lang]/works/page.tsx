@@ -151,13 +151,8 @@ export default async function WorksPage(
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
 
-  const byName = new Map(dictionary.works.map((work) => [work.name, work]));
-  const isWork = (work: (typeof dictionary.works)[number] | undefined): work is (typeof dictionary.works)[number] =>
-    Boolean(work);
-  const coreWorks = ["OpsDesk", "Nimbus Weather Journal", "DTU × Mover Thesis"].map((name) => byName.get(name)).filter(isWork);
-  const supportingWorks = dictionary.works.filter(
-    (work) => !["OpsDesk", "Nimbus Weather Journal", "DTU × Mover Thesis"].includes(work.name),
-  );
+  const coreWorks = dictionary.works.filter((work) => work.primary);
+  const supportingWorks = dictionary.works.filter((work) => !work.primary);
 
   return (
     <div>

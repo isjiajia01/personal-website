@@ -105,6 +105,21 @@ const dictionary = {
       primary: true,
     },
     {
+      name: "Denmark Flex Planner",
+      summary:
+        "一个已上线的地图型决策支持工具，在预算、电网分区和区域约束下，为丹麦 EV 充电与本地灵活性投资确定优先级。",
+      roleFit: "能源基础设施 · 约束优化 · 数据产品",
+      evidence: [
+        "整合丹麦公开的 EV、可再生能源、电网和地理数据，形成 municipality-level 规划证据",
+        "支持比较不同情景，并在约束条件下优化投资组合，给出可解释的市镇级建议",
+        "已部署 FastAPI + Next.js 产品，包含公开交互地图、API health checks 和可复现 smoke tests",
+      ],
+      stack: ["Python", "FastAPI", "Next.js", "公开数据", "约束优化", "Oracle deploy"],
+      link: "https://flex.zhangjiajia.me",
+      color: "green",
+      primary: true,
+    },
+    {
       name: "Cargo Guard",
       summary:
         "一个小型 Python demo，用来检查物流数据是否完整、新鲜、有效，是否值得团队继续使用。",
@@ -204,7 +219,7 @@ const dictionary = {
 
 ### 我最适合什么团队
 
-我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Nimbus 和 DTU × Mover thesis 是最好的起点；Cargo Guard 只是 data-quality thinking 的补充证据。
+我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Nimbus 和 DTU × Mover thesis 是最好的起点；Cargo Guard 只是 data-quality thinking 的补充证据。
 
 这个 portfolio 本身也是一个 Next.js static export 的内容和部署小项目。可以通过 [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com)、[LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289) 或 [GitHub](https://github.com/isjiajia01) 联系我。
   `,
