@@ -4,10 +4,12 @@ export function generateStaticParams() {
 
 import { getDictionary } from "@/dictionaries";
 import { Metadata } from "next";
+import Link from "next/link";
 import { getAlternateLanguages } from "@/lib/metadata";
 import {
   RiArchiveLine as ArchiveBoxIcon,
   RiApps2Line as BriefcaseIcon,
+  RiArrowRightLine as ArrowRightIcon,
   RiExternalLinkLine as ExternalLinkIcon,
   RiShieldCheckLine as EvidenceIcon,
   RiStarLine as StarIcon,
@@ -73,6 +75,7 @@ function WorkCard({
   compact?: boolean;
 }) {
   const isPlaceholder = work.link === "#";
+  const isExternal = work.link.startsWith("http");
 
   const body = (
     <div className="portfolio-card-motion group rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
@@ -83,9 +86,12 @@ function WorkCard({
             <h2 className="font-mono text-sm font-semibold text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
               {work.name}
             </h2>
-            {!isPlaceholder && (
-              <ExternalLinkIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
-            )}
+            {!isPlaceholder &&
+              (isExternal ? (
+                <ExternalLinkIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
+              ) : (
+                <ArrowRightIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
+              ))}
           </div>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-printer-ink-light dark:text-printer-ink-dark/40">
             {work.roleFit}
@@ -136,10 +142,18 @@ function WorkCard({
 
   if (isPlaceholder) return body;
 
+  if (isExternal) {
+    return (
+      <a href={work.link} target="_blank" rel="noopener noreferrer" className="block">
+        {body}
+      </a>
+    );
+  }
+
   return (
-    <a href={work.link} target="_blank" rel="noopener" className="block">
+    <Link href={work.link} className="block">
       {body}
-    </a>
+    </Link>
   );
 }
 

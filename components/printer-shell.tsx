@@ -722,6 +722,10 @@ export default function PrinterShell({
     setDisplayLang(lang);
   }, [lang]);
 
+  useLayoutEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   const getStickerBounds = useCallback((sticker: StickerDefinition, shellRect: DOMRect) => {
     return getStickerBoundsForShell(sticker, shellRect.width, shellRect.height);
   }, []);
@@ -992,7 +996,7 @@ export default function PrinterShell({
   ];
 
   return (
-    <div className="min-h-screen page-grid flex flex-col items-center px-3 py-6 sm:py-10">
+    <div lang={lang} className="min-h-screen page-grid flex flex-col items-center px-3 py-6 sm:py-10">
       {/* Printer Body */}
       <div className="w-full max-w-3xl relative">
         {/* Snail crawling along the very top edge of the printer shell */}

@@ -157,10 +157,24 @@ export default async function Home(
               return <div key={work.name}>{card}</div>;
             }
 
+            if (work.link.startsWith("http")) {
+              return (
+                <a
+                  key={work.name}
+                  href={work.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  {card}
+                </a>
+              );
+            }
+
             return (
-              <a key={work.name} href={work.link} target="_blank" rel="noopener" className="block">
+              <Link key={work.name} href={work.link} className="block">
                 {card}
-              </a>
+              </Link>
             );
           })}
         </div>
