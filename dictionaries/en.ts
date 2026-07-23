@@ -16,7 +16,7 @@ const dictionary = {
       "A job-facing portfolio for hiring conversations — still printed on slightly playful paper.",
     ],
     bio: `
-A Copenhagen-based DTU MSc student building practical systems for complex operational work.
+A Copenhagen-based DTU MSc Engineering graduate in Mathematical Modelling and Computation, building practical systems for complex operational work.
 
 My strongest work sits around internal tools, workflow automation with human review, data-quality workflows, and decision-support systems.
     `,
@@ -318,7 +318,7 @@ My strongest work sits around internal tools, workflow automation with human rev
     },
   ],
   aboutContent: `
-This is a job-facing personal index for [Jiajia Zhang](https://me.zhangjiajia.me), based in Copenhagen and finishing an MSc at DTU.
+This is a job-facing personal index for [Jiajia Zhang](https://me.zhangjiajia.me), based in Copenhagen. I completed the DTU MSc Engineering degree in Mathematical Modelling and Computation in July 2026.
 
 ### Why these projects
 

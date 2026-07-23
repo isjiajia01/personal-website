@@ -16,7 +16,7 @@ const dictionary = {
       "这是一个求职向作品集，但仍然保留一点打印纸的个性。",
     ],
     bio: `
-我在哥本哈根，正在完成 DTU 硕士。
+我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
 
 主线不是“什么都做”，而是围绕 internal tools、workflow automation with human review、data-quality workflows 和 decision-support systems。
     `,
@@ -317,7 +317,7 @@ const dictionary = {
     },
   ],
   aboutContent: `
-这里是 [Jiajia Zhang](https://me.zhangjiajia.me) 的求职向个人索引。我在哥本哈根，正在完成 DTU 硕士。
+这里是 [Jiajia Zhang](https://me.zhangjiajia.me) 的求职向个人索引。我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
 
 ### 为什么是这些项目
 

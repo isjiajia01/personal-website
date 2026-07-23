@@ -64,7 +64,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "简历索引",
     name: "Jiajia Zhang",
     summary:
-      "DTU 硕士，面向 junior product/full-stack 角色，主线是 internal tools、workflow automation with human review 和 operational decision support。最强证据是 OpsDesk、Nimbus 和 DTU × Mover thesis；Cargo Guard 只是数据质量补充证据。",
+      "已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位，面向 junior product/full-stack 角色，主线是 internal tools、workflow automation with human review 和 operational decision support。最强证据是 OpsDesk、Nimbus 和 DTU × Mover thesis；Cargo Guard 只是数据质量补充证据。",
     imageDescription:
       "Jiajia Zhang，做 internal tools、workflow automation、data-quality workflows、SwiftUI 产品和决策支持。",
     highlights: [],
@@ -209,14 +209,14 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       school: "Technical University of Denmark (DTU)",
       degree: "MSc, Mathematical Modelling and Computation",
       location: "Denmark",
-      period: "2024 - 2026",
+      period: "Sep 2023 - Jul 2026",
     },
   },
   en: {
     pageTitle: "Resume Index",
     name: "Jiajia Zhang",
     summary:
-      "DTU MSc student targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, Nimbus, and the DTU × Mover thesis; Cargo Guard is supporting data-quality evidence.",
+      "DTU MSc Engineering graduate in Mathematical Modelling and Computation, with the degree completed in July 2026. Targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, Nimbus, and the DTU × Mover thesis; Cargo Guard is supporting data-quality evidence.",
     imageDescription:
       "Jiajia Zhang building internal tools, workflow automation, data-quality workflows, SwiftUI products, and decision support.",
     highlights: [],
@@ -361,7 +361,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       school: "Technical University of Denmark (DTU)",
       degree: "MSc, Mathematical Modelling and Computation",
       location: "Denmark",
-      period: "2024 - 2026",
+      period: "Sep 2023 - Jul 2026",
     },
   },
 };
