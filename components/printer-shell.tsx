@@ -8,6 +8,7 @@ import classNames from "classnames";
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import RotaryDial from "./rotary-dial";
 import PrinterSnail from "./printer-snail";
+import HalftoneBackground from "./halftone-background";
 import {
   RiComputerLine as ComputerDesktopIcon,
   RiMoonLine as MoonIcon,
@@ -996,9 +997,10 @@ export default function PrinterShell({
   ];
 
   return (
-    <div lang={lang} className="min-h-screen page-grid flex flex-col items-center px-3 py-6 sm:py-10">
+    <div lang={lang} className="min-h-screen relative flex flex-col items-center px-3 py-6 sm:py-10">
+      <HalftoneBackground resolvedMode={resolvedMode} />
       {/* Printer Body */}
-      <div className="w-full max-w-3xl relative">
+      <div className="w-full max-w-3xl relative z-10">
         {/* Snail crawling along the very top edge of the printer shell */}
         <PrinterSnail />
         {/* Unified Header Housing - Wraps both brand and slit areas to share a single shadow */}

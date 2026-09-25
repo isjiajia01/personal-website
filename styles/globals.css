@@ -29,22 +29,9 @@
 }
 
 @layer components {
-  /* Page grid background - Industrial workbench style */
+  /* Legacy page-grid container */
   .page-grid {
-    background-image: 
-      radial-gradient(at 50% 0%, rgba(255,255,255,0.4) 0%, transparent 80%),
-      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
-    background-size: 100% 100%, 40px 40px, 40px 40px;
-    /* Offset grid to prevent it from looking too rigid */
-    background-position: 0 0, 13px 13px, 13px 13px;
-    /* Removed background-attachment: fixed to let it scroll */
-  }
-  :is(.dark) .page-grid {
-    background-image: 
-      radial-gradient(at 50% 0%, rgba(100,120,255,0.04) 0%, transparent 60%),
-      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-image: none;
   }
 
   /* Printer paper torn edge effect */
