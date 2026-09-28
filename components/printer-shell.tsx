@@ -388,6 +388,100 @@ const STICKER_BY_ID = STICKERS.reduce<Record<StickerId, StickerDefinition>>((acc
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
+type PetId = "cat" | "dog";
+
+interface PetDefinition {
+  id: PetId;
+  label: string;
+  src: string;
+  intrinsicWidth: number;
+  intrinsicHeight: number;
+  width: number;
+  xlWidth: number;
+  rotation: number;
+  side: "left" | "right";
+  inset: number;
+  top?: number;
+  bottom?: number;
+}
+
+type PetLayout = Record<PetId, { x: number; y: number }>;
+type PetOrder = PetId[];
+
+const PETS: PetDefinition[] = [
+  { id: "cat", label: "tiny guard", src: "/images/cat-sticker-cutout.png", intrinsicWidth: 180, intrinsicHeight: 203, width: 150, xlWidth: 180, rotation: 7, side: "right", inset: 16, top: 126 },
+  { id: "dog", label: "Ponyo", src: "/images/dog-sticker-cutout.png", intrinsicWidth: 160, intrinsicHeight: 212, width: 130, xlWidth: 160, rotation: -8, side: "left", inset: 16, bottom: 34 },
+];
+const PET_BY_ID = Object.fromEntries(PETS.map((pet) => [pet.id, pet])) as Record<PetId, PetDefinition>;
+const DEFAULT_PET_ORDER: PetOrder = ["cat", "dog"];
+const PET_LAYOUT_STORAGE_KEY = "__printer_pet_layout_v1__";
+const PET_ORDER_STORAGE_KEY = "__printer_pet_order_v1__";
+let petLayoutMemory: PetLayout | null = null;
+let petOrderMemory: PetOrder | null = null;
+
+function petDisplayWidth(pet: PetDefinition) {
+  return window.matchMedia("(min-width: 1280px)").matches ? pet.xlWidth : pet.width;
+}
+
+function petDefaultInset(pet: PetDefinition) {
+  return window.matchMedia("(min-width: 1280px)").matches ? 48 : pet.inset;
+}
+
+function getPetBounds(pet: PetDefinition, rect: DOMRect, width: number) {
+  const height = width * pet.intrinsicHeight / pet.intrinsicWidth;
+  const radians = Math.abs(pet.rotation) * Math.PI / 180;
+  const halfWidth = (width * Math.cos(radians) + height * Math.sin(radians)) / 2;
+  const halfHeight = (height * Math.cos(radians) + width * Math.sin(radians)) / 2;
+  const minX = 8 + halfWidth - rect.left;
+  const maxX = window.innerWidth - 8 - halfWidth - rect.left;
+  const minY = Math.min(halfHeight, rect.height / 2);
+  const maxY = Math.max(minY, rect.height - halfHeight);
+  return { minX: Math.min(minX, maxX), maxX: Math.max(minX, maxX), minY, maxY };
+}
+
+function parsePetLayout(raw: string | null): PetLayout | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<Record<PetId, { x?: unknown; y?: unknown }>>;
+    const layout = {} as PetLayout;
+    for (const pet of PETS) {
+      const position = parsed[pet.id];
+      if (!position || typeof position.x !== "number" || !Number.isFinite(position.x) || typeof position.y !== "number" || !Number.isFinite(position.y)) return null;
+      layout[pet.id] = { x: position.x, y: position.y };
+    }
+    return layout;
+  } catch {
+    return null;
+  }
+}
+
+function parsePetOrder(raw: string | null): PetOrder | null {
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length !== PETS.length || parsed.some((id) => typeof id !== "string" || !Object.hasOwn(PET_BY_ID, id)) || new Set(parsed).size !== PETS.length) return null;
+    return parsed as PetOrder;
+  } catch {
+    return null;
+  }
+}
+
+function movePetToTop(order: PetOrder, id: PetId): PetOrder {
+  return [...order.filter((petId) => petId !== id), id];
+}
+
+function createDefaultPetLayout(rect: DOMRect): PetLayout {
+  const layout = {} as PetLayout;
+  for (const pet of PETS) {
+    const width = petDisplayWidth(pet);
+    const height = width * pet.intrinsicHeight / pet.intrinsicWidth;
+    const inset = petDefaultInset(pet);
+    const x = pet.side === "right" ? rect.width + inset : -inset;
+    const y = pet.top !== undefined ? pet.top + height / 2 : rect.height - (pet.bottom ?? 0) - height / 2;
+    layout[pet.id] = { x, y };
+  }
+  return layout;
+}
 
 function getStickerBoundsForShell(sticker: StickerDefinition, shellWidth: number, shellHeight: number) {
   const minCenterX = sticker.width / 2;
@@ -650,6 +744,48 @@ const StickerButton = memo(function StickerButton({
 });
 
 
+interface PetStickerButtonProps {
+  pet: PetDefinition;
+  position: { x: number; y: number } | null;
+  dragging: boolean;
+  hydrated: boolean;
+  onPointerDown: (event: React.PointerEvent<HTMLButtonElement>, id: PetId) => void;
+  onPointerMove: (event: React.PointerEvent<HTMLButtonElement>, id: PetId) => void;
+  onPointerUp: (event: React.PointerEvent<HTMLButtonElement>) => void;
+  onLostPointerCapture: (event: React.PointerEvent<HTMLButtonElement>) => void;
+}
+
+const PetStickerButton = memo(function PetStickerButton({ pet, position, dragging, hydrated, onPointerDown, onPointerMove, onPointerUp, onLostPointerCapture }: PetStickerButtonProps) {
+  const widthClass = pet.id === "cat" ? "w-[150px] xl:w-[180px]" : "w-[130px] xl:w-[160px]";
+  return (
+    <button
+      style={{ "--pet-rest-rotation": `${pet.rotation}deg`, left: position ? `${position.x}px` : undefined, right: position ? "auto" : undefined, top: position ? `${position.y}px` : undefined, bottom: position ? "auto" : undefined } as React.CSSProperties}
+      data-pet-id={pet.id}
+      aria-hidden="true"
+      tabIndex={-1}
+      onPointerDown={(event) => onPointerDown(event, pet.id)}
+      onPointerMove={(event) => onPointerMove(event, pet.id)}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onLostPointerCapture={onLostPointerCapture}
+      className={classNames(
+        "pet-sticker absolute hidden pointer-events-auto touch-none select-none lg:block",
+        widthClass,
+        dragging ? "z-[60] cursor-grabbing" : "z-0 cursor-grab",
+        dragging ? "pet-sticker-grabbed" : hydrated ? "pet-sticker-settle" : ""
+      )}
+    >
+      <Image src={pet.src} alt="" width={pet.intrinsicWidth} height={pet.intrinsicHeight} draggable={false} className="block h-auto w-full pet-sticker-art" priority />
+      <span
+        aria-hidden="true"
+        className="pet-sticker-gloss pointer-events-none absolute inset-0"
+        style={{ maskImage: `url(${pet.src})`, WebkitMaskImage: `url(${pet.src})` }}
+      />
+      <span className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-printer-ink-light shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark/45">{pet.label}</span>
+    </button>
+  );
+});
+
 interface PrinterShellProps {
   dictionary: {
     labels: {
@@ -698,6 +834,13 @@ export default function PrinterShell({
     offsetY: number;
   } | null>(null);
   const langSwitchTimerRef = useRef<number | null>(null);
+  const petLayerRef = useRef<HTMLDivElement>(null);
+  const [petLayout, setPetLayout] = useState<PetLayout | null>(() => petLayoutMemory);
+  const petLayoutRef = useRef<PetLayout | null>(petLayoutMemory);
+  const [petOrder, setPetOrder] = useState<PetOrder>(() => petOrderMemory ?? [...DEFAULT_PET_ORDER]);
+  const [draggingPetId, setDraggingPetId] = useState<PetId | null>(null);
+  const [petsHydrated, setPetsHydrated] = useState(false);
+  const petDragStateRef = useRef<{ id: PetId; pointerId: number; offsetX: number; offsetY: number } | null>(null);
 
   const navItems = [
     { label: dictionary.labels.home, href: dictionary.urls.home },
@@ -855,6 +998,78 @@ export default function PrinterShell({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [normalizeStickerLayoutToTopSection, persistStickerLayout]);
+  const normalizePetLayout = useCallback((layout: PetLayout) => {
+    const layer = petLayerRef.current;
+    if (!layer) return layout;
+    const rect = layer.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return layout;
+    const normalized = { ...layout };
+    let changed = false;
+    for (const pet of PETS) {
+      const position = layout[pet.id];
+      const bounds = getPetBounds(pet, rect, petDisplayWidth(pet));
+      const x = clamp(position.x, bounds.minX, bounds.maxX);
+      const y = clamp(position.y, bounds.minY, bounds.maxY);
+      normalized[pet.id] = { x, y };
+      changed ||= Math.abs(x - position.x) > 0.0005 || Math.abs(y - position.y) > 0.0005;
+    }
+    return changed ? normalized : layout;
+  }, []);
+
+  const persistPetLayout = useCallback((layout: PetLayout) => {
+    petLayoutMemory = layout;
+    try { localStorage.setItem(PET_LAYOUT_STORAGE_KEY, JSON.stringify(layout)); } catch {}
+  }, []);
+
+  useLayoutEffect(() => {
+    const layer = petLayerRef.current;
+    if (!layer) return;
+    const rect = layer.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+    const current = petLayoutRef.current;
+    if (current) {
+      setPetLayout(current);
+      setPetsHydrated(true);
+      return;
+    }
+    let stored: PetLayout | null = null;
+    try { stored = parsePetLayout(localStorage.getItem(PET_LAYOUT_STORAGE_KEY)); } catch {}
+    const initial = stored ? normalizePetLayout(stored) : createDefaultPetLayout(rect);
+    petLayoutRef.current = initial;
+    setPetLayout(initial);
+    if (stored) persistPetLayout(initial);
+    setPetsHydrated(true);
+  }, [normalizePetLayout, persistPetLayout]);
+
+  useLayoutEffect(() => {
+    let order = petOrderMemory;
+    if (!order) {
+      try { order = parsePetOrder(localStorage.getItem(PET_ORDER_STORAGE_KEY)); } catch {}
+    }
+    if (order) setPetOrder(order);
+  }, []);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      const current = petLayoutRef.current;
+      if (!current) return;
+      const normalized = normalizePetLayout(current);
+      if (normalized !== current) {
+        petLayoutRef.current = normalized;
+        setPetLayout(normalized);
+      }
+      persistPetLayout(normalized);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [normalizePetLayout, persistPetLayout]);
+
+  useEffect(() => {
+    petLayoutRef.current = petLayout;
+    if (petLayout) petLayoutMemory = petLayout;
+  }, [petLayout]);
+
 
   useEffect(() => {
     return () => {
@@ -863,6 +1078,63 @@ export default function PrinterShell({
       }
     };
   }, []);
+  const updatePetPositionFromPointer = useCallback((id: PetId, clientX: number, clientY: number, offsetX: number, offsetY: number) => {
+    const layer = petLayerRef.current;
+    const current = petLayoutRef.current;
+    if (!layer || !current) return;
+    const rect = layer.getBoundingClientRect();
+    const pet = PET_BY_ID[id];
+    const bounds = getPetBounds(pet, rect, petDisplayWidth(pet));
+    const next = { ...current, [id]: {
+      x: clamp(clientX - rect.left - offsetX, bounds.minX, bounds.maxX),
+      y: clamp(clientY - rect.top - offsetY, bounds.minY, bounds.maxY),
+    } };
+    petLayoutRef.current = next;
+    setPetLayout(next);
+  }, []);
+
+  const finishPetDrag = useCallback((pointerId: number) => {
+    const drag = petDragStateRef.current;
+    if (!drag || drag.pointerId !== pointerId) return;
+    petDragStateRef.current = null;
+    setDraggingPetId(null);
+    if (petLayoutRef.current) persistPetLayout(petLayoutRef.current);
+  }, [persistPetLayout]);
+
+  const onPetPointerDown = useCallback((event: React.PointerEvent<HTMLButtonElement>, id: PetId) => {
+    const layer = petLayerRef.current;
+    const current = petLayoutRef.current;
+    if (!layer || !current) return;
+    const rect = layer.getBoundingClientRect();
+    const position = current[id];
+    petDragStateRef.current = { id, pointerId: event.pointerId, offsetX: event.clientX - rect.left - position.x, offsetY: event.clientY - rect.top - position.y };
+    setPetOrder((order) => {
+      const nextOrder = movePetToTop(order, id);
+      petOrderMemory = nextOrder;
+      try { localStorage.setItem(PET_ORDER_STORAGE_KEY, JSON.stringify(nextOrder)); } catch {}
+      return nextOrder;
+    });
+    setDraggingPetId(id);
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }, []);
+
+  const onPetPointerMove = useCallback((event: React.PointerEvent<HTMLButtonElement>, id: PetId) => {
+    const drag = petDragStateRef.current;
+    if (!drag || drag.id !== id || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    updatePetPositionFromPointer(id, event.clientX, event.clientY, drag.offsetX, drag.offsetY);
+  }, [updatePetPositionFromPointer]);
+
+  const onPetPointerUp = useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    finishPetDrag(event.pointerId);
+  }, [finishPetDrag]);
+
+  const onPetLostPointerCapture = useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
+    finishPetDrag(event.pointerId);
+  }, [finishPetDrag]);
+
 
   function onNavPress(href: string) {
     if (isActive(href)) {
@@ -1128,32 +1400,24 @@ export default function PrinterShell({
         <div className="relative h-0 pointer-events-none" aria-hidden="true">
           <div className="printer-shell-bottom-shadow" />
         </div>
-        {/* Pet cutout stickers — float outside the receipt paper in the side whitespace */}
-        <div className="pointer-events-none absolute -right-4 top-[126px] z-40 hidden translate-x-1/2 rotate-[7deg] select-none lg:block xl:-right-12" aria-hidden="true">
-          <Image
-            src="/images/cat-sticker-cutout.png"
-            alt=""
-            width={180}
-            height={203}
-            className="h-auto w-[150px] xl:w-[180px] [filter:drop-shadow(0_10px_16px_rgba(0,0,0,0.18))_drop-shadow(0_1px_0_rgba(255,255,255,0.7))] dark:[filter:drop-shadow(0_12px_18px_rgba(0,0,0,0.55))]"
-            priority
-          />
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-printer-ink-light shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark/45">
-            tiny guard
-          </div>
-        </div>
-        <div className="pointer-events-none absolute -left-4 bottom-[34px] z-40 hidden -translate-x-1/2 -rotate-[8deg] select-none lg:block xl:-left-12" aria-hidden="true">
-          <Image
-            src="/images/dog-sticker-cutout.png"
-            alt=""
-            width={160}
-            height={212}
-            className="h-auto w-[130px] xl:w-[160px] [filter:drop-shadow(0_10px_16px_rgba(0,0,0,0.16))_drop-shadow(0_1px_0_rgba(255,255,255,0.7))] dark:[filter:drop-shadow(0_12px_18px_rgba(0,0,0,0.5))]"
-            priority
-          />
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-printer-ink-light shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark/45">
-            Ponyo
-          </div>
+        {/* Draggable pet stickers roam the full printer body and side gutters. */}
+        <div ref={petLayerRef} className="pointer-events-none absolute inset-0 z-40 hidden lg:block" aria-hidden="true">
+          {petOrder.map((petId) => {
+            const pet = PET_BY_ID[petId];
+            return (
+              <PetStickerButton
+                key={petId}
+                pet={pet}
+                position={petLayout?.[petId] ?? null}
+                dragging={draggingPetId === petId}
+                hydrated={petsHydrated}
+                onPointerDown={onPetPointerDown}
+                onPointerMove={onPetPointerMove}
+                onPointerUp={onPetPointerUp}
+                onLostPointerCapture={onPetLostPointerCapture}
+              />
+            );
+          })}
         </div>
 
         {/* Printed paper output area — clipped so paper slides in from the slit */}
