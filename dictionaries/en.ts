@@ -49,6 +49,9 @@ My strongest work sits around internal tools, workflow automation with human rev
     works: "Work",
     resume: "Resume",
     about: "About",
+    viewResume: "View Resume",
+    emailMe: "Email me",
+    seeWork: "See the work",
     featured: "Best Starting Points",
     archive: "Supporting Material",
     brandName: "JIAJIA",
@@ -59,6 +62,7 @@ My strongest work sits around internal tools, workflow automation with human rev
     notFoundButton: "← Print Home",
     notFoundError: "ERR 404 · PAPER_NOT_FOUND",
     printedOn: "Printed on",
+    viewAllWorkEvidence: "View full project evidence",
     noocWorks: "Start with the projects most relevant to internal tools, workflow automation, and operational decision support.",
     aboutTitle: "About",
     aboutSubtitle: "How I think about workflow systems, evidence, and practical automation",
@@ -75,7 +79,7 @@ My strongest work sits around internal tools, workflow automation with human rev
   },
   homepage: {
     headline:
-      "I build internal tools and workflow systems for teams that need clearer evidence, safer automation, and better decisions.",
+      "I build internal tools and workflow systems — clearer evidence, safer automation, better decisions.",
     subline:
       "Best fit: junior product/full-stack roles around internal tools, support automation, and operational decision support. iOS product work and optimization research are adjacent proof, not separate directions.",
     proofPoints: [
@@ -105,6 +109,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "https://jobops.zhangjiajia.me/opsdesk",
       color: "blue",
       primary: true,
+      homeFeatured: true,
     },
     {
       name: "Denmark Flex Planner",
@@ -120,6 +125,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "https://flex.zhangjiajia.me",
       color: "green",
       primary: true,
+      homeFeatured: true,
     },
     {
       name: "Afgang",
@@ -135,6 +141,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "/en/projects/afgang",
       color: "emerald",
       primary: true,
+      homeFeatured: true,
     },
     {
       name: "Cargo Guard",
@@ -150,6 +157,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "#",
       color: "yellow",
       primary: false,
+      homeFeatured: false,
     },
     {
       name: "Nimbus Weather Journal",
@@ -165,6 +173,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "https://github.com/isjiajia01/10.01_Nimbus",
       color: "cyan",
       primary: true,
+      homeFeatured: false,
     },
     {
       name: "DTU × Mover Thesis",
@@ -180,6 +189,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "#",
       color: "orange",
       primary: true,
+      homeFeatured: false,
     },
     {
       name: "This Website",
@@ -195,6 +205,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "https://me.zhangjiajia.me",
       color: "rose",
       primary: false,
+      homeFeatured: false,
     },
   ],
   afgangCase: {

@@ -49,6 +49,9 @@ const dictionary = {
     works: "项目",
     resume: "简历",
     about: "关于",
+    viewResume: "查看简历",
+    emailMe: "发邮件给我",
+    seeWork: "查看项目",
     featured: "优先看这里",
     archive: "补充材料",
     brandName: "JIAJIA",
@@ -59,6 +62,7 @@ const dictionary = {
     notFoundButton: "← 打印主页",
     notFoundError: "ERR 404 · PAPER_NOT_FOUND",
     printedOn: "打印于",
+    viewAllWorkEvidence: "查看完整项目证据",
     noocWorks: "优先从最能说明 internal tools、workflow automation 和 decision support 的项目看起。",
     aboutTitle: "关于",
     aboutSubtitle: "我如何理解 workflow systems、证据和实用自动化",
@@ -74,7 +78,7 @@ const dictionary = {
     },
   },
   homepage: {
-    headline: "我做 internal tools 和 workflow systems：让团队更容易看清证据、安全自动化、做出决策。",
+    headline: "我构建内部工具与工作流系统 —— 更清晰的证据、更安全的自动化、更好的决策。",
     subline:
       "最匹配 junior product/full-stack 方向，尤其是 internal tools、support automation 和 operational decision support。iOS 产品和优化研究是相邻证据，不是分散主线。",
     proofPoints: [
@@ -104,6 +108,7 @@ const dictionary = {
       link: "https://jobops.zhangjiajia.me/opsdesk",
       color: "blue",
       primary: true,
+      homeFeatured: true,
     },
     {
       name: "Denmark Flex Planner",
@@ -119,6 +124,7 @@ const dictionary = {
       link: "https://flex.zhangjiajia.me",
       color: "green",
       primary: true,
+      homeFeatured: true,
     },
     {
       name: "Afgang",
@@ -134,6 +140,7 @@ const dictionary = {
       link: "/zh/projects/afgang",
       color: "emerald",
       primary: true,
+      homeFeatured: true,
     },
     {
       name: "Cargo Guard",
@@ -149,6 +156,7 @@ const dictionary = {
       link: "#",
       color: "yellow",
       primary: false,
+      homeFeatured: false,
     },
     {
       name: "Nimbus Weather Journal",
@@ -164,6 +172,7 @@ const dictionary = {
       link: "https://github.com/isjiajia01/10.01_Nimbus",
       color: "cyan",
       primary: true,
+      homeFeatured: false,
     },
     {
       name: "DTU × Mover Thesis",
@@ -179,6 +188,7 @@ const dictionary = {
       link: "#",
       color: "orange",
       primary: true,
+      homeFeatured: false,
     },
     {
       name: "This Website",
@@ -194,6 +204,7 @@ const dictionary = {
       link: "https://me.zhangjiajia.me",
       color: "rose",
       primary: false,
+      homeFeatured: false,
     },
   ],
   afgangCase: {

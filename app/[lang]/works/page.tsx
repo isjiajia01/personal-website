@@ -59,7 +59,7 @@ export async function generateMetadata(
 
 function WorkMark({ name }: { name: string }) {
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-lg font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center border border-printer-ink/15 bg-printer-ink/5 font-mono text-lg font-bold text-printer-ink dark:border-printer-ink-dark/15 dark:bg-printer-ink-dark/5 dark:text-printer-ink-dark">
       {name[0]}
     </div>
   );
@@ -78,7 +78,7 @@ function WorkCard({
   const isExternal = work.link.startsWith("http");
 
   const body = (
-    <div className="portfolio-card-motion group rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
+    <div className="portfolio-card-motion group border border-printer-ink/12 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/12 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
       <div className="flex items-start gap-3">
         <WorkMark name={work.name} />
         <div className="min-w-0 flex-1">
@@ -93,20 +93,20 @@ function WorkCard({
                 <ArrowRightIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
               ))}
           </div>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-printer-ink-light dark:text-printer-ink-dark/40">
+          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-printer-ink/70 dark:text-printer-ink-dark/65">
             {work.roleFit}
           </p>
         </div>
       </div>
 
-      <p className="mt-4 font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+      <p className="mt-4 font-serif text-[14px] leading-relaxed text-printer-ink/85 dark:text-printer-ink-dark/80">
         {work.summary}
       </p>
 
       {!compact && (
         <>
           <div className="mt-4">
-            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink-light dark:text-printer-ink-dark/45">
+            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink/65 dark:text-printer-ink-dark/60">
               <EvidenceIcon className="h-2.5 w-2.5" />
               {dictionary.labels.evidence}
             </div>
@@ -114,7 +114,7 @@ function WorkCard({
               {work.evidence.map((item) => (
                 <div key={item} className="flex items-start gap-2">
                   <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-printer-accent dark:bg-printer-accent-dark" />
-                  <span className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+                  <span className="font-serif text-[14px] leading-relaxed text-printer-ink/80 dark:text-printer-ink-dark/75">
                     {item}
                   </span>
                 </div>
@@ -123,7 +123,7 @@ function WorkCard({
           </div>
 
           <div className="mt-4">
-            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink-light dark:text-printer-ink-dark/45">
+            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink/65 dark:text-printer-ink-dark/60">
               <StackIcon className="h-2.5 w-2.5" />
               {dictionary.labels.stack}
             </div>

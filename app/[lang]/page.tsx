@@ -34,7 +34,7 @@ export default async function Home(
   const params = await props.params;
   const dictionary = await getDictionary(params.lang);
   const motto = getRandomMotto(dictionary);
-  const featuredWorks = dictionary.works.filter((work) => work.primary);
+  const featuredWorks = dictionary.works.filter((work) => work.homeFeatured);
 
   return (
     <div>
@@ -42,16 +42,36 @@ export default async function Home(
         <div className="flex flex-col gap-5">
           <div>
             <PrintedLabel variant="accent">{dictionary.labels.roleFit}</PrintedLabel>
-            <h1 className="mt-4 font-serif text-2xl font-bold leading-tight tracking-tight text-printer-ink dark:text-printer-ink-dark sm:text-3xl">
+            <h1 className="mt-4 font-serif text-3xl font-bold leading-tight tracking-tight text-printer-ink dark:text-printer-ink-dark sm:text-4xl">
               Jiajia Zhang
             </h1>
-            <p className="mt-3 max-w-2xl font-serif text-sm leading-relaxed text-printer-ink dark:text-printer-ink-dark/80">
+            <p className="mt-3 max-w-2xl font-serif text-lg font-medium leading-snug text-printer-ink dark:text-printer-ink-dark sm:text-xl">
               {dictionary.homepage.headline}
             </p>
-            <p className="mt-2 max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+            <p className="mt-3 max-w-2xl font-serif text-[15px] leading-relaxed text-printer-ink/80 dark:text-printer-ink-dark/80">
               {dictionary.homepage.subline}
             </p>
-            <p className="mt-3 max-w-2xl font-mono text-[10px] uppercase tracking-[0.22em] text-printer-ink-light dark:text-printer-ink-dark/40">
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <Link
+                href={dictionary.urls.resume}
+                className="inline-flex min-h-9 items-center justify-center bg-printer-accent px-3 py-2 font-mono text-[11px] font-medium uppercase tracking-wider text-white transition-opacity hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-accent dark:bg-printer-accent-dark dark:text-printer-ink-dark"
+              >
+                {dictionary.labels.viewResume}
+              </Link>
+              <a
+                href="mailto:isjiajiazhang@gmail.com"
+                className="inline-flex min-h-9 items-center justify-center border border-printer-ink/25 px-3 py-2 font-mono text-[11px] font-medium uppercase tracking-wider text-printer-ink transition-colors hover:border-printer-ink/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:border-printer-ink-dark/25 dark:text-printer-ink-dark"
+              >
+                {dictionary.labels.emailMe}
+              </a>
+              <Link
+                href={dictionary.urls.works}
+                className="inline-flex min-h-9 items-center px-1 py-2 font-mono text-[11px] font-medium uppercase tracking-wider text-printer-ink underline decoration-printer-ink/30 underline-offset-4 hover:decoration-printer-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:text-printer-ink-dark"
+              >
+                {dictionary.labels.seeWork} →
+              </Link>
+            </div>
+            <p className="mt-4 max-w-2xl font-mono text-[10px] uppercase tracking-[0.22em] text-printer-ink/55 dark:text-printer-ink-dark/50">
               {motto}
             </p>
           </div>
@@ -61,9 +81,9 @@ export default async function Home(
               <a
                 key={`${contact.label}-${contact.name}`}
                 href={contact.link}
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center gap-1.5 rounded-sm border border-printer-ink/8 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-printer-ink-light transition-colors hover:border-printer-accent/20 hover:text-printer-accent dark:border-printer-ink-dark/8 dark:text-printer-ink-dark/50 dark:hover:border-printer-accent-dark/20 dark:hover:text-printer-accent-dark"
+                target={contact.link.startsWith("mailto:") ? undefined : "_blank"}
+                rel={contact.link.startsWith("mailto:") ? undefined : "noopener"}
+                className="inline-flex items-center gap-1.5 border border-printer-ink/15 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-wider text-printer-ink/75 transition-colors hover:border-printer-accent/40 hover:text-printer-accent dark:border-printer-ink-dark/15 dark:text-printer-ink-dark/70 dark:hover:border-printer-accent-dark/40 dark:hover:text-printer-accent-dark"
               >
                 <contact.icon className="h-3 w-3" />
                 {contact.label}
@@ -112,7 +132,7 @@ export default async function Home(
           {dictionary.homepage.proofPoints.map((point) => (
             <div key={point} className="flex items-start gap-2">
               <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-printer-accent dark:bg-printer-accent-dark" />
-              <p className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+              <p className="font-serif text-[15px] leading-relaxed text-printer-ink/80 dark:text-printer-ink-dark/80">
                 {point}
               </p>
             </div>
@@ -133,23 +153,30 @@ export default async function Home(
         <div className="grid gap-3">
           {featuredWorks.map((work) => {
             const card = (
-              <div className="portfolio-card-motion group flex min-h-[132px] flex-col gap-3 rounded-md border border-printer-ink/8 bg-printer-ink/[0.025] p-3 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-printer-accent/20 bg-printer-accent/10 font-mono text-sm font-bold text-printer-accent dark:border-printer-accent-dark/20 dark:bg-printer-accent-dark/10 dark:text-printer-accent-dark">
+              <div className="portfolio-card-motion group flex min-h-[150px] flex-col gap-3 border border-printer-ink/12 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/12 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-printer-ink/15 bg-printer-ink/5 font-mono text-sm font-bold text-printer-ink dark:border-printer-ink-dark/15 dark:bg-printer-ink-dark/5 dark:text-printer-ink-dark">
                     {work.name[0]}
                   </div>
                   <div className="min-w-0">
-                    <div className="font-mono text-sm font-medium text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
+                    <div className="font-mono text-[15px] font-medium text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
                       {work.name}
                     </div>
-                    <div className="mt-0.5 line-clamp-1 font-mono text-[10px] text-printer-ink-light dark:text-printer-ink-dark/40">
+                    <div className="mt-1 line-clamp-1 font-mono text-[11px] text-printer-ink/70 dark:text-printer-ink-dark/65">
                       {work.roleFit}
                     </div>
                   </div>
                 </div>
-                <p className="line-clamp-3 font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+                <p className="line-clamp-3 font-serif text-[14px] leading-relaxed text-printer-ink/85 dark:text-printer-ink-dark/80">
                   {work.summary}
                 </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {work.stack.slice(0, 3).map((item) => (
+                    <span key={item} className="border border-printer-ink/15 px-2 py-1 font-mono text-[10px] text-printer-ink/75 dark:border-printer-ink-dark/15 dark:text-printer-ink-dark/70">
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             );
 
@@ -182,7 +209,7 @@ export default async function Home(
           href={dictionary.urls.works}
           className="mt-4 inline-flex items-center gap-1 font-mono text-[11px] tracking-wider text-printer-accent hover:underline dark:text-printer-accent-dark"
         >
-          {params.lang === "zh" ? "查看完整项目证据" : "VIEW PROJECT EVIDENCE"} →
+          {dictionary.labels.viewAllWorkEvidence} →
         </Link>
       </PrintedSection>
 
@@ -196,15 +223,27 @@ export default async function Home(
           </span>
         }
       >
-        <p className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+        <p className="font-serif text-[15px] leading-relaxed text-printer-ink/80 dark:text-printer-ink-dark/80">
           {dictionary.homepage.note}
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Link href={dictionary.urls.resume}>
-            <PrintedLabel variant="accent">{dictionary.labels.resume}</PrintedLabel>
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <Link
+            href={dictionary.urls.resume}
+            className="inline-flex min-h-9 items-center justify-center bg-printer-accent px-3 py-2 font-mono text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-accent dark:bg-printer-accent-dark dark:text-printer-ink-dark"
+          >
+            {dictionary.labels.viewResume}
           </Link>
-          <Link href={dictionary.urls.about}>
-            <PrintedLabel variant="default">{dictionary.labels.about}</PrintedLabel>
+          <a
+            href="mailto:isjiajiazhang@gmail.com"
+            className="inline-flex min-h-9 items-center justify-center border border-printer-ink/25 px-3 py-2 font-mono text-[11px] font-medium uppercase tracking-wider text-printer-ink hover:border-printer-ink/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:border-printer-ink-dark/25 dark:text-printer-ink-dark"
+          >
+            {dictionary.labels.emailMe}
+          </a>
+          <Link
+            href={dictionary.urls.works}
+            className="inline-flex min-h-9 items-center px-1 py-2 font-mono text-[11px] font-medium uppercase tracking-wider text-printer-ink underline decoration-printer-ink/30 underline-offset-4 hover:decoration-printer-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:text-printer-ink-dark"
+          >
+            {dictionary.labels.seeWork} →
           </Link>
         </div>
       </PrintedSection>

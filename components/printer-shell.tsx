@@ -621,6 +621,8 @@ const StickerButton = memo(function StickerButton({
   return (
     <button
       type="button"
+      aria-hidden="true"
+      tabIndex={-1}
       aria-label={`${sticker.label} sticker`}
       onPointerDown={(event) => onPointerDown(event, sticker.id)}
       onPointerMove={(event) => onPointerMove(event, sticker.id)}
@@ -1014,8 +1016,8 @@ export default function PrinterShell({
             <div className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[120%] h-[80%] bg-[radial-gradient(ellipse_at_center,rgba(100,120,255,0.07)_0%,rgba(80,100,220,0.03)_40%,transparent_70%)]" />
           </div>
 
-          {/* Draggable shell stickers */}
-          <div className="absolute inset-0 z-30 pointer-events-none" aria-label="shell stickers">
+          {/* Draggable shell stickers remain decorative chrome and never expose focusable content. */}
+          <div className="absolute inset-0 z-30 pointer-events-none" aria-hidden="true">
             {stickerLayout && stickerOrder.map((stickerId) => {
               const sticker = STICKER_BY_ID[stickerId];
               const position = stickerLayout[stickerId];
