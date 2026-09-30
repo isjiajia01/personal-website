@@ -405,7 +405,7 @@ interface PetDefinition {
   bottom?: number;
 }
 
-type PetLayout = Record<PetId, { x: number; y: number }>;
+type PetLayout = Partial<Record<PetId, { x: number; y: number }>>;
 type PetOrder = PetId[];
 
 const PETS: PetDefinition[] = [
@@ -414,17 +414,13 @@ const PETS: PetDefinition[] = [
 ];
 const PET_BY_ID = Object.fromEntries(PETS.map((pet) => [pet.id, pet])) as Record<PetId, PetDefinition>;
 const DEFAULT_PET_ORDER: PetOrder = ["cat", "dog"];
-const PET_LAYOUT_STORAGE_KEY = "__printer_pet_layout_v1__";
+const PET_LAYOUT_STORAGE_KEY = "__printer_pet_layout_v2__";
 const PET_ORDER_STORAGE_KEY = "__printer_pet_order_v1__";
 let petLayoutMemory: PetLayout | null = null;
 let petOrderMemory: PetOrder | null = null;
 
 function petDisplayWidth(pet: PetDefinition) {
   return window.matchMedia("(min-width: 1280px)").matches ? pet.xlWidth : pet.width;
-}
-
-function petDefaultInset(pet: PetDefinition) {
-  return window.matchMedia("(min-width: 1280px)").matches ? 48 : pet.inset;
 }
 
 function getPetBounds(pet: PetDefinition, rect: DOMRect, width: number) {
@@ -444,12 +440,21 @@ function parsePetLayout(raw: string | null): PetLayout | null {
   try {
     const parsed = JSON.parse(raw) as Partial<Record<PetId, { x?: unknown; y?: unknown }>>;
     const layout = {} as PetLayout;
+    let hasAny = false;
     for (const pet of PETS) {
       const position = parsed[pet.id];
-      if (!position || typeof position.x !== "number" || !Number.isFinite(position.x) || typeof position.y !== "number" || !Number.isFinite(position.y)) return null;
-      layout[pet.id] = { x: position.x, y: position.y };
+      if (
+        position &&
+        typeof position.x === "number" &&
+        Number.isFinite(position.x) &&
+        typeof position.y === "number" &&
+        Number.isFinite(position.y)
+      ) {
+        layout[pet.id] = { x: position.x, y: position.y };
+        hasAny = true;
+      }
     }
-    return layout;
+    return hasAny ? layout : null;
   } catch {
     return null;
   }
@@ -469,20 +474,6 @@ function parsePetOrder(raw: string | null): PetOrder | null {
 function movePetToTop(order: PetOrder, id: PetId): PetOrder {
   return [...order.filter((petId) => petId !== id), id];
 }
-
-function createDefaultPetLayout(rect: DOMRect): PetLayout {
-  const layout = {} as PetLayout;
-  for (const pet of PETS) {
-    const width = petDisplayWidth(pet);
-    const height = width * pet.intrinsicHeight / pet.intrinsicWidth;
-    const inset = petDefaultInset(pet);
-    const x = pet.side === "right" ? rect.width + inset : -inset;
-    const y = pet.top !== undefined ? pet.top + height / 2 : rect.height - (pet.bottom ?? 0) - height / 2;
-    layout[pet.id] = { x, y };
-  }
-  return layout;
-}
-
 function getStickerBoundsForShell(sticker: StickerDefinition, shellWidth: number, shellHeight: number) {
   const minCenterX = sticker.width / 2;
   const maxCenterX = Math.max(minCenterX, shellWidth - sticker.width / 2);
@@ -746,21 +737,45 @@ const StickerButton = memo(function StickerButton({
 
 interface PetStickerButtonProps {
   pet: PetDefinition;
-  position: { x: number; y: number } | null;
+  position?: { x: number; y: number };
   dragging: boolean;
   hydrated: boolean;
   onPointerDown: (event: React.PointerEvent<HTMLButtonElement>, id: PetId) => void;
   onPointerMove: (event: React.PointerEvent<HTMLButtonElement>, id: PetId) => void;
   onPointerUp: (event: React.PointerEvent<HTMLButtonElement>) => void;
   onLostPointerCapture: (event: React.PointerEvent<HTMLButtonElement>) => void;
+  onDoubleClick: (id: PetId) => void;
 }
 
-const PetStickerButton = memo(function PetStickerButton({ pet, position, dragging, hydrated, onPointerDown, onPointerMove, onPointerUp, onLostPointerCapture }: PetStickerButtonProps) {
+const PetStickerButton = memo(function PetStickerButton({
+  pet,
+  position,
+  dragging,
+  hydrated,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onLostPointerCapture,
+  onDoubleClick,
+}: PetStickerButtonProps) {
   const widthClass = pet.id === "cat" ? "w-[150px] xl:w-[180px]" : "w-[130px] xl:w-[160px]";
+  const hasCustomPos = Boolean(position);
+
   return (
     <button
-      style={{ "--pet-rest-rotation": `${pet.rotation}deg`, left: position ? `${position.x}px` : undefined, right: position ? "auto" : undefined, top: position ? `${position.y}px` : undefined, bottom: position ? "auto" : undefined } as React.CSSProperties}
+      style={{
+        "--pet-rest-rotation": `${pet.rotation}deg`,
+        ...(hasCustomPos
+          ? {
+              left: `${position!.x}px`,
+              top: `${position!.y}px`,
+              right: "auto",
+              bottom: "auto",
+            }
+          : {}),
+      } as React.CSSProperties}
       data-pet-id={pet.id}
+      data-custom-pos={hasCustomPos ? "true" : "false"}
       aria-hidden="true"
       tabIndex={-1}
       onPointerDown={(event) => onPointerDown(event, pet.id)}
@@ -768,11 +783,12 @@ const PetStickerButton = memo(function PetStickerButton({ pet, position, draggin
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       onLostPointerCapture={onLostPointerCapture}
+      onDoubleClick={() => onDoubleClick(pet.id)}
       className={classNames(
         "pet-sticker absolute hidden pointer-events-auto touch-none select-none lg:block",
         widthClass,
-        dragging ? "z-[60] cursor-grabbing" : "z-0 cursor-grab",
-        dragging ? "pet-sticker-grabbed" : hydrated ? "pet-sticker-settle" : ""
+        dragging ? "z-[60] cursor-grabbing pet-sticker-grabbed" : "z-0 cursor-grab",
+        !dragging && hydrated ? "pet-sticker-settle" : ""
       )}
     >
       <Image src={pet.src} alt="" width={pet.intrinsicWidth} height={pet.intrinsicHeight} draggable={false} className="block h-auto w-full pet-sticker-art" priority />
@@ -1007,6 +1023,7 @@ export default function PrinterShell({
     let changed = false;
     for (const pet of PETS) {
       const position = layout[pet.id];
+      if (!position) continue;
       const bounds = getPetBounds(pet, rect, petDisplayWidth(pet));
       const x = clamp(position.x, bounds.minX, bounds.maxX);
       const y = clamp(position.y, bounds.minY, bounds.maxY);
@@ -1016,16 +1033,18 @@ export default function PrinterShell({
     return changed ? normalized : layout;
   }, []);
 
-  const persistPetLayout = useCallback((layout: PetLayout) => {
+  const persistPetLayout = useCallback((layout: PetLayout | null) => {
     petLayoutMemory = layout;
-    try { localStorage.setItem(PET_LAYOUT_STORAGE_KEY, JSON.stringify(layout)); } catch {}
+    try {
+      if (layout && Object.keys(layout).length > 0) {
+        localStorage.setItem(PET_LAYOUT_STORAGE_KEY, JSON.stringify(layout));
+      } else {
+        localStorage.removeItem(PET_LAYOUT_STORAGE_KEY);
+      }
+    } catch {}
   }, []);
 
   useLayoutEffect(() => {
-    const layer = petLayerRef.current;
-    if (!layer) return;
-    const rect = layer.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) return;
     const current = petLayoutRef.current;
     if (current) {
       setPetLayout(current);
@@ -1034,10 +1053,12 @@ export default function PrinterShell({
     }
     let stored: PetLayout | null = null;
     try { stored = parsePetLayout(localStorage.getItem(PET_LAYOUT_STORAGE_KEY)); } catch {}
-    const initial = stored ? normalizePetLayout(stored) : createDefaultPetLayout(rect);
-    petLayoutRef.current = initial;
-    setPetLayout(initial);
-    if (stored) persistPetLayout(initial);
+    if (stored) {
+      const normalized = normalizePetLayout(stored);
+      petLayoutRef.current = normalized;
+      setPetLayout(normalized);
+      persistPetLayout(normalized);
+    }
     setPetsHydrated(true);
   }, [normalizePetLayout, persistPetLayout]);
 
@@ -1049,7 +1070,6 @@ export default function PrinterShell({
     if (order) setPetOrder(order);
   }, []);
 
-
   useEffect(() => {
     const handleResize = () => {
       const current = petLayoutRef.current;
@@ -1058,8 +1078,8 @@ export default function PrinterShell({
       if (normalized !== current) {
         petLayoutRef.current = normalized;
         setPetLayout(normalized);
+        persistPetLayout(normalized);
       }
-      persistPetLayout(normalized);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -1070,7 +1090,6 @@ export default function PrinterShell({
     if (petLayout) petLayoutMemory = petLayout;
   }, [petLayout]);
 
-
   useEffect(() => {
     return () => {
       if (langSwitchTimerRef.current !== null) {
@@ -1078,17 +1097,20 @@ export default function PrinterShell({
       }
     };
   }, []);
+
   const updatePetPositionFromPointer = useCallback((id: PetId, clientX: number, clientY: number, offsetX: number, offsetY: number) => {
     const layer = petLayerRef.current;
-    const current = petLayoutRef.current;
-    if (!layer || !current) return;
+    if (!layer) return;
     const rect = layer.getBoundingClientRect();
     const pet = PET_BY_ID[id];
     const bounds = getPetBounds(pet, rect, petDisplayWidth(pet));
-    const next = { ...current, [id]: {
-      x: clamp(clientX - rect.left - offsetX, bounds.minX, bounds.maxX),
-      y: clamp(clientY - rect.top - offsetY, bounds.minY, bounds.maxY),
-    } };
+    const next = {
+      ...(petLayoutRef.current ?? {}),
+      [id]: {
+        x: clamp(clientX - rect.left - offsetX, bounds.minX, bounds.maxX),
+        y: clamp(clientY - rect.top - offsetY, bounds.minY, bounds.maxY),
+      }
+    };
     petLayoutRef.current = next;
     setPetLayout(next);
   }, []);
@@ -1102,12 +1124,14 @@ export default function PrinterShell({
   }, [persistPetLayout]);
 
   const onPetPointerDown = useCallback((event: React.PointerEvent<HTMLButtonElement>, id: PetId) => {
+    if (event.button !== 0) return;
+    const button = event.currentTarget;
     const layer = petLayerRef.current;
-    const current = petLayoutRef.current;
-    if (!layer || !current) return;
-    const rect = layer.getBoundingClientRect();
-    const position = current[id];
-    petDragStateRef.current = { id, pointerId: event.pointerId, offsetX: event.clientX - rect.left - position.x, offsetY: event.clientY - rect.top - position.y };
+    if (!layer) return;
+    const btnRect = button.getBoundingClientRect();
+    const offsetX = event.clientX - (btnRect.left + btnRect.width / 2);
+    const offsetY = event.clientY - (btnRect.top + btnRect.height / 2);
+    petDragStateRef.current = { id, pointerId: event.pointerId, offsetX, offsetY };
     setPetOrder((order) => {
       const nextOrder = movePetToTop(order, id);
       petOrderMemory = nextOrder;
@@ -1116,8 +1140,20 @@ export default function PrinterShell({
     });
     setDraggingPetId(id);
     event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
+    button.setPointerCapture(event.pointerId);
   }, []);
+
+  const onPetDoubleClick = useCallback((id: PetId) => {
+    setPetLayout((prev) => {
+      if (!prev || !(id in prev)) return prev;
+      const next = { ...prev };
+      delete next[id];
+      const hasRemaining = Object.keys(next).length > 0;
+      petLayoutRef.current = hasRemaining ? next : null;
+      persistPetLayout(hasRemaining ? next : null);
+      return hasRemaining ? next : null;
+    });
+  }, [persistPetLayout]);
 
   const onPetPointerMove = useCallback((event: React.PointerEvent<HTMLButtonElement>, id: PetId) => {
     const drag = petDragStateRef.current;
@@ -1134,7 +1170,6 @@ export default function PrinterShell({
   const onPetLostPointerCapture = useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
     finishPetDrag(event.pointerId);
   }, [finishPetDrag]);
-
 
   function onNavPress(href: string) {
     if (isActive(href)) {
@@ -1408,13 +1443,14 @@ export default function PrinterShell({
               <PetStickerButton
                 key={petId}
                 pet={pet}
-                position={petLayout?.[petId] ?? null}
+                position={petLayout?.[petId]}
                 dragging={draggingPetId === petId}
                 hydrated={petsHydrated}
                 onPointerDown={onPetPointerDown}
                 onPointerMove={onPetPointerMove}
                 onPointerUp={onPetPointerUp}
                 onLostPointerCapture={onPetLostPointerCapture}
+                onDoubleClick={onPetDoubleClick}
               />
             );
           })}

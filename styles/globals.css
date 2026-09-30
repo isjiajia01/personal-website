@@ -283,9 +283,42 @@
   }
 
   .pet-sticker {
-    transform: translate(-50%, -50%) rotate(var(--pet-rest-rotation, 0deg));
+    transform: translate3d(-50%, -50%, 0) rotate(var(--pet-rest-rotation, 0deg));
     transform-origin: 50% 55%;
     transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Default natural positions before dragging */
+  .pet-sticker:not([data-custom-pos="true"])[data-pet-id="cat"] {
+    top: 126px;
+    right: -1rem;
+    left: auto;
+    bottom: auto;
+    transform: translate3d(50%, 0, 0) rotate(var(--pet-rest-rotation, 7deg));
+  }
+
+  @media (min-width: 1280px) {
+    .pet-sticker:not([data-custom-pos="true"])[data-pet-id="cat"] {
+      right: -3rem;
+    }
+  }
+
+  .pet-sticker:not([data-custom-pos="true"])[data-pet-id="dog"] {
+    bottom: 34px;
+    left: -1rem;
+    right: auto;
+    top: auto;
+    transform: translate3d(-50%, 0, 0) rotate(var(--pet-rest-rotation, -8deg));
+  }
+
+  @media (min-width: 1280px) {
+    .pet-sticker:not([data-custom-pos="true"])[data-pet-id="dog"] {
+      left: -3rem;
+    }
+  }
+
+  .pet-sticker[data-custom-pos="true"] {
+    transform: translate3d(-50%, -50%, 0) rotate(var(--pet-rest-rotation, 0deg));
   }
 
   .pet-sticker-art {
@@ -323,10 +356,16 @@
   }
 
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    .pet-sticker[data-pet-id="cat"]:hover:not(:active) {
+    .pet-sticker:not([data-custom-pos="true"])[data-pet-id="cat"]:hover:not(:active) {
+      transform: translate3d(50%, 0, 0) rotate(6deg) scale(1.03);
+    }
+    .pet-sticker:not([data-custom-pos="true"])[data-pet-id="dog"]:hover:not(:active) {
+      transform: translate3d(-50%, 0, 0) rotate(-9deg) scale(1.03);
+    }
+    .pet-sticker[data-custom-pos="true"][data-pet-id="cat"]:hover:not(:active) {
       transform: translate3d(-50%, -50%, 0) rotate(6deg) scale(1.03);
     }
-    .pet-sticker[data-pet-id="dog"]:hover:not(:active) {
+    .pet-sticker[data-custom-pos="true"][data-pet-id="dog"]:hover:not(:active) {
       transform: translate3d(-50%, -50%, 0) rotate(-9deg) scale(1.03);
     }
   }
