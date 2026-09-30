@@ -13,6 +13,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   document.documentElement.dataset.colorMode = mode;
                   var dark = mode === 'dark' || mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches;
                   document.documentElement.classList.toggle('dark', dark);
+                  var lang = location.pathname.split('/')[1] === 'zh' ? 'zh' : 'en';
+                  document.documentElement.lang = lang;
                 } catch(e) {}
               })();
             `,

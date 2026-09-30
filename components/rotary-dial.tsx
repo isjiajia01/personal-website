@@ -5,8 +5,8 @@ import React, { useCallback } from "react";
 
 interface RotaryDialOption<T extends string> {
   value: T;
-  /** Displayed outside the knob */
-  label: React.ReactNode;
+  /** Displayed outside the knob (deprecated) */
+  label?: React.ReactNode;
 }
 
 interface RotaryDialProps<T extends string> {
@@ -20,8 +20,14 @@ interface RotaryDialProps<T extends string> {
   title?: string;
   /** Extra class names on the outer wrapper */
   className?: string;
-  /** Label arrangement around the knob */
+  /** Label arrangement around the knob (kept for backwards compatibility) */
   labelLayout?: "arc" | "inline";
+  /** Current value inline label displayed beside the knob */
+  currentLabel?: React.ReactNode;
+  /** Accessible label for the interactive button */
+  ariaLabel?: string;
+  /** Place the current-value label beside the knob (default) or underneath it */
+  labelPlacement?: "inline" | "below";
 }
 
 /**
@@ -51,6 +57,9 @@ export default function RotaryDial<T extends string>({
   title,
   className,
   labelLayout = "arc",
+  currentLabel,
+  ariaLabel,
+  labelPlacement = "inline",
 }: RotaryDialProps<T>) {
   const currentIndex = options.findIndex((o) => o.value === value);
   const rotation = currentIndex >= 0 ? optionAngle(currentIndex, options.length) : 0;
@@ -60,88 +69,39 @@ export default function RotaryDial<T extends string>({
     onChange(options[nextIndex].value);
   }, [currentIndex, options, onChange]);
 
-  // Knob outer diameter & label orbit radius (px)
-  const knobSize = 36; // w-9 = 36px
-  const labelRadius = 28; // distance from center to label center
-
   return (
     <div
-      className={classNames("relative flex items-center justify-center", className)}
-      style={{ width: knobSize, height: knobSize }}
-    >
-      {/* Labels around the knob (arc) or on a single row (inline) */}
-      {labelLayout === "inline" ? (
-        options.map((opt, i) => {
-          const isActive = i === currentIndex;
-          const rowY = -labelRadius * Math.SQRT1_2;
-          const xExtent = labelRadius * Math.SQRT1_2;
-          const ratio = options.length === 1 ? 0.5 : i / (options.length - 1);
-          const x = -xExtent + 2 * xExtent * ratio;
-
-          return (
-            <div
-              key={String(opt.value)}
-              className={classNames(
-                "absolute pointer-events-none select-none transition-opacity duration-200",
-                "font-mono text-[8px] uppercase tracking-widest leading-none",
-                isActive
-                  ? "text-printer-accent dark:text-printer-accent-dark opacity-100"
-                  : "text-printer-ink-light dark:text-printer-ink-dark/40 opacity-60"
-              )}
-              style={{
-                left: `calc(50% + ${x}px)`,
-                top: `calc(50% + ${rowY}px)`,
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              {opt.label}
-            </div>
-          );
-        })
-      ) : (
-        options.map((opt, i) => {
-          const angle = optionAngle(i, options.length);
-          const rad = (angle - 90) * (Math.PI / 180); // -90 because CSS 0° = right, we want 0° = top
-          const x = Math.cos(rad) * labelRadius;
-          const y = Math.sin(rad) * labelRadius;
-          const isActive = i === currentIndex;
-
-          return (
-            <div
-              key={String(opt.value)}
-              className={classNames(
-                "absolute pointer-events-none select-none transition-opacity duration-200",
-                "font-mono text-[8px] uppercase tracking-widest leading-none",
-                isActive
-                  ? "text-printer-accent dark:text-printer-accent-dark opacity-100"
-                  : "text-printer-ink-light dark:text-printer-ink-dark/40 opacity-60"
-              )}
-              style={{
-                left: `calc(50% + ${x}px)`,
-                top: `calc(50% + ${y}px)`,
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              {opt.label}
-            </div>
-          );
-        })
+      className={classNames(
+        "inline-flex",
+        labelPlacement === "below" ? "flex-col items-center gap-0.5" : "items-center gap-1.5",
+        className,
       )}
-
-      {/* The clickable knob */}
+    >
       <button
+        type="button"
         onClick={cycle}
         title={title}
-        className="rotary-dial-knob absolute inset-[5px] rounded-full cursor-pointer"
+        aria-label={ariaLabel}
+        className="relative flex items-center justify-center w-11 h-11 p-1 bg-transparent cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:focus-visible:outline-printer-ink-dark shrink-0"
       >
-        {/* Active indicator line (inside knob only) */}
-        <div
-          className="absolute inset-0 flex justify-center transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-          style={{ transform: `rotate(${rotation}deg)` }}
-        >
-          <div className="w-[1.5px] h-[40%] bg-printer-accent dark:bg-printer-accent-dark rounded-full" />
+        <div className="rotary-dial-knob relative w-9 h-9 rounded-full pointer-events-none">
+          {/* Active indicator line (inside knob only) */}
+          <div
+            className="absolute inset-0 flex justify-center transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none"
+            style={{ transform: `rotate(${rotation}deg)` }}
+          >
+            <div className="w-[1.5px] h-[40%] bg-printer-accent dark:bg-printer-accent-dark rounded-full" />
+          </div>
         </div>
       </button>
+      {currentLabel && (
+        <span
+          onClick={cycle}
+          className="font-mono text-[11px] uppercase tracking-[0.08em] text-printer-ink-muted dark:text-printer-ink-muted-dark select-none cursor-pointer leading-none"
+        >
+          {currentLabel}
+        </span>
+      )}
     </div>
   );
 }

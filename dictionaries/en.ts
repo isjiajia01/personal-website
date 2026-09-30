@@ -4,6 +4,7 @@ import {
   RiSendPlaneLine as PaperAirplaneIcon,
 } from "@remixicon/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import type { WorkItem } from "./index";
 
 const dictionary = {
   meta: {
@@ -73,6 +74,11 @@ My strongest work sits around internal tools, workflow automation with human rev
     openProject: "Open",
     contactMe: "Contact",
     analyticalProof: "Planning / Analytics Proof",
+    language: "Language",
+    theme: "Theme",
+    themeSystem: "System",
+    themeLight: "Light",
+    themeDark: "Dark",
     icon(label: string) {
       return `Icon for ${label}`;
     },
@@ -91,6 +97,8 @@ My strongest work sits around internal tools, workflow automation with human rev
       "Junior Product / Full-stack Engineer",
       "Internal Tools / Workflow Automation Builder",
     ],
+    evidenceLead:
+      "Targeting Junior Product / Full-stack Engineer and Internal Tools / Workflow Automation Builder roles.",
     note:
       "The site keeps a little personality, but the path is practical: start with Work, then Resume if you want the compact hiring version.",
   },
@@ -106,6 +114,14 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Useful for explaining customer-support automation and operations guardrails without claiming enterprise-scale production",
       ],
       stack: ["Next.js", "TypeScript", "Postgres", "Docker", "Workflow design", "Oracle deploy"],
+      domain: "jobops.zhangjiajia.me",
+      image: {
+        src: "/images/projects/opsdesk/opsdesk-1200.webp",
+        srcSmall: "/images/projects/opsdesk/opsdesk-600.webp",
+        width: 1200,
+        height: 750,
+        alt: "A high-risk support ticket review screen with a structured evidence package and human approval actions",
+      },
       link: "https://jobops.zhangjiajia.me/opsdesk",
       color: "blue",
       primary: true,
@@ -122,6 +138,14 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Deployed FastAPI and Next.js product with a public interactive map, API health checks, and reproducible smoke tests",
       ],
       stack: ["Python", "FastAPI", "Next.js", "Public data", "Constrained optimization", "Oracle deploy"],
+      domain: "flex.zhangjiajia.me",
+      image: {
+        src: "/images/projects/flex/flex-1200.webp",
+        srcSmall: "/images/projects/flex/flex-600.webp",
+        width: 1200,
+        height: 750,
+        alt: "A national municipality priority map with grid-stress and renewable metrics plus budget controls",
+      },
       link: "https://flex.zhangjiajia.me",
       color: "green",
       primary: true,
@@ -138,6 +162,13 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Verified by 86 tests, Chromium and WebKit across four viewports, and 12 boundary checks with zero optimistic contour buckets",
       ],
       stack: ["Python", "FastAPI", "r5py/R5", "GTFS", "GeoPandas", "MapLibre", "Lifecycle design"],
+      image: {
+        src: "/images/projects/afgang/reachability-desktop.webp",
+        srcSmall: "/images/projects/afgang/reachability-desktop-600.webp",
+        width: 1440,
+        height: 900,
+        alt: "A Copenhagen reachability map",
+      },
       link: "/en/projects/afgang",
       color: "emerald",
       primary: true,
@@ -207,7 +238,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       primary: false,
       homeFeatured: false,
     },
-  ],
+  ] as WorkItem[],
   afgangCase: {
     title: "Afgang",
     eyebrow: "Owner-local transport utility · Copenhagen · 2026",

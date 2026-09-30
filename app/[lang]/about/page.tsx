@@ -65,9 +65,10 @@ export default async function AboutPage(
   // Convert markdown-like content to simple HTML
   const aboutHtml = dictionary.aboutContent
     .trim()
-    .replace(/### (.+)/g, "<h3>$1</h3>")
+    .replace(/#### (.+)/g, "<h3>$1</h3>")
+    .replace(/### (.+)/g, "<h2>$1</h2>")
     .replace(/## (.+)/g, "<h2>$1</h2>")
-    .replace(/# (.+)/g, "<h1>$1</h1>")
+    .replace(/# (.+)/g, "<h2>$1</h2>")
     .replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
       '<a href="$2" target="_blank" rel="noopener">$1</a>',
@@ -83,12 +84,12 @@ export default async function AboutPage(
   return (
     <div>
       {/* Header */}
-      <PrintedSection>
+      <PrintedSection className="!mb-8">
         <PrintedPageTitle icon={IdentificationIcon}>
           {dictionary.labels.aboutTitle}
         </PrintedPageTitle>
         {subtitle && (
-          <p className="font-serif text-xs text-printer-ink-light dark:text-printer-ink-dark/50">
+          <p className="font-serif text-[14px] leading-relaxed text-printer-ink-muted dark:text-printer-ink-muted-dark">
             {subtitle}
           </p>
         )}
@@ -102,7 +103,7 @@ export default async function AboutPage(
       <PrintedDivider style="dashed" />
 
       {/* Footer */}
-      <div className="font-mono text-[9px] text-printer-ink-light dark:text-printer-ink-dark/30 tracking-wider uppercase text-center py-4">
+      <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark text-center py-4">
         {params.lang === "zh" ? "就酱～" : "That's about it~"}
       </div>
     </div>

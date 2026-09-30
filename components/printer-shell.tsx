@@ -370,16 +370,6 @@ const STICKER_NORMALIZE_EPSILON_PX = 4;
 const SHELL_BOTTOM_SECTION_HEIGHT_PX = 20;
 const SHELL_BOTTOM_SAFE_GAP_PX = 2;
 
-const STICKER_ANCHORS = [
-  { x: 0.08, y: 0.14 },
-  { x: 0.36, y: 0.1 },
-  { x: 0.64, y: 0.1 },
-  { x: 0.92, y: 0.14 },
-  { x: 0.18, y: 0.4 },
-  { x: 0.5, y: 0.38 },
-  { x: 0.82, y: 0.4 },
-];
-
 const STICKER_BY_ID = STICKERS.reduce<Record<StickerId, StickerDefinition>>((acc, sticker) => {
   acc[sticker.id] = sticker;
   return acc;
@@ -474,37 +464,167 @@ function parsePetOrder(raw: string | null): PetOrder | null {
 function movePetToTop(order: PetOrder, id: PetId): PetOrder {
   return [...order.filter((petId) => petId !== id), id];
 }
-function getStickerBoundsForShell(sticker: StickerDefinition, shellWidth: number, shellHeight: number) {
-  const minCenterX = sticker.width / 2;
-  const maxCenterX = Math.max(minCenterX, shellWidth - sticker.width / 2);
-  const minCenterY = sticker.height / 2;
+function getStickerBoundsForShell(
+  sticker: StickerDefinition,
+  shellWidth: number,
+  shellHeight: number,
+  scale: number = 1,
+) {
+  const w = sticker.width * scale;
+  const h = sticker.height * scale;
+  const minCenterX = w / 2;
+  const maxCenterX = Math.max(minCenterX, shellWidth - w / 2);
+  const minCenterY = h / 2;
   const maxCenterY = Math.max(
     minCenterY,
-    shellHeight - SHELL_BOTTOM_SECTION_HEIGHT_PX - SHELL_BOTTOM_SAFE_GAP_PX - sticker.height / 2,
+    shellHeight - SHELL_BOTTOM_SECTION_HEIGHT_PX - SHELL_BOTTOM_SAFE_GAP_PX - h / 2,
   );
-  return { minCenterX, maxCenterX, minCenterY, maxCenterY };
+  return { minCenterX, maxCenterX, minCenterY, maxCenterY, width: w, height: h };
 }
 
-function createRandomStickerLayout(shellRect: DOMRect): StickerLayout {
-  const anchors = [...STICKER_ANCHORS];
+interface ExclusionRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
 
-  for (let i = anchors.length - 1; i > 0; i -= 1) {
-    const swapIndex = Math.floor(Math.random() * (i + 1));
-    [anchors[i], anchors[swapIndex]] = [anchors[swapIndex], anchors[i]];
+function rectFromEl(el: HTMLElement | null, shellRect: DOMRect, padding = 6): ExclusionRect | null {
+  if (!el) return null;
+  const rect = el.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return null;
+  return {
+    left: Math.max(0, rect.left - shellRect.left - padding),
+    top: Math.max(0, rect.top - shellRect.top - padding),
+    right: rect.right - shellRect.left + padding,
+    bottom: rect.bottom - shellRect.top + padding,
+  };
+}
+
+/**
+ * Rectangles a sticker may never overlap: the brand plate and each interactive
+ * cluster (the nav pills, the dial group). They are kept as separate rectangles
+ * on purpose — a single union box would swallow the free band between the plate
+ * and the controls, which is where the default stickers are meant to live.
+ * Elements hidden at the current breakpoint measure 0×0 and drop out.
+ */
+function getExclusionRects(
+  shellRect: DOMRect,
+  els: (HTMLElement | null)[],
+  isMobile: boolean,
+): ExclusionRect[] {
+  const rects = els
+    .map((el) => rectFromEl(el, shellRect))
+    .filter((rect): rect is ExclusionRect => rect !== null);
+  if (rects.length > 0) return rects;
+  return isMobile
+    ? [{ left: 0, top: 0, right: 180, bottom: 68 }]
+    : [{ left: 0, top: 0, right: 300, bottom: 74 }];
+}
+
+function clampAndExcludeSticker(
+  x: number,
+  y: number,
+  sticker: StickerDefinition,
+  shellWidth: number,
+  shellHeight: number,
+  exclusions: ExclusionRect[],
+  scale: number = 1,
+): { x: number; y: number } {
+  const bounds = getStickerBoundsForShell(sticker, shellWidth, shellHeight, scale);
+  const halfW = bounds.width / 2;
+  const halfH = bounds.height / 2;
+
+  const clampPoint = (cx: number, cy: number) => ({
+    x: clamp(cx, bounds.minCenterX, bounds.maxCenterX),
+    y: clamp(cy, bounds.minCenterY, bounds.maxCenterY),
+  });
+
+  let point = clampPoint(x, y);
+
+  // Push out of the nearest blocking rectangle and repeat, so a sticker that
+  // escapes one cluster cannot land on another one.
+  for (let pass = 0; pass < 6; pass += 1) {
+    const blocker = exclusions.find(
+      (rect) =>
+        point.x + halfW > rect.left &&
+        point.x - halfW < rect.right &&
+        point.y + halfH > rect.top &&
+        point.y - halfH < rect.bottom,
+    );
+    if (!blocker) break;
+
+    const candidates = [
+      { x: blocker.left - halfW, y: point.y, d: Math.abs(blocker.left - halfW - point.x) },
+      { x: blocker.right + halfW, y: point.y, d: Math.abs(blocker.right + halfW - point.x) },
+      { x: point.x, y: blocker.top - halfH, d: Math.abs(blocker.top - halfH - point.y) },
+      { x: point.x, y: blocker.bottom + halfH, d: Math.abs(blocker.bottom + halfH - point.y) },
+    ];
+    const inBounds = candidates.filter(
+      (candidate) =>
+        candidate.x >= bounds.minCenterX - 0.5 &&
+        candidate.x <= bounds.maxCenterX + 0.5 &&
+        candidate.y >= bounds.minCenterY - 0.5 &&
+        candidate.y <= bounds.maxCenterY + 0.5,
+    );
+    const pool = inBounds.length > 0 ? inBounds : candidates;
+    pool.sort((a, b) => a.d - b.d);
+    point = clampPoint(pool[0].x, pool[0].y);
   }
 
+  return point;
+}
+
+const STICKER_BAND_GAP_PX = 6;
+
+/**
+ * The compact single-row header leaves one horizontal band free between the
+ * brand plate and the nav/dial cluster. This reports that band plus how many
+ * stickers fit inside it side by side. At 1440 the band is roughly 180px wide,
+ * so only the first few stickers can be shown; the rest are simply not placed.
+ */
+function stickerBand(exclusions: ExclusionRect[], shellWidth: number, scale: number) {
+  const sorted = [...exclusions].sort((a, b) => a.left - b.left);
+  const left = sorted[0] ? sorted[0].right : 0;
+  const right = sorted.length > 1 ? sorted[sorted.length - 1].left : shellWidth;
+  const width = Math.max(0, right - left);
+  const widest = Math.max(...STICKERS.map((sticker) => sticker.width * scale));
+  const fit = Math.max(1, Math.floor((width + STICKER_BAND_GAP_PX) / (widest + STICKER_BAND_GAP_PX)));
+  return { left, width, widest, fit };
+}
+
+function createRandomStickerLayout(
+  shellRect: DOMRect,
+  isMobile: boolean = false,
+  exclusions?: ExclusionRect[],
+): StickerLayout {
+  const scale = isMobile ? 0.75 : 1;
+  const excl =
+    exclusions ??
+    (isMobile
+      ? [{ left: 0, top: 0, right: 180, bottom: 68 }]
+      : [{ left: 0, top: 0, right: 300, bottom: 74 }]);
+
+  const band = stickerBand(excl, shellRect.width, scale);
+  const bandMiddleY = shellRect.height / 2;
   const layout = {} as StickerLayout;
 
-  for (let index = 0; index < STICKERS.length; index += 1) {
+  for (let index = 0; index < Math.min(band.fit, STICKERS.length); index += 1) {
     const sticker = STICKERS[index];
-    const anchor = anchors[index] ?? { x: 0.5, y: 0.5 };
-    const bounds = getStickerBoundsForShell(sticker, shellRect.width, shellRect.height);
-    const centerX = clamp((anchor.x + (Math.random() - 0.5) * 0.05) * shellRect.width, bounds.minCenterX, bounds.maxCenterX);
-    const centerY = clamp((anchor.y + (Math.random() - 0.5) * 0.04) * shellRect.height, bounds.minCenterY, bounds.maxCenterY);
-    layout[sticker.id] = {
-      x: centerX,
-      y: centerY,
-    };
+    const ratio = band.fit > 1 ? index / (band.fit - 1) : 0.5;
+    const alternate = index % 2 === 0 ? -1 : 1;
+    const rawX = band.left + band.widest / 2 + ratio * Math.max(0, band.width - band.widest);
+    const rawY = bandMiddleY + alternate * Math.min(6, band.widest / 8);
+
+    layout[sticker.id] = clampAndExcludeSticker(
+      rawX,
+      rawY,
+      sticker,
+      shellRect.width,
+      shellRect.height,
+      excl,
+      scale,
+    );
   }
 
   return layout;
@@ -684,6 +804,7 @@ interface StickerButtonProps {
   sticker: StickerDefinition;
   x: number;
   y: number;
+  isMobile?: boolean;
   dragging: boolean;
   resolvedMode: ResolvedColorMode;
   onPointerDown: (event: React.PointerEvent<HTMLButtonElement>, id: StickerId) => void;
@@ -696,6 +817,7 @@ const StickerButton = memo(function StickerButton({
   sticker,
   x,
   y,
+  isMobile = false,
   dragging,
   resolvedMode,
   onPointerDown,
@@ -703,6 +825,10 @@ const StickerButton = memo(function StickerButton({
   onPointerUp,
   onLostPointerCapture,
 }: StickerButtonProps) {
+  const scale = isMobile ? 0.75 : 1;
+  const width = Math.round(sticker.width * scale);
+  const height = Math.round(sticker.height * scale);
+
   return (
     <button
       type="button"
@@ -719,8 +845,8 @@ const StickerButton = memo(function StickerButton({
         dragging ? "z-50 cursor-grabbing" : "z-20 cursor-grab",
       )}
       style={{
-        width: `${sticker.width}px`,
-        height: `${sticker.height}px`,
+        width: `${width}px`,
+        height: `${height}px`,
         left: `${x}px`,
         top: `${y}px`,
         transform: `translate3d(-50%, -50%, 0) rotate(${sticker.rotation}deg)`,
@@ -797,7 +923,7 @@ const PetStickerButton = memo(function PetStickerButton({
         className="pet-sticker-gloss pointer-events-none absolute inset-0"
         style={{ maskImage: `url(${pet.src})`, WebkitMaskImage: `url(${pet.src})` }}
       />
-      <span className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-printer-ink-light shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark/45">{pet.label}</span>
+      <span className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-printer-ink/10 bg-printer-paper/80 px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink shadow-sm backdrop-blur-[1px] dark:border-white/10 dark:bg-printer-paper-dark/70 dark:text-printer-ink-dark">{pet.label}</span>
     </button>
   );
 });
@@ -811,6 +937,11 @@ interface PrinterShellProps {
       about: string;
       brandName: string;
       brandTagline: string;
+      language?: string;
+      theme?: string;
+      themeSystem?: string;
+      themeLight?: string;
+      themeDark?: string;
     };
     urls: {
       home: string;
@@ -839,6 +970,12 @@ export default function PrinterShell({
   const [pendingFromPath, setPendingFromPath] = useState<string | null>(null);
   const [displayLang, setDisplayLang] = useState(lang);
   const shellRef = useRef<HTMLDivElement>(null);
+  const brandPlateMobileRef = useRef<HTMLDivElement>(null);
+  const brandPlateDesktopRef = useRef<HTMLDivElement>(null);
+  const controlsClusterRef = useRef<HTMLDivElement>(null);
+  const mobileDialsRef = useRef<HTMLDivElement>(null);
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const [stickerLayout, setStickerLayout] = useState<StickerLayout | null>(() => stickerLayoutMemory);
   const [stickerOrder, setStickerOrder] = useState<StickerOrder>(() => stickerOrderMemory ?? [...DEFAULT_STICKER_ORDER]);
   const stickerLayoutRef = useRef<StickerLayout | null>(stickerLayoutMemory);
@@ -888,8 +1025,27 @@ export default function PrinterShell({
     document.documentElement.lang = lang;
   }, [lang]);
 
-  const getStickerBounds = useCallback((sticker: StickerDefinition, shellRect: DOMRect) => {
-    return getStickerBoundsForShell(sticker, shellRect.width, shellRect.height);
+  useLayoutEffect(() => {
+    const updateMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 639px)").matches);
+    };
+    updateMobile();
+    const mql = window.matchMedia("(max-width: 639px)");
+    mql.addEventListener("change", updateMobile);
+    return () => mql.removeEventListener("change", updateMobile);
+  }, []);
+
+  const getStickerExclusions = useCallback((shellRect: DOMRect, mobile: boolean) => {
+    return getExclusionRects(
+      shellRect,
+      [
+        mobile ? brandPlateMobileRef.current : brandPlateDesktopRef.current,
+        controlsClusterRef.current,
+        mobileDialsRef.current,
+        mobileNavRef.current,
+      ],
+      mobile,
+    );
   }, []);
 
   const normalizeStickerLayoutToTopSection = useCallback((layout: StickerLayout): StickerLayout => {
@@ -899,35 +1055,39 @@ export default function PrinterShell({
     const shellRect = shell.getBoundingClientRect();
     if (shellRect.width <= 0 || shellRect.height <= 0) return layout;
 
+    const mobile = shellRect.width < 640;
+    const scale = mobile ? 0.75 : 1;
+    const exclusions = getStickerExclusions(shellRect, mobile);
+    const fitted = STICKERS.slice(0, stickerBand(exclusions, shellRect.width, scale).fit);
+
     const normalized = {} as StickerLayout;
     let changed = false;
 
-    for (const sticker of STICKERS) {
+    for (const sticker of fitted) {
       const position = layout[sticker.id];
-      const bounds = getStickerBounds(sticker, shellRect);
-      const rawCenterX = position.x;
-      const rawCenterY = position.y;
-      const clampedCenterX = clamp(rawCenterX, bounds.minCenterX, bounds.maxCenterX);
-      const clampedCenterY = clamp(rawCenterY, bounds.minCenterY, bounds.maxCenterY);
-      const centerX =
-        Math.abs(clampedCenterX - rawCenterX) <= STICKER_NORMALIZE_EPSILON_PX ? rawCenterX : clampedCenterX;
-      const centerY =
-        Math.abs(clampedCenterY - rawCenterY) <= STICKER_NORMALIZE_EPSILON_PX ? rawCenterY : clampedCenterY;
+      if (!position) continue;
 
-      normalized[sticker.id] = {
-        x: centerX,
-        y: centerY,
-      };
+      const adjusted = clampAndExcludeSticker(
+        position.x,
+        position.y,
+        sticker,
+        shellRect.width,
+        shellRect.height,
+        exclusions,
+        scale,
+      );
+
+      normalized[sticker.id] = adjusted;
 
       if (!changed) {
         changed =
-          Math.abs(normalized[sticker.id].x - position.x) > 0.0005 ||
-          Math.abs(normalized[sticker.id].y - position.y) > 0.0005;
+          Math.abs(adjusted.x - position.x) > 0.0005 ||
+          Math.abs(adjusted.y - position.y) > 0.0005;
       }
     }
 
     return changed ? normalized : layout;
-  }, [getStickerBounds]);
+  }, [getStickerExclusions]);
 
   const persistStickerLayout = useCallback((layout: StickerLayout) => {
     stickerLayoutMemory = layout;
@@ -944,11 +1104,16 @@ export default function PrinterShell({
   }, []);
 
   useLayoutEffect(() => {
+    const shellRect = shellRef.current?.getBoundingClientRect();
+    const mobile = shellRect ? shellRect.width < 640 : window.matchMedia("(max-width: 639px)").matches;
+    setIsMobile(mobile);
+
     const current = stickerLayoutRef.current;
     if (current) {
-      // Keep current in-memory layout as-is across remounts (e.g. language switch)
-      // to avoid tiny re-normalization shifts.
-      setStickerLayout((prev) => (prev ?? current));
+      const normalized = normalizeStickerLayoutToTopSection(current);
+      setStickerLayout(normalized);
+      stickerLayoutRef.current = normalized;
+      persistStickerLayout(normalized);
       return;
     }
 
@@ -963,13 +1128,13 @@ export default function PrinterShell({
       }
     } catch {}
 
-    const shellRect = shellRef.current?.getBoundingClientRect();
     if (!shellRect || shellRect.width <= 0 || shellRect.height <= 0) return;
-    const randomLayout = createRandomStickerLayout(shellRect);
+    const exclusions = getStickerExclusions(shellRect, mobile);
+    const randomLayout = createRandomStickerLayout(shellRect, mobile, exclusions);
     setStickerLayout(randomLayout);
     stickerLayoutRef.current = randomLayout;
     persistStickerLayout(randomLayout);
-  }, [normalizeStickerLayoutToTopSection, persistStickerLayout]);
+  }, [getStickerExclusions, normalizeStickerLayoutToTopSection, persistStickerLayout]);
 
   useLayoutEffect(() => {
     if (stickerOrderMemory) {
@@ -1216,22 +1381,33 @@ export default function PrinterShell({
     if (rect.width <= 0 || rect.height <= 0) return;
 
     const sticker = STICKER_BY_ID[id];
-    const bounds = getStickerBounds(sticker, rect);
-    const centerX = clamp(clientX - rect.left - offsetX, bounds.minCenterX, bounds.maxCenterX);
-    const centerY = clamp(clientY - rect.top - offsetY, bounds.minCenterY, bounds.maxCenterY);
+    if (!sticker) return;
+
+    const mobile = rect.width < 640;
+    const scale = mobile ? 0.75 : 1;
+    const exclusions = getStickerExclusions(rect, mobile);
+    const adjusted = clampAndExcludeSticker(
+      clientX - rect.left - offsetX,
+      clientY - rect.top - offsetY,
+      sticker,
+      rect.width,
+      rect.height,
+      exclusions,
+      scale,
+    );
 
     const nextLayout: StickerLayout = {
       ...currentLayout,
       [id]: {
-        x: centerX,
-        y: centerY,
+        x: adjusted.x,
+        y: adjusted.y,
       },
     };
 
     stickerLayoutMemory = nextLayout;
     stickerLayoutRef.current = nextLayout;
     setStickerLayout(nextLayout);
-  }, [getStickerBounds]);
+  }, [getStickerExclusions]);
 
   const finishStickerDrag = useCallback((pointerId: number) => {
     const dragState = dragStateRef.current;
@@ -1240,9 +1416,13 @@ export default function PrinterShell({
     setDraggingStickerId(null);
 
     if (stickerLayoutRef.current) {
-      persistStickerLayout(stickerLayoutRef.current);
+      const normalized = normalizeStickerLayoutToTopSection(stickerLayoutRef.current);
+      stickerLayoutMemory = normalized;
+      stickerLayoutRef.current = normalized;
+      setStickerLayout(normalized);
+      persistStickerLayout(normalized);
     }
-  }, [persistStickerLayout]);
+  }, [normalizeStickerLayoutToTopSection, persistStickerLayout]);
 
   const onStickerPointerDown = useCallback((event: React.PointerEvent<HTMLButtonElement>, id: StickerId) => {
     const shell = shellRef.current;
@@ -1304,9 +1484,20 @@ export default function PrinterShell({
     { value: "light", label: <SunIcon className={iconCls} /> },
     { value: "dark", label: <MoonIcon className={iconCls} /> },
   ];
+  const languageLabel = dictionary.labels.language ?? (displayLang === "zh" ? "语言" : "Language");
+  const themeLabel = dictionary.labels.theme ?? (displayLang === "zh" ? "主题" : "Theme");
+  const themeSystemLabel = dictionary.labels.themeSystem ?? (displayLang === "zh" ? "系统" : "System");
+  const themeLightLabel = dictionary.labels.themeLight ?? (displayLang === "zh" ? "浅色" : "Light");
+  const themeDarkLabel = dictionary.labels.themeDark ?? (displayLang === "zh" ? "深色" : "Dark");
+  const themeCurrentLabel =
+    mode === "system"
+      ? themeSystemLabel
+      : mode === "light"
+        ? themeLightLabel
+        : themeDarkLabel;
 
   return (
-    <div lang={lang} className="min-h-screen relative flex flex-col items-center px-3 py-6 sm:py-10">
+    <div lang={lang} className="min-h-screen relative flex flex-col items-center px-3 pb-6 pt-4 sm:pb-10 sm:pt-8">
       <HalftoneBackground resolvedMode={resolvedMode} />
       {/* Printer Body */}
       <div className="w-full max-w-3xl relative z-10">
@@ -1323,8 +1514,11 @@ export default function PrinterShell({
             <div className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[120%] h-[80%] bg-[radial-gradient(ellipse_at_center,rgba(100,120,255,0.07)_0%,rgba(80,100,220,0.03)_40%,transparent_70%)]" />
           </div>
 
-          {/* Draggable shell stickers remain decorative chrome and never expose focusable content. */}
-          <div className="absolute inset-0 z-30 pointer-events-none" aria-hidden="true">
+          {/* Draggable shell stickers remain decorative chrome and never expose focusable content.
+              They render from sm upward only: below that the two-row header leaves no band that is
+              free of the brand plate, the nav pills and the dial cluster, so any placement would
+              either cover a control or the candidate's name. */}
+          <div className="absolute inset-0 z-30 pointer-events-none hidden sm:block" aria-hidden="true">
             {stickerLayout && stickerOrder.map((stickerId) => {
               const sticker = STICKER_BY_ID[stickerId];
               const position = stickerLayout[stickerId];
@@ -1337,6 +1531,7 @@ export default function PrinterShell({
                   sticker={sticker}
                   x={position.x}
                   y={position.y}
+                  isMobile={isMobile}
                   dragging={dragging}
                   resolvedMode={resolvedMode}
                   onPointerDown={onStickerPointerDown}
@@ -1349,11 +1544,83 @@ export default function PrinterShell({
           </div>
 
           {/* Top part - Brand & Nav */}
-          <div className="bg-printer-body dark:bg-printer-body-dark px-6 pt-6 pb-5 sm:px-10 sm:pt-10 relative">
-            {/* Brand plate */}
-            <div className="relative flex items-start justify-between mb-8">
-              <div className="flex items-center gap-4">
-                <div className="relative">
+          <div className="bg-printer-body dark:bg-printer-body-dark px-4 sm:px-8 pt-4 sm:pt-6 pb-2 sm:pb-4 relative">
+            {/* Mobile layout (below sm): two rows */}
+            <div className="flex flex-col gap-2.5 sm:hidden">
+              {/* Row 1: avatar, wordmark and LED on left; both dials on right */}
+              <div className="flex items-center justify-between min-h-[44px]">
+                <div ref={brandPlateMobileRef} className="flex items-center gap-3">
+                  <div className="relative shrink-0">
+                    <div className="absolute -inset-1.5 rounded-full bg-black/5 dark:bg-white/[0.08] shadow-inner" />
+                    <Image
+                      className="h-8 w-8 rounded-full ring-1 ring-black/10 dark:ring-white/[0.15] shadow-sm dark:shadow-[0_0_12px_rgba(100,120,255,0.1)] relative z-10"
+                      src={profilePhoto}
+                      alt="Jiajia Zhang"
+                      priority
+                    />
+                  </div>
+                  <div>
+                    <div className="font-mono text-sm font-bold tracking-[0.25em] text-printer-ink dark:text-printer-ink-dark uppercase leading-none">
+                      {dictionary.labels.brandName}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 ml-1">
+                    <div className="relative w-3.5 h-3.5 rounded-full bg-black/10 dark:bg-black/40 flex items-center justify-center shrink-0">
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500/90 shadow-[0_0_8px_rgba(34,197,94,0.6),inset_0_-1px_2px_rgba(0,0,0,0.3)] printer-led-pulse" style={{ animationDelay: indicatorDelay }} />
+                      <div className="absolute inset-0 rounded-full border border-black/10 dark:border-white/5 shadow-inner pointer-events-none" />
+                    </div>
+                    <span className="font-mono text-[11px] text-printer-ink-muted dark:text-printer-ink-muted-dark uppercase tracking-widest leading-none">
+                      ON
+                    </span>
+                  </div>
+                </div>
+
+                <div ref={mobileDialsRef} className="flex items-center gap-2 shrink-0">
+                  <RotaryDial
+                    options={langOptions}
+                    value={displayLang}
+                    onChange={switchToLanguage}
+                    currentLabel={displayLang === "en" ? "EN" : "中"}
+                    ariaLabel={`${languageLabel}: ${displayLang === "en" ? "English" : "中文"}`}
+                    title={displayLang === "en" ? "切换到中文" : "Switch to English"}
+                  />
+                  <RotaryDial
+                    options={colorModeOptions}
+                    value={mode}
+                    onChange={setColorMode}
+                    currentLabel={themeCurrentLabel}
+                    ariaLabel={`${themeLabel}: ${themeCurrentLabel}`}
+                    title={themeCurrentLabel}
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: full-width four-pill nav row */}
+              <nav ref={mobileNavRef} className="grid grid-cols-4 gap-1.5 w-full">
+                {navItems.map((item, index) => {
+                  const active = pendingNavHref ? pendingNavHref === item.href : isActive(item.href);
+                  return (
+                    <Link key={index} href={item.href} className="w-full">
+                      <button
+                        onClick={() => onNavPress(item.href)}
+                        className={classNames(
+                          "printer-btn whitespace-nowrap w-full min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                          { "active": active },
+                        )}
+                      >
+                        <span className="leading-none">{item.label}</span>
+                      </button>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Desktop layout (sm and up): single row */}
+            <div className="hidden sm:flex sm:items-center sm:justify-between sm:gap-4 min-h-[44px]">
+              {/* Brand plate on the LEFT */}
+              <div ref={brandPlateDesktopRef} className="flex items-center gap-4 shrink-0">
+                <div className="relative shrink-0">
                   <div className="absolute -inset-2 rounded-full bg-black/5 dark:bg-white/[0.08] shadow-inner" />
                   <Image
                     className="h-8 w-8 rounded-full ring-1 ring-black/10 dark:ring-white/[0.15] shadow-sm dark:shadow-[0_0_12px_rgba(100,120,255,0.1)] relative z-10"
@@ -1363,60 +1630,62 @@ export default function PrinterShell({
                   />
                 </div>
                 <div>
-                  <div className="font-mono text-sm font-bold tracking-[0.25em] text-printer-ink dark:text-printer-ink-dark uppercase">
+                  <div className="font-mono text-sm font-bold tracking-[0.25em] text-printer-ink dark:text-printer-ink-dark uppercase leading-tight">
                     {dictionary.labels.brandName}
                   </div>
-                  <div className="font-mono text-[9px] tracking-[0.1em] text-printer-ink-light dark:text-printer-ink-dark/40 uppercase mt-0.5">
-                    {dictionary.labels.brandTagline}
-                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-6">
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="relative w-3.5 h-3.5 rounded-full bg-black/10 dark:bg-black/40 flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/90 shadow-[0_0_8px_rgba(34,197,94,0.6),inset_0_-1px_2px_rgba(0,0,0,0.3)] animate-[pulse_2s_infinite]" style={{ animationDelay: indicatorDelay }} />
+                <div className="flex items-center gap-1.5 ml-2">
+                  <div className="relative w-3.5 h-3.5 rounded-full bg-black/10 dark:bg-black/40 flex items-center justify-center shrink-0">
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/90 shadow-[0_0_8px_rgba(34,197,94,0.6),inset_0_-1px_2px_rgba(0,0,0,0.3)] printer-led-pulse" style={{ animationDelay: indicatorDelay }} />
                     <div className="absolute inset-0 rounded-full border border-black/10 dark:border-white/5 shadow-inner pointer-events-none" />
                   </div>
-                  <span className="font-mono text-[8px] text-printer-ink-light dark:text-printer-ink-dark/40 uppercase tracking-widest leading-none">
+                  <span className="font-mono text-[11px] text-printer-ink-muted dark:text-printer-ink-muted-dark uppercase tracking-widest leading-none">
                     ON
                   </span>
                 </div>
               </div>
-            </div>
 
-            {/* Navigation row */}
-            <div className="relative mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2">
-              <nav className="relative flex items-center gap-2 sm:gap-2.5 flex-1 w-full py-1.5">
-                {navItems.map((item, index) => {
-                  const active = pendingNavHref ? pendingNavHref === item.href : isActive(item.href);
-                  return (
-                    <Link key={index} href={item.href}>
-                      <button
-                        onClick={() => onNavPress(item.href)}
-                        className={classNames("printer-btn whitespace-nowrap", { "active": active })}
-                      >
-                        <span className="leading-none">{item.label}</span>
-                      </button>
-                    </Link>
-                  );
-                })}
-              </nav>
-              <div className="sm:hidden h-[1px] bg-black/10 dark:bg-white/10" />
-              <div className="flex items-center justify-end gap-5 shrink-0 py-1">
-                <RotaryDial
-                  options={langOptions}
-                  value={displayLang}
-                  onChange={switchToLanguage}
-                  title={displayLang === "en" ? "切换到中文" : "Switch to English"}
-                />
-                <RotaryDial
-                  options={colorModeOptions}
-                  value={mode}
-                  onChange={setColorMode}
-                  labelLayout="inline"
-                  title={mode === "system" ? "System" : mode === "light" ? "Light" : "Dark"}
-                />
+              {/* Nav pills plus both dials on the RIGHT */}
+              <div ref={controlsClusterRef} className="flex items-center justify-end gap-2 lg:gap-3 shrink-0">
+                <nav className="flex items-center gap-1 lg:gap-1.5">
+                  {navItems.map((item, index) => {
+                    const active = pendingNavHref ? pendingNavHref === item.href : isActive(item.href);
+                    return (
+                      <Link key={index} href={item.href}>
+                        <button
+                          onClick={() => onNavPress(item.href)}
+                          className={classNames(
+                            "printer-btn whitespace-nowrap px-3 min-h-[44px] sm:min-h-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                            { "active": active },
+                          )}
+                        >
+                          <span className="leading-none">{item.label}</span>
+                        </button>
+                      </Link>
+                    );
+                  })}
+                </nav>
+                <div className="w-px h-6 bg-black/10 dark:bg-white/10 shrink-0" />
+                <div className="flex items-center gap-2 lg:gap-3 shrink-0">
+                  <RotaryDial
+                    options={langOptions}
+                    value={displayLang}
+                    onChange={switchToLanguage}
+                    currentLabel={displayLang === "en" ? "EN" : "中"}
+                    ariaLabel={`${languageLabel}: ${displayLang === "en" ? "English" : "中文"}`}
+                    title={displayLang === "en" ? "切换到中文" : "Switch to English"}
+                    labelPlacement="below"
+                  />
+                  <RotaryDial
+                    options={colorModeOptions}
+                    value={mode}
+                    onChange={setColorMode}
+                    currentLabel={themeCurrentLabel}
+                    ariaLabel={`${themeLabel}: ${themeCurrentLabel}`}
+                    title={themeCurrentLabel}
+                    labelPlacement="below"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -1478,12 +1747,31 @@ export default function PrinterShell({
               <div className="printer-content-area paper-content-settle flex-1 px-6 sm:px-10 py-8 relative z-10">{children}</div>
 
               <div className="printer-paper-footer px-6 sm:px-10 py-6 mt-4 border-t border-dashed border-printer-ink/10 dark:border-printer-ink-dark/10 relative z-10">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-printer-ink-light dark:text-printer-ink-dark/40">
-                  <div className="font-mono text-[10px] tracking-widest uppercase order-2 sm:order-1">© {new Date().getFullYear()} Jiajia</div>
-                  <div className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-4 order-1 sm:order-2">
-                    <a href="https://github.com/isjiajia01" target="_blank" rel="noopener" className="hover:text-printer-accent transition-colors">GitHub</a>
-                    <a href="https://www.linkedin.com/in/jiajia-zhang-0a8a40289" target="_blank" rel="noopener" className="hover:text-printer-accent transition-colors">LinkedIn</a>
-                    <a href="mailto:isjiajiazhang@gmail.com" className="hover:text-printer-accent transition-colors">Email</a>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-printer-ink-muted dark:text-printer-ink-muted-dark">
+                  <div className="font-mono text-[11px] tracking-widest uppercase order-2 sm:order-1">© {new Date().getFullYear()} Jiajia</div>
+                  <div className="font-mono text-[11px] tracking-widest uppercase flex items-center gap-4 order-1 sm:order-2">
+                    <a
+                      href="https://github.com/isjiajia01"
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-1 sm:min-h-0 sm:min-w-0 sm:px-0 hover:text-printer-accent-text dark:hover:text-printer-accent-text-dark transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:focus-visible:outline-printer-ink-dark"
+                    >
+                      GitHub
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/jiajia-zhang-0a8a40289"
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-1 sm:min-h-0 sm:min-w-0 sm:px-0 hover:text-printer-accent-text dark:hover:text-printer-accent-text-dark transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:focus-visible:outline-printer-ink-dark"
+                    >
+                      LinkedIn
+                    </a>
+                    <a
+                      href="mailto:isjiajiazhang@gmail.com"
+                      className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-1 sm:min-h-0 sm:min-w-0 sm:px-0 hover:text-printer-accent-text dark:hover:text-printer-accent-text-dark transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-printer-ink dark:focus-visible:outline-printer-ink-dark"
+                    >
+                      Email
+                    </a>
                   </div>
                 </div>
               </div>

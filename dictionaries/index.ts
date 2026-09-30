@@ -9,6 +9,28 @@ export const languageLabels = {
   en: "English",
   zh: "中文",
 };
+export interface ProjectImage {
+  src: string;
+  srcSmall: string;
+  width: number;
+  height: number;
+  alt: string;
+}
+
+export interface WorkItem {
+  name: string;
+  summary: string;
+  roleFit: string;
+  evidence: string[];
+  stack: string[];
+  link: string;
+  color: string;
+  primary: boolean;
+  homeFeatured: boolean;
+  domain?: string;
+  image?: ProjectImage;
+}
+
 
 export type Dictionary = Awaited<
   ReturnType<(typeof dictionaries)[keyof typeof dictionaries]>

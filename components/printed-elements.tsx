@@ -15,10 +15,10 @@ export function PrintedSection({
   children,
 }: PrintedSectionProps) {
   return (
-    <section className={classNames("mb-8", className)}>
+    <section className={classNames("mb-10", className)}>
       {label && (
         <div className="flex items-center gap-2 mb-3">
-          <div className="inline-flex items-center gap-1.5 leading-none align-middle font-mono text-[10px] tracking-[0.3em] uppercase text-printer-ink-light dark:text-printer-ink-dark/50 bg-printer-ink/5 dark:bg-printer-ink-dark/5 px-2 py-[3px] rounded-sm [&_svg]:shrink-0 [&_svg]:align-middle [&_.label-text]:inline-flex [&_.label-text]:items-center [&_.label-text]:leading-none [&_.label-text]:translate-y-[0.5px]">
+          <div className="inline-flex items-center gap-1.5 leading-none align-middle font-mono text-[11px] tracking-[0.12em] uppercase text-printer-ink-muted dark:text-printer-ink-muted-dark bg-printer-ink/5 dark:bg-printer-ink-dark/5 px-2 py-[3px] rounded-sm [&_svg]:shrink-0 [&_svg]:align-middle [&_.label-text]:inline-flex [&_.label-text]:items-center [&_.label-text]:leading-none [&_.label-text]:translate-y-[0.5px]">
             {label}
           </div>
           <div className="flex-1 h-px bg-printer-ink/5 dark:bg-printer-ink-dark/5" />
@@ -48,13 +48,13 @@ export function PrintedLabel({
   return (
     <span
       className={classNames(
-        "inline-flex items-center leading-none font-mono text-[10px] tracking-widest uppercase px-2 py-[3px] rounded-sm border [&_svg]:shrink-0 [&_svg]:align-middle [&_.label-text]:inline-flex [&_.label-text]:items-center [&_.label-text]:leading-none [&_.label-text]:translate-y-[0.5px]",
+        "inline-flex items-center leading-none font-mono text-[11px] tracking-[0.1em] uppercase px-2 py-[3px] rounded-sm border [&_svg]:shrink-0 [&_svg]:align-middle [&_.label-text]:inline-flex [&_.label-text]:items-center [&_.label-text]:leading-none [&_.label-text]:translate-y-[0.5px]",
         {
-          "border-printer-ink/10 dark:border-printer-ink-dark/10 text-printer-ink/70 dark:text-printer-ink-dark/70":
+          "border-printer-ink/10 dark:border-printer-ink-dark/10 text-printer-ink/75 dark:text-printer-ink-dark/75":
             variant === "default",
-          "border-printer-accent/30 dark:border-printer-accent-dark/30 text-printer-accent dark:text-printer-accent-dark bg-printer-accent/5":
+          "border-printer-accent/30 dark:border-printer-accent-dark/30 text-printer-accent-text dark:text-printer-accent-text-dark bg-printer-accent/5":
             variant === "accent",
-          "border-printer-ink/5 dark:border-printer-ink-dark/5 text-printer-ink-light dark:text-printer-ink-dark/40":
+          "border-printer-ink/5 dark:border-printer-ink-dark/5 text-printer-ink-muted dark:text-printer-ink-muted-dark":
             variant === "muted",
         },
         className,
@@ -108,20 +108,21 @@ export function PrintedPageTitle({
   iconClassName,
 }: PrintedPageTitleProps) {
   return (
-    <div className={classNames("relative mb-1", className)}>
-      <Icon
-        className={classNames(
-          "pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-x-5 -translate-y-1/2 text-printer-ink-light dark:text-printer-ink-dark/50 sm:-translate-x-6",
-          iconClassName,
-        )}
-      />
+    <div className={classNames("mb-1", className)}>
       <h1
         className={classNames(
-          "font-serif text-xl font-bold tracking-tight text-printer-ink dark:text-printer-ink-dark uppercase",
+          "inline-flex items-center gap-2 font-serif text-xl font-bold tracking-tight text-printer-ink dark:text-printer-ink-dark uppercase",
           titleClassName,
         )}
       >
-        {children}
+        <Icon
+          aria-hidden="true"
+          className={classNames(
+            "h-4 w-4 shrink-0 text-printer-ink-muted dark:text-printer-ink-muted-dark",
+            iconClassName,
+          )}
+        />
+        <span>{children}</span>
       </h1>
     </div>
   );

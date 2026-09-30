@@ -21,6 +21,7 @@ import {
   PrintedPageTitle,
   PrintedSection,
 } from "@/components/printed-elements";
+import ProjectShot from "@/components/project-shot";
 
 export async function generateMetadata(
   props: {
@@ -69,31 +70,47 @@ function WorkCard({
   work,
   dictionary,
   compact = false,
+  priority = false,
 }: {
   work: Awaited<ReturnType<typeof getDictionary>>["works"][number];
   dictionary: Awaited<ReturnType<typeof getDictionary>>;
   compact?: boolean;
+  priority?: boolean;
 }) {
-  const isPlaceholder = work.link === "#";
-  const isExternal = work.link.startsWith("http");
+  const isPlaceholder = !work.link || work.link === "#";
+  const isExternal = !isPlaceholder && work.link.startsWith("http");
+  const hasImage = Boolean(work.image && !compact);
+
+  const cardClasses = isPlaceholder
+    ? "border border-printer-ink/12 bg-printer-ink/[0.025] p-4 dark:border-printer-ink-dark/12 dark:bg-printer-ink-dark/[0.025]"
+    : "portfolio-card-motion group border border-printer-ink/12 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/12 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25";
 
   const body = (
-    <div className="portfolio-card-motion group border border-printer-ink/12 bg-printer-ink/[0.025] p-4 transition-colors hover:border-printer-accent/25 hover:bg-printer-accent/[0.035] dark:border-printer-ink-dark/12 dark:bg-printer-ink-dark/[0.025] dark:hover:border-printer-accent-dark/25">
+    <div className={cardClasses}>
+      {hasImage && (
+        <div className="mb-3">
+          <ProjectShot
+            image={work.image!}
+            domain={work.domain}
+            priority={Boolean(work.primary && priority)}
+          />
+        </div>
+      )}
       <div className="flex items-start gap-3">
-        <WorkMark name={work.name} />
+        {!hasImage && <WorkMark name={work.name} />}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-mono text-sm font-semibold text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
+            <h3 className="font-mono text-sm font-semibold text-printer-ink transition-colors group-hover:text-printer-accent dark:text-printer-ink-dark dark:group-hover:text-printer-accent-dark">
               {work.name}
-            </h2>
+            </h3>
             {!isPlaceholder &&
               (isExternal ? (
-                <ExternalLinkIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
+                <ExternalLinkIcon className="h-3 w-3 text-printer-ink-muted dark:text-printer-ink-muted-dark" />
               ) : (
-                <ArrowRightIcon className="h-3 w-3 text-printer-ink-light dark:text-printer-ink-dark/40" />
+                <ArrowRightIcon className="h-3 w-3 text-printer-ink-muted dark:text-printer-ink-muted-dark" />
               ))}
           </div>
-          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-printer-ink/70 dark:text-printer-ink-dark/65">
+          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
             {work.roleFit}
           </p>
         </div>
@@ -106,8 +123,8 @@ function WorkCard({
       {!compact && (
         <>
           <div className="mt-4">
-            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink/65 dark:text-printer-ink-dark/60">
-              <EvidenceIcon className="h-2.5 w-2.5" />
+            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
+              <EvidenceIcon className="h-3 w-3" />
               {dictionary.labels.evidence}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -123,8 +140,8 @@ function WorkCard({
           </div>
 
           <div className="mt-4">
-            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-printer-ink/65 dark:text-printer-ink-dark/60">
-              <StackIcon className="h-2.5 w-2.5" />
+            <div className="mb-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
+              <StackIcon className="h-3 w-3" />
               {dictionary.labels.stack}
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -170,11 +187,11 @@ export default async function WorksPage(
 
   return (
     <div>
-      <PrintedSection>
+      <PrintedSection className="!mb-8">
         <PrintedPageTitle icon={BriefcaseIcon}>
           {dictionary.labels.works}
         </PrintedPageTitle>
-        <p className="max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/50">
+        <p className="max-w-2xl font-serif text-[14px] leading-relaxed text-printer-ink-muted dark:text-printer-ink-muted-dark">
           {dictionary.labels.noocWorks}
         </p>
       </PrintedSection>
@@ -182,14 +199,19 @@ export default async function WorksPage(
       <PrintedSection
         label={
           <span className="inline-flex items-center gap-1.5">
-            <StarIcon className="h-2.5 w-2.5" />
-            <span className="label-text">{dictionary.labels.featured}</span>
+            <StarIcon className="h-3 w-3" />
+            <h2 className="label-text">{dictionary.labels.featured}</h2>
           </span>
         }
       >
         <div className="flex flex-col gap-4">
           {coreWorks.map((work) => (
-            <WorkCard key={work!.name} work={work!} dictionary={dictionary} />
+            <WorkCard
+              key={work.name}
+              work={work}
+              dictionary={dictionary}
+              priority
+            />
           ))}
         </div>
       </PrintedSection>
@@ -200,8 +222,8 @@ export default async function WorksPage(
           <PrintedSection
             label={
               <span className="inline-flex items-center gap-1.5">
-                <ArchiveBoxIcon className="h-2.5 w-2.5" />
-                <span className="label-text">{dictionary.labels.archive}</span>
+                <ArchiveBoxIcon className="h-3 w-3" />
+                <h2 className="label-text">{dictionary.labels.archive}</h2>
               </span>
             }
           >
