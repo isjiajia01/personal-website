@@ -1,24 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import {
-  RiArrowLeftLine as ArrowLeftIcon,
-  RiBusLine as BusIcon,
-  RiDatabase2Line as DatabaseIcon,
-  RiExternalLinkLine as ExternalLinkIcon,
-  RiGitMergeLine as LifecycleIcon,
-  RiMap2Line as MapIcon,
-  RiRouteLine as RouteIcon,
-  RiShieldCheckLine as ShieldIcon,
-} from "@remixicon/react";
-import { getDictionary, Language } from "@/dictionaries";
+import { getDictionary, type Language } from "@/dictionaries";
 import { getAlternateLanguages } from "@/lib/metadata";
-import {
-  PrintedDivider,
-  PrintedLabel,
-  PrintedPageTitle,
-  PrintedSection,
-} from "@/components/printed-elements";
 
 export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "zh" }];
@@ -75,29 +59,6 @@ export async function generateMetadata(
   };
 }
 
-function SectionLabel({
-  icon: Icon,
-  children,
-}: {
-  icon: typeof MapIcon;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <Icon className="h-2.5 w-2.5" />
-      <span className="label-text">{children}</span>
-    </span>
-  );
-}
-
-function FigureCaption({ children }: { children: React.ReactNode }) {
-  return (
-    <figcaption className="mt-2 font-mono text-[9px] leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/40">
-      {children}
-    </figcaption>
-  );
-}
-
 export default async function AfgangCasePage(
   props: {
     params: Promise<{ lang: Language }>;
@@ -107,244 +68,234 @@ export default async function AfgangCasePage(
   const dictionary = await getDictionary(params.lang);
   const project = dictionary.afgangCase;
 
+  const sources = [
+    {
+      label: project.sourceLinks.rejseplanen,
+      href: "https://labs.rejseplanen.dk/hc/en-us/articles/21639730766877-Om-GTFS-Schedule-Static",
+    },
+    {
+      label: project.sourceLinks.openStreetMap,
+      href: "https://www.openstreetmap.org/copyright",
+    },
+    {
+      label: project.sourceLinks.openFreeMap,
+      href: "https://openfreemap.org/",
+    },
+    {
+      label: project.sourceLinks.openMapTiles,
+      href: "https://openmaptiles.org/",
+    },
+  ];
+
   return (
     <article>
+      {/* Back link */}
       <Link
         href={dictionary.urls.works}
-        className="mb-5 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-printer-ink-light transition-colors hover:text-printer-accent dark:text-printer-ink-dark/45 dark:hover:text-printer-accent-dark"
+        className="text-[13px] leading-5 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
       >
-        <ArrowLeftIcon className="h-3 w-3" />
-        {project.backToWorks}
+        ← {project.backToWorks}
       </Link>
 
-      <PrintedSection>
-        <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-printer-accent dark:text-printer-accent-dark">
-          {project.eyebrow}
-        </p>
-        <PrintedPageTitle icon={BusIcon}>{project.title}</PrintedPageTitle>
-        <p className="mt-3 max-w-2xl font-serif text-sm leading-relaxed text-printer-ink dark:text-printer-ink-dark/80">
-          {project.summary}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {project.status.map((status, index) => (
-            <PrintedLabel key={status} variant={index === 0 ? "accent" : "default"}>
-              {status}
-            </PrintedLabel>
-          ))}
-        </div>
-      </PrintedSection>
+      {/* Eyebrow */}
+      <p className="mt-8 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+        {project.eyebrow}
+      </p>
 
-      <figure className="mb-8">
+      {/* Title */}
+      <h1 className="mt-1 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+        {project.title}
+      </h1>
+
+      {/* Summary */}
+      <p className="mt-3 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+        {project.summary}
+      </p>
+
+      {/* Status joined ' · ' */}
+      <p className="mt-3 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+        {project.status.join(" · ")}
+      </p>
+
+      {/* Hero figure */}
+      <figure className="mt-8">
         <Image
           src="/images/projects/afgang/reachability-desktop.webp"
           width={1440}
           height={900}
-          sizes="(max-width: 760px) 100vw, 720px"
+          sizes="(max-width: 640px) 100vw, 576px"
           priority
           alt={project.imageAlts.reachabilityDesktop}
-          className="h-auto w-full border border-printer-ink/10 dark:border-printer-ink-dark/10"
+          className="h-auto w-full rounded-md border border-zinc-200 dark:border-zinc-800"
         />
-        <FigureCaption>{project.imageCaptions.reachability}</FigureCaption>
+        <figcaption className="mt-2 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.imageCaptions.reachability}
+        </figcaption>
       </figure>
 
-      <div className="mb-8 grid grid-cols-2 border-y border-printer-ink/10 dark:border-printer-ink-dark/10 sm:grid-cols-4">
-        {project.metrics.map((metric, index) => (
-          <div
-            key={metric.label}
-            className={`px-3 py-4 ${index % 2 === 0 ? "border-r" : ""} ${index > 1 ? "border-t sm:border-t-0" : ""} border-printer-ink/10 dark:border-printer-ink-dark/10 sm:border-r sm:last:border-r-0`}
-          >
-            <div className="font-mono text-xl font-semibold text-printer-accent dark:text-printer-accent-dark">
-              {metric.value}
-            </div>
-            <div className="mt-1 font-serif text-[11px] leading-snug text-printer-ink-light dark:text-printer-ink-dark/50">
+      {/* Metrics DL grid */}
+      <dl className="mt-8 grid grid-cols-2 gap-4 border-y border-zinc-200 py-4 dark:border-zinc-800 sm:grid-cols-4">
+        {project.metrics.map((metric) => (
+          <div key={metric.label}>
+            <dt className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
               {metric.label}
-            </div>
+            </dt>
+            <dd className="mt-1 text-[15px] font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
+              {metric.value}
+            </dd>
           </div>
         ))}
-      </div>
+      </dl>
 
-      <PrintedSection
-        label={<SectionLabel icon={RouteIcon}>{project.sectionLabels.outcome}</SectionLabel>}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {project.outcome.map((paragraph) => (
-            <p
-              key={paragraph}
-              className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55"
-            >
-              {paragraph}
-            </p>
+      {/* Outcome section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.outcome}
+        </h2>
+        <div className="mt-4 space-y-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+          {project.outcome.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
           ))}
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedDivider style="dashed" />
-
-      <PrintedSection
-        label={<SectionLabel icon={DatabaseIcon}>{project.sectionLabels.system}</SectionLabel>}
-      >
-        <p className="max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+      {/* System section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.system}
+        </h2>
+        <p className="mt-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {project.systemIntro}
         </p>
-        <ol className="mt-5 border-y border-printer-ink/10 dark:border-printer-ink-dark/10">
+        <ol className="mt-4 list-decimal space-y-2 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {project.systemFlow.map((step, index) => (
-            <li
-              key={step}
-              className="flex items-center gap-3 border-b border-printer-ink/8 py-3 last:border-b-0 dark:border-printer-ink-dark/8"
-            >
-              <span className="font-mono text-[9px] text-printer-accent dark:text-printer-accent-dark">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="font-mono text-[11px] leading-relaxed text-printer-ink/75 dark:text-printer-ink-dark/70">
-                {step}
-              </span>
-            </li>
+            <li key={index}>{step}</li>
           ))}
         </ol>
-      </PrintedSection>
+      </section>
 
-      <PrintedSection
-        label={<SectionLabel icon={ShieldIcon}>{project.sectionLabels.decisions}</SectionLabel>}
-      >
-        <div className="border-y border-printer-ink/10 dark:border-printer-ink-dark/10">
+      {/* Decisions section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.decisions}
+        </h2>
+        <div className="mt-6 space-y-6">
           {project.decisions.map((decision) => (
-            <div
-              key={decision.title}
-              className="grid gap-2 border-b border-printer-ink/8 py-4 last:border-b-0 dark:border-printer-ink-dark/8 sm:grid-cols-[12rem_1fr] sm:gap-5"
-            >
-              <h2 className="font-mono text-[11px] font-semibold leading-relaxed text-printer-ink dark:text-printer-ink-dark">
+            <div key={decision.title}>
+              <h3 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
                 {decision.title}
-              </h2>
-              <p className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+              </h3>
+              <p className="mt-2 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
                 {decision.body}
               </p>
             </div>
           ))}
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedSection
-        label={<SectionLabel icon={LifecycleIcon}>{project.sectionLabels.lifecycle}</SectionLabel>}
-      >
-        <p className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+      {/* Lifecycle section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.lifecycle}
+        </h2>
+        <p className="mt-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {project.lifecycleIntro}
         </p>
-        <ol className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+        <ol className="mt-4 list-decimal space-y-2 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {project.lifecycle.map((step, index) => (
-            <li key={step} className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-printer-accent/25 font-mono text-[9px] text-printer-accent dark:border-printer-accent-dark/25 dark:text-printer-accent-dark">
-                {index + 1}
-              </span>
-              <span className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
-                {step}
-              </span>
-            </li>
+            <li key={index}>{step}</li>
           ))}
         </ol>
-      </PrintedSection>
+      </section>
 
-      <PrintedDivider style="dotted" />
-
-      <PrintedSection
-        label={<SectionLabel icon={ShieldIcon}>{project.sectionLabels.validation}</SectionLabel>}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <p className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
-            {project.validationIntro}
-          </p>
-          <p className="border-l-2 border-printer-accent pl-4 font-serif text-xs leading-relaxed text-printer-ink dark:border-printer-accent-dark dark:text-printer-ink-dark/75">
-            {project.validationDetail}
-          </p>
+      {/* Validation section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.validation}
+        </h2>
+        <div className="mt-4 space-y-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+          <p>{project.validationIntro}</p>
+          <p>{project.validationDetail}</p>
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedSection
-        label={<SectionLabel icon={MapIcon}>{project.sectionLabels.interface}</SectionLabel>}
-      >
-        <p className="mb-5 max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+      {/* Interface section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.interface}
+        </h2>
+        <p className="mt-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {project.interfaceBody}
         </p>
-        <div className="grid items-start gap-5 sm:grid-cols-[1fr_13rem]">
+        <div className="mt-6 space-y-6">
           <figure>
             <Image
               src="/images/projects/afgang/commute-desktop.webp"
               width={1440}
               height={900}
-              sizes="(max-width: 640px) 100vw, 500px"
+              sizes="(max-width: 640px) 100vw, 576px"
               alt={project.imageAlts.commuteDesktop}
-              className="h-auto w-full border border-printer-ink/10 dark:border-printer-ink-dark/10"
+              className="h-auto w-full rounded-md border border-zinc-200 dark:border-zinc-800"
             />
-            <FigureCaption>{project.imageCaptions.commute}</FigureCaption>
+            <figcaption className="mt-2 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+              {project.imageCaptions.commute}
+            </figcaption>
           </figure>
           <figure>
             <Image
               src="/images/projects/afgang/reachability-mobile.webp"
               width={390}
               height={844}
-              sizes="(max-width: 640px) 70vw, 208px"
+              sizes="(max-width: 640px) 70vw, 240px"
               alt={project.imageAlts.reachabilityMobile}
-              className="mx-auto h-auto w-full max-w-[17rem] border border-printer-ink/10 dark:border-printer-ink-dark/10"
+              className="mx-auto h-auto w-full max-w-[16rem] rounded-md border border-zinc-200 dark:border-zinc-800"
             />
-            <FigureCaption>{project.imageCaptions.mobile}</FigureCaption>
+            <figcaption className="mt-2 text-center text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+              {project.imageCaptions.mobile}
+            </figcaption>
           </figure>
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedDivider style="solid" />
-
-      <PrintedSection
-        label={<SectionLabel icon={ShieldIcon}>{project.sectionLabels.boundaries}</SectionLabel>}
-      >
-        <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-          {project.limits.map((limit) => (
-            <li key={limit} className="flex items-start gap-2">
-              <span className="mt-1.5 h-1 w-1 shrink-0 bg-printer-accent dark:bg-printer-accent-dark" />
-              <span className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
-                {limit}
-              </span>
-            </li>
+      {/* Boundaries section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.boundaries}
+        </h2>
+        <ul className="mt-4 list-disc space-y-2 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+          {project.limits.map((limit, index) => (
+            <li key={index}>{limit}</li>
           ))}
         </ul>
-      </PrintedSection>
+      </section>
 
-      <PrintedSection
-        label={<SectionLabel icon={DatabaseIcon}>{project.sectionLabels.sources}</SectionLabel>}
-      >
-        <p className="font-serif text-xs leading-relaxed text-printer-ink-light dark:text-printer-ink-dark/55">
+      {/* Sources section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {project.sectionLabels.sources}
+        </h2>
+        <p className="mt-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {project.sourceIntro}
         </p>
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
-          {[
-            {
-              label: project.sourceLinks.rejseplanen,
-              href: "https://labs.rejseplanen.dk/hc/en-us/articles/21639730766877-Om-GTFS-Schedule-Static",
-            },
-            {
-              label: project.sourceLinks.openStreetMap,
-              href: "https://www.openstreetmap.org/copyright",
-            },
-            {
-              label: project.sourceLinks.openFreeMap,
-              href: "https://openfreemap.org/",
-            },
-            {
-              label: project.sourceLinks.openMapTiles,
-              href: "https://openmaptiles.org/",
-            },
-          ].map((source) => (
+          {sources.map((source) => (
             <a
               key={source.href}
               href={source.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-mono text-[10px] text-printer-accent hover:underline dark:text-printer-accent-dark"
+              className="text-[13px] leading-5 underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
             >
               {source.label}
-              <ExternalLinkIcon className="h-3 w-3" />
+              <span aria-hidden="true">↗</span>
+              <span className="sr-only">
+                {" "}
+                {dictionary.labels.opensInNewTab}
+              </span>
             </a>
           ))}
         </div>
-      </PrintedSection>
+      </section>
     </article>
   );
 }

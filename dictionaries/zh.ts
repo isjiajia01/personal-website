@@ -1,19 +1,13 @@
-import {
-  RiLinkedinBoxLine as LinkedInIcon,
-  RiMailLine as EnvelopeIcon,
-  RiSendPlaneLine as PaperAirplaneIcon,
-} from "@remixicon/react";
-import { SiGithub } from "@icons-pack/react-simple-icons";
-
 const dictionary = {
   meta: {
     baseUrl: "https://me.zhangjiajia.me",
     websiteName: "Jiajia Zhang 的作品集",
+    authorName: "Jiajia Zhang",
     motto: "面向 internal tools 和 workflow systems 的 junior product/full-stack candidate。",
     mottos: [
       "我做 internal tools 和 workflow systems：证据清楚、人工可审、决策可复盘。",
       "最适合的方向：internal tools、support automation、operational decision support。",
-      "这是一个求职向作品集，但仍然保留一点打印纸的个性。",
+      "面向招聘交流的个人作品集。",
     ],
     bio: `
 我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
@@ -49,53 +43,89 @@ const dictionary = {
     works: "项目",
     resume: "简历",
     about: "关于",
-    viewResume: "查看简历",
-    emailMe: "发邮件给我",
-    seeWork: "查看项目",
     featured: "优先看这里",
     archive: "补充材料",
-    brandName: "JIAJIA",
-    brandTagline: "Workflow & Product Systems",
     notFoundStatus: "纸空了",
     notFoundTitle: "托盘已空",
     notFoundSubtitle: "请正确放入纸张以打印内容。",
     notFoundButton: "← 打印主页",
     notFoundError: "ERR 404 · PAPER_NOT_FOUND",
-    printedOn: "打印于",
     viewAllWorkEvidence: "查看完整项目证据",
     noocWorks: "优先从最能说明 internal tools、workflow automation 和 decision support 的项目看起。",
     aboutTitle: "关于",
     aboutSubtitle: "我如何理解 workflow systems、证据和实用自动化",
-    focus: "最适合方向",
-    evidence: "最强证据",
-    roleFit: "候选人定位",
-    stack: "技术/方法",
     openProject: "打开",
-    contactMe: "联系",
-    analyticalProof: "规划 / 分析证据",
-    icon(label: string) {
-      return `${label} 的图标`;
-    },
+    skipToContent: "跳至内容",
+    opensInNewTab: "（在新标签页中打开）",
   },
   homepage: {
-    headline: "我构建内部工具与工作流系统 —— 更清晰的证据、更安全的自动化、更好的决策。",
-    subline:
-      "最匹配 junior product/full-stack 方向，尤其是 internal tools、support automation 和 operational decision support。iOS 产品和优化研究是相邻证据，不是分散主线。",
-    proofPoints: [
-      "OpsDesk：线上 support/operations demo，包含 evidence package、draft action、approval gate、feedback memory 和 audit replay。",
-      "Afgang：本地优先的交通工具，包含计划时刻可达范围、保守地图曲面、事务化数据更新和跨浏览器验证。",
-      "DTU × Mover Thesis：真实物流规划项目，把路线约束转成可解释的决策支持证据。",
+    bioParagraphs: [
+      [
+        {
+          type: "text" as const,
+          value: "现居哥本哈根，已于 2026 年 7 月完成 ",
+        },
+        {
+          type: "org" as const,
+          id: "org-dtu",
+          name: "DTU",
+          href: "https://www.dtu.dk/",
+          description:
+            "丹麦技术大学（Technical University of Denmark）—— 数学建模与计算工程硕士，2026 年 7 月毕业。",
+        },
+        {
+          type: "text" as const,
+          value: " 数学建模与计算硕士学位，硕士论文结合 ",
+        },
+        {
+          type: "org" as const,
+          id: "org-mover",
+          name: "Mover",
+          href: "https://www.mover.dk/",
+          description:
+            "哥本哈根末端物流与多日配送规划平台。",
+        },
+        {
+          type: "text" as const,
+          value: " 场景研究多日配送规划与决策支持。",
+        },
+      ],
+      [
+        {
+          type: "text" as const,
+          value:
+            "核心方向围绕 internal tools、带人工审核的 workflow automation、数据质量工作流与运营决策支持 —— 并以早期在 ",
+        },
+        {
+          type: "org" as const,
+          id: "org-deloitte",
+          name: "Deloitte",
+          href: "https://www.deloitte.com/",
+          description: "早期企业系统与工程实践经历。",
+        },
+        {
+          type: "text" as const,
+          value: " 的工程实践及 ",
+        },
+        {
+          type: "org" as const,
+          id: "org-gdut",
+          name: "GDUT",
+          href: "https://www.gdut.edu.cn/",
+          description: "广东工业大学 —— 本科工程与计算机基础。",
+        },
+        {
+          type: "text" as const,
+          value: " 的本科背景为基础。",
+        },
+      ],
     ],
-    roleTargets: [
-      "Junior Product / Full-stack Engineer",
-      "Internal Tools / Workflow Automation Builder",
-    ],
-    note:
-      "站点可以有一点个性，但路径是实用的：先看项目证据，再看简历版总结。",
   },
   works: [
     {
+      slug: "opsdesk",
       name: "OpsDesk",
+      year: "2026",
       summary:
         "一个 support/operations demo，把客户问题转成证据、草稿动作、审批、反馈记忆和可 replay 的日志。",
       roleFit: "Internal tools · workflow automation with human review · support operations",
@@ -111,7 +141,9 @@ const dictionary = {
       homeFeatured: true,
     },
     {
+      slug: "denmark-flex-planner",
       name: "Denmark Flex Planner",
+      year: "2026",
       summary:
         "一个已上线的地图型决策支持工具，在预算、电网分区和区域约束下，为丹麦 EV 充电与本地灵活性投资确定优先级。",
       roleFit: "能源基础设施 · 约束优化 · 数据产品",
@@ -127,7 +159,9 @@ const dictionary = {
       homeFeatured: true,
     },
     {
+      slug: "afgang",
       name: "Afgang",
+      year: "2026",
       summary:
         "一个本地优先的哥本哈根交通工具，把通勤决策和基于计划时刻表的保守可达范围放在同一产品中。",
       roleFit: "全栈工程 · 公共交通数据 · 地理空间可靠性",
@@ -143,7 +177,9 @@ const dictionary = {
       homeFeatured: true,
     },
     {
+      slug: "cargo-guard",
       name: "Cargo Guard",
+      year: "2025",
       summary:
         "一个小型 Python demo，用来检查物流数据是否完整、新鲜、有效，是否值得团队继续使用。",
       roleFit: "Data quality · operational checks · supporting evidence",
@@ -153,13 +189,15 @@ const dictionary = {
         "适合作为 data-quality thinking 的补充证据，但不是作品集主线",
       ],
       stack: ["Python", "JSON contracts", "Data validation", "HTML report", "Logistics demo data"],
-      link: "#",
+      link: "/zh/works#cargo-guard",
       color: "yellow",
       primary: false,
       homeFeatured: false,
     },
     {
+      slug: "nimbus",
       name: "Nimbus Weather Journal",
+      year: "2025",
       summary:
         "一个 SwiftUI 天气日记产品，覆盖天气数据、shared settings、radar/wind features 和 fallback 行为。",
       roleFit: "Product engineering · SwiftUI · API-backed consumer app",
@@ -172,10 +210,12 @@ const dictionary = {
       link: "https://github.com/isjiajia01/10.01_Nimbus",
       color: "cyan",
       primary: true,
-      homeFeatured: false,
+      homeFeatured: true,
     },
     {
+      slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
+      year: "2026",
       summary:
         "一个有 Mover 场景背景的真实物流规划项目：决定多日配送如何接单、排路线，并在 depot 压力下做恢复。",
       roleFit: "Logistics planning · optimization · operational decision support",
@@ -185,19 +225,20 @@ const dictionary = {
         "强项是分析能力、复杂系统理解，以及面向运营场景的产品/工具思维",
       ],
       stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
-      link: "#",
+      link: "/zh/works#dtu-mover-thesis",
       color: "orange",
       primary: true,
-      homeFeatured: false,
+      homeFeatured: true,
     },
     {
+      slug: "this-website",
       name: "This Website",
+      year: "2026",
       summary:
-        "基于 nooc.me 代码视觉改造的打印纸作品集，把个人主页整理成更适合招聘/面试的索引。",
+        "极简单栏个人作品集，将个人主页整理成适合招聘与面试交流的索引。",
       roleFit: "Frontend polish · content systems · deployment hygiene",
       evidence: [
-        "保留有辨识度的 visual shell，同时把内容重组为 hiring conversation",
-        "Next.js static export，通过 GitHub Actions 部署到个人 Oracle host",
+        "围绕 hiring conversation 组织项目证据、案例与简历索引",
         "体现审美、迭代速度，以及根据反馈快速调整的能力",
       ],
       stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
@@ -306,25 +347,21 @@ const dictionary = {
       label: "GitHub",
       name: "@isjiajia01",
       link: "https://github.com/isjiajia01",
-      icon: SiGithub,
     },
     {
       label: "LinkedIn",
       name: "Jiajia Zhang",
       link: "https://www.linkedin.com/in/jiajia-zhang-0a8a40289",
-      icon: LinkedInIcon,
     },
     {
       label: "邮箱",
       name: "isjiajiazhang@gmail.com",
       link: "mailto:isjiajiazhang@gmail.com",
-      icon: EnvelopeIcon,
     },
     {
       label: "网站",
       name: "me.zhangjiajia.me",
       link: "https://me.zhangjiajia.me",
-      icon: PaperAirplaneIcon,
     },
   ],
   aboutContent: `

@@ -43,7 +43,7 @@ const sections = [
     title: "Data stored by Solis",
     body: [
       "Solis may store saved locations, the selected place, display and accessibility preferences, onboarding and feature settings, cached daylight, astronomy, weather and widget data, and StoreKit entitlement state on your device or in its shared app-group container.",
-      "Removing the iPhone app may not immediately remove every locally cached preference or widget payload. Related app-group data may need to be managed through iPhone settings."
+      "Removing the iPhone app may not immediately remove every locally cached preference or widget payload. Related app-group data may need to be managed through iPhone settings.",
     ],
   },
   {
@@ -62,51 +62,66 @@ const sections = [
 
 export default function SolisPrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#070a12] px-5 py-12 text-white sm:px-8">
-      <article className="mx-auto max-w-3xl">
-        <p className="font-mono text-xs uppercase tracking-[0.24em] text-amber-300/75">
+    <main className="mx-auto max-w-xl px-6 py-16 sm:py-24">
+      <article>
+        <p className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
           Solis
         </p>
-        <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="mt-1 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
           Privacy Policy
         </h1>
-        <p className="mt-5 max-w-2xl font-serif text-base leading-7 text-white/70">
+        <p className="mt-3 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           Solis is a daylight and astronomy companion. It is not designed for
           advertising or cross-app tracking, and it does not sell personal data.
         </p>
 
-        <div className="mt-10 space-y-6">
+        <div className="mt-12 space-y-12">
           {sections.map((section) => (
-            <section key={section.title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-              <h2 className="font-serif text-2xl font-medium">{section.title}</h2>
-              <div className="mt-3 space-y-3 text-[15px] leading-7 text-white/70">
-                {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            <section key={section.title}>
+              <h2 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+                {section.title}
+              </h2>
+              <div className="mt-2 space-y-3 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
+                {section.body.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
               </div>
             </section>
           ))}
         </div>
 
-        <section className="mt-6 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-6">
-          <h2 className="font-serif text-2xl font-medium">Contact</h2>
-          <p className="mt-3 leading-7 text-white/70">
+        <section className="mt-12">
+          <h2 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+            Contact
+          </h2>
+          <p className="mt-2 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
             For privacy questions, email{" "}
-            <a className="text-amber-300 underline underline-offset-4" href={`mailto:${contactEmail}`}>
+            <a
+              className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+              href={`mailto:${contactEmail}`}
+            >
               {contactEmail}
             </a>
             .
           </p>
         </section>
 
-        <div className="mt-10 flex flex-wrap gap-4 border-t border-white/10 pt-6 text-sm">
-          <Link className="text-amber-300 underline underline-offset-4" href="/solis/support/">
+        <div className="mt-16 flex flex-wrap gap-4 border-t border-zinc-200 pt-6 text-[13px] leading-5 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+          <Link
+            className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+            href="/solis/support/"
+          >
             Solis Support
           </Link>
-          <Link className="text-white/65 underline underline-offset-4" href="/">
+          <Link
+            className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+            href="/"
+          >
             Jiajia Zhang
           </Link>
         </div>
 
-        <p className="mt-8 font-mono text-xs uppercase tracking-wider text-white/35">
+        <p className="mt-4 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
           Effective September 9, 2026
         </p>
       </article>
