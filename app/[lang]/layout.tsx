@@ -3,21 +3,17 @@ import { getDictionary, dictionaryKeys, type Language } from "../../dictionaries
 import { getAlternateLanguages } from "@/lib/metadata";
 import { generateWebSiteJsonLd } from "@/lib/json-ld";
 import { SiteShell } from "../../components/site-shell";
+import { SharedRootLayout } from "../shared-root-layout";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
   return dictionaryKeys.map((lang) => ({ lang }));
 }
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ lang: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const params = await props.params;
   if (!dictionaryKeys.includes(params.lang as Language)) return {};
   const dictionary = await getDictionary(params.lang);
-
   return {
     metadataBase: new URL(dictionary.meta.baseUrl),
     title: dictionary.meta.websiteName,
@@ -31,14 +27,7 @@ export async function generateMetadata(
       siteName: dictionary.meta.websiteName,
       title: dictionary.meta.websiteName,
       description: dictionary.meta.motto,
-      images: [
-        {
-          url: "/apple-icon.png",
-          width: 512,
-          height: 512,
-          alt: dictionary.meta.websiteName,
-        },
-      ],
+      images: [{ url: "/apple-icon.png", width: 512, height: 512, alt: dictionary.meta.websiteName }],
     },
     twitter: {
       title: dictionary.meta.websiteName,
@@ -49,32 +38,20 @@ export async function generateMetadata(
     },
     alternates: {
       canonical: new URL(dictionary.urls.home, dictionary.meta.baseUrl).href,
-      languages: await getAlternateLanguages(
-        (dictionary) => dictionary.urls.home,
-      ),
+      languages: await getAlternateLanguages((dictionary) => dictionary.urls.home),
     },
   };
 }
 
-export default async function RootLayout(
-  props: {
-    children: React.ReactNode;
-    params: Promise<{
-      lang: string;
-    }>;
-  }
-) {
+export default async function LocalizedRootLayout(props: {
+  children: React.ReactNode;
+  params: Promise<{ lang: string }>;
+}) {
   const params = await props.params;
-
-  const {
-    children
-  } = props;
-
   if (!dictionaryKeys.includes(params.lang as Language)) notFound();
   const dictionary = await getDictionary(params.lang);
-
   return (
-    <>
+    <SharedRootLayout lang={params.lang === "zh" ? "zh-Hans" : "en"}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -97,19 +74,11 @@ export default async function RootLayout(
           about: dictionary.labels.about,
           opensInNewTab: dictionary.labels.opensInNewTab,
         }}
-        urls={{
-          home: dictionary.urls.home,
-          works: dictionary.urls.works,
-          resume: dictionary.urls.resume,
-          about: dictionary.urls.about,
-        }}
-        contacts={dictionary.contacts.map((c) => ({
-          label: c.label,
-          link: c.link,
-        }))}
+        urls={{ home: dictionary.urls.home, works: dictionary.urls.works, resume: dictionary.urls.resume, about: dictionary.urls.about }}
+        contacts={dictionary.contacts.map((c) => ({ label: c.label, link: c.link }))}
       >
-        {children}
+        {props.children}
       </SiteShell>
-    </>
+    </SharedRootLayout>
   );
 }

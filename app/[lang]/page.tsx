@@ -25,7 +25,7 @@ export default async function Home(props: {
       </p>
 
       {/* Bio paragraphs */}
-      <div className="mt-8 space-y-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+      <div className="mt-8 space-y-4 text-[15px] leading-(--leading-body) text-zinc-900 dark:text-zinc-100">
         {dictionary.homepage.bioParagraphs.map((paragraph, pIdx) => (
           <p key={pIdx}>
             {paragraph.map((token, tIdx) => {
