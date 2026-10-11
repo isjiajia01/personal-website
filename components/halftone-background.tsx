@@ -19,12 +19,12 @@ export default function HalftoneBackground({
 
   // Sync resolvedMode prop immediately
   useEffect(() => {
-    if (resolvedMode) {
-      const nextIsDark = resolvedMode === "dark";
-      if (isDarkRef.current !== nextIsDark) {
-        isDarkRef.current = nextIsDark;
-        drawRef.current?.();
-      }
+    const nextIsDark = resolvedMode
+      ? resolvedMode === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (isDarkRef.current !== nextIsDark) {
+      isDarkRef.current = nextIsDark;
+      drawRef.current?.();
     }
   }, [resolvedMode]);
 
@@ -47,22 +47,32 @@ export default function HalftoneBackground({
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    // Initial dark mode detection
-    isDarkRef.current = resolvedMode
-      ? resolvedMode === "dark"
-      : document.documentElement.classList.contains("dark");
-
     const pitch = 10; // Hexagonal lattice pitch in CSS px (D5: 8-12px)
     const count = 4; // 4 wandering Lissajous metaballs (D8: 3-5 blobs)
     const reducedMotionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const darkModeMq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    // Initial dark mode detection
+    isDarkRef.current = resolvedMode
+      ? resolvedMode === "dark"
+      : darkModeMq.matches;
 
     let width = 0;
     let height = 0;
+    let currentDpr = 0;
+    let rows = 0;
+    let columns = 0;
+    let xEven = new Float32Array(0);
+    let xOdd = new Float32Array(0);
+    let attenEven = new Float32Array(0);
+    let attenOdd = new Float32Array(0);
     let frame = 0;
-    let frameNumber = 0;
     let previous = 0;
+    let lastDraw = 0;
     let elapsed = 0;
-
+    let hasDrawnInitial = false;
+    const maxRadius = pitch * 0.44; // 4.4px (D5)
+    const tau = Math.PI * 2;
     // Palette per D2, D3, D4
     const getColors = () => {
       if (isDarkRef.current) {
@@ -89,6 +99,7 @@ export default function HalftoneBackground({
 
     const draw = () => {
       if (width <= 0 || height <= 0) return;
+      hasDrawnInitial = true;
       const { base, dot } = getColors();
 
       // Solid background fill (D2)
@@ -96,69 +107,69 @@ export default function HalftoneBackground({
       ctx.fillRect(0, 0, width, height);
 
       const baseDim = Math.min(width, height);
-      const centres = paths.map((p) => {
-        const r = p.radius * baseDim;
-        return {
-          x: width / 2 + Math.sin(elapsed * p.fx + p.phase) * p.ax * width * 0.46,
-          y: height / 2 + Math.cos(elapsed * p.fy + p.phase * 0.7) * p.ay * height * 0.46,
-          r2: r * r,
-        };
-      });
+      const halfW = width / 2;
+      const halfH = height / 2;
+      const spanW = width * 0.46;
+      const spanH = height * 0.46;
+
+      const r0 = paths[0].radius * baseDim;
+      const c0x = halfW + Math.sin(elapsed * paths[0].fx + paths[0].phase) * paths[0].ax * spanW;
+      const c0y = halfH + Math.cos(elapsed * paths[0].fy + paths[0].phase * 0.7) * paths[0].ay * spanH;
+      const c0r2 = r0 * r0;
+
+      const r1 = paths[1].radius * baseDim;
+      const c1x = halfW + Math.sin(elapsed * paths[1].fx + paths[1].phase) * paths[1].ax * spanW;
+      const c1y = halfH + Math.cos(elapsed * paths[1].fy + paths[1].phase * 0.7) * paths[1].ay * spanH;
+      const c1r2 = r1 * r1;
+
+      const r2 = paths[2].radius * baseDim;
+      const c2x = halfW + Math.sin(elapsed * paths[2].fx + paths[2].phase) * paths[2].ax * spanW;
+      const c2y = halfH + Math.cos(elapsed * paths[2].fy + paths[2].phase * 0.7) * paths[2].ay * spanH;
+      const c2r2 = r2 * r2;
+
+      const r3 = paths[3].radius * baseDim;
+      const c3x = halfW + Math.sin(elapsed * paths[3].fx + paths[3].phase) * paths[3].ax * spanW;
+      const c3y = halfH + Math.cos(elapsed * paths[3].fy + paths[3].phase * 0.7) * paths[3].ay * spanH;
+      const c3r2 = r3 * r3;
 
       ctx.fillStyle = dot;
       ctx.beginPath();
 
-      const rows = Math.ceil(height / pitch) + 1;
-      const columns = Math.ceil(width / pitch) + 2;
-      const maxRadius = pitch * 0.44; // 4.4px (D5)
-
-      // Center attenuation band (D6, STATES.mobile):
-      // Printer shell is max-w-3xl (768px -> half is 384px) + 120px = 504px.
-      // On narrow/mobile screens (<= 768px), the attenuation band covers the paper column width.
-      const halfCenter = Math.min(width * 0.48, 504);
-
       for (let row = 0; row < rows; row++) {
-        // Hexagonal lattice offset (D5)
-        const offset = row % 2 ? pitch / 2 : 0;
+        const isOdd = (row & 1) === 1;
+        const xRow = isOdd ? xOdd : xEven;
+        const attenRow = isOdd ? attenOdd : attenEven;
         const y = row * pitch;
 
         // Precompute y-distance squared to blobs
-        const dy0 = y - centres[0].y; const dy0_sq = dy0 * dy0;
-        const dy1 = y - centres[1].y; const dy1_sq = dy1 * dy1;
-        const dy2 = y - centres[2].y; const dy2_sq = dy2 * dy2;
-        const dy3 = y - centres[3].y; const dy3_sq = dy3 * dy3;
+        const dy0 = y - c0y; const dy0_sq = dy0 * dy0 + 1;
+        const dy1 = y - c1y; const dy1_sq = dy1 * dy1 + 1;
+        const dy2 = y - c2y; const dy2_sq = dy2 * dy2 + 1;
+        const dy3 = y - c3y; const dy3_sq = dy3 * dy3 + 1;
 
         for (let col = 0; col < columns; col++) {
-          const x = col * pitch + offset;
+          const x = xRow[col];
 
-          const dx0 = x - centres[0].x;
-          const dx1 = x - centres[1].x;
-          const dx2 = x - centres[2].x;
-          const dx3 = x - centres[3].x;
+          const dx0 = x - c0x;
+          const dx1 = x - c1x;
+          const dx2 = x - c2x;
+          const dx3 = x - c3x;
 
           // Inverse-square metaball sum
           const v =
-            centres[0].r2 / (dx0 * dx0 + dy0_sq + 1) +
-            centres[1].r2 / (dx1 * dx1 + dy1_sq + 1) +
-            centres[2].r2 / (dx2 * dx2 + dy2_sq + 1) +
-            centres[3].r2 / (dx3 * dx3 + dy3_sq + 1);
+            c0r2 / (dx0 * dx0 + dy0_sq) +
+            c1r2 / (dx1 * dx1 + dy1_sq) +
+            c2r2 / (dx2 * dx2 + dy2_sq) +
+            c3r2 / (dx3 * dx3 + dy3_sq);
 
-          // Central printer zone attenuation (D6):
-          // Within 120px around printer column, dot coverage fades to at most 40% of peak.
-          const distFromCenter = Math.abs(x - width / 2);
-          const centerAttenuation =
-            distFromCenter < halfCenter
-              ? 0.35 + 0.65 * Math.pow(distFromCenter / halfCenter, 1.8)
-              : 1.0;
-
-          const t = Math.min(1, (v * 0.4 + 0.04) * centerAttenuation);
+          const t = Math.min(1, (v * 0.4 + 0.04) * attenRow[col]);
           const r = Math.sqrt(t) * maxRadius;
 
           // Drop sub-pixel dots to keep drawing clean and fast
           if (r < 0.4) continue;
 
           ctx.moveTo(x + r, y);
-          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.arc(x, y, r, 0, tau);
         }
       }
 
@@ -168,12 +179,19 @@ export default function HalftoneBackground({
     drawRef.current = draw;
 
     const tick = (now: number) => {
+      if (document.hidden || reducedMotionMq.matches) {
+        frame = 0;
+        return;
+      }
       // Capped delta prevents leaps after tab blur (M3)
-      elapsed += Math.min((now - previous) / 1000, 0.08) * 0.7;
+      if (previous > 0) {
+        elapsed += Math.min((now - previous) / 1000, 0.08) * 0.7;
+      }
       previous = now;
 
-      // Capped to ~30fps for minimal CPU overhead (M2, A4)
-      if (++frameNumber % 2 === 0) {
+      // Throttle redraws (~20fps) for minimal main-thread overhead
+      if (!hasDrawnInitial || now - lastDraw >= 48) {
+        lastDraw = now;
         draw();
       }
       frame = requestAnimationFrame(tick);
@@ -184,59 +202,101 @@ export default function HalftoneBackground({
       frame = 0;
       isDarkRef.current = resolvedMode
         ? resolvedMode === "dark"
-        : document.documentElement.classList.contains("dark");
-      draw();
+        : darkModeMq.matches;
 
-      // Pause when hidden or reduced motion (M3, M5)
-      if (!document.hidden && !reducedMotionMq.matches) {
-        previous = performance.now();
-        frame = requestAnimationFrame(tick);
+      // Pause completely when tab is hidden (M3)
+      if (document.hidden) {
+        return;
       }
+
+      // Static single frame when reduced motion is preferred (M5)
+      if (reducedMotionMq.matches) {
+        draw();
+        return;
+      }
+
+      if (!hasDrawnInitial) {
+        draw();
+      }
+      previous = performance.now();
+      lastDraw = previous;
+      frame = requestAnimationFrame(tick);
     };
 
     const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.floor(width * dpr));
-      canvas.height = Math.max(1, Math.floor(height * dpr));
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw();
-    };
+      const nextWidth = window.innerWidth;
+      const nextHeight = window.innerHeight;
+      const maxDpr = nextWidth < 768 ? 1 : 1.5;
+      const nextDpr = Math.min(window.devicePixelRatio || 1, maxDpr);
 
-    // Watch dark mode class toggle on <html> (D9, M4)
-    const observer = new MutationObserver(() => {
-      const nextIsDark = document.documentElement.classList.contains("dark");
-      if (nextIsDark !== isDarkRef.current) {
-        isDarkRef.current = nextIsDark;
+      if (
+        nextWidth === width &&
+        nextHeight === height &&
+        nextDpr === currentDpr
+      ) {
+        return;
+      }
+
+      width = nextWidth;
+      height = nextHeight;
+      currentDpr = nextDpr;
+      rows = Math.ceil(height / pitch) + 1;
+      columns = Math.ceil(width / pitch) + 2;
+
+      xEven = new Float32Array(columns);
+      xOdd = new Float32Array(columns);
+      attenEven = new Float32Array(columns);
+      attenOdd = new Float32Array(columns);
+
+      // Center attenuation band (D6, STATES.mobile)
+      const halfCenter = Math.min(width * 0.48, 504);
+      const centerX = width / 2;
+
+      for (let col = 0; col < columns; col++) {
+        const xe = col * pitch;
+        const xo = xe + pitch / 2;
+        xEven[col] = xe;
+        xOdd[col] = xo;
+
+        const distE = Math.abs(xe - centerX);
+        attenEven[col] =
+          distE < halfCenter
+            ? 0.35 + 0.65 * Math.pow(distE / halfCenter, 1.8)
+            : 1.0;
+
+        const distO = Math.abs(xo - centerX);
+        attenOdd[col] =
+          distO < halfCenter
+            ? 0.35 + 0.65 * Math.pow(distO / halfCenter, 1.8)
+            : 1.0;
+      }
+
+      canvas.width = Math.max(1, Math.floor(width * currentDpr));
+      canvas.height = Math.max(1, Math.floor(height * currentDpr));
+      ctx.setTransform(currentDpr, 0, 0, currentDpr, 0, 0);
+      if (hasDrawnInitial && !document.hidden) {
         draw();
       }
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+    };
 
-    const resizeObserver = new ResizeObserver(() => {
-      resize();
-    });
+    const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(host);
 
     window.addEventListener("resize", resize, { passive: true });
     document.addEventListener("visibilitychange", startOrStop);
     reducedMotionMq.addEventListener("change", startOrStop);
+    darkModeMq.addEventListener("change", startOrStop);
 
     resize();
     startOrStop();
-
     return () => {
       cancelAnimationFrame(frame);
       drawRef.current = null;
-      observer.disconnect();
       resizeObserver.disconnect();
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", startOrStop);
       reducedMotionMq.removeEventListener("change", startOrStop);
+      darkModeMq.removeEventListener("change", startOrStop);
     };
   }, [resolvedMode]);
 
@@ -244,12 +304,16 @@ export default function HalftoneBackground({
     <div
       ref={hostRef}
       aria-hidden="true"
-      className={`fixed inset-0 z-0 pointer-events-none select-none overflow-hidden motion-reduce:transition-none transition-opacity duration-500 ${
+      className={`fixed inset-0 -z-10 pointer-events-none select-none overflow-hidden motion-reduce:transition-none transition-opacity duration-500 ${
         mounted ? "opacity-100" : "opacity-0"
-      } ${className}`}
-      style={{
-        backgroundColor: resolvedMode === "dark" ? "#0a0c12" : "#e0e0d8",
-      }}
+      } bg-[#e0e0d8] dark:bg-[#0a0c12] ${className}`}
+      style={
+        resolvedMode
+          ? {
+              backgroundColor: resolvedMode === "dark" ? "#0a0c12" : "#e0e0d8",
+            }
+          : undefined
+      }
     >
       <canvas
         ref={canvasRef}

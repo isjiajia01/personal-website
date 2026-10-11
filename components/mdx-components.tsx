@@ -3,130 +3,158 @@ import Image from "next/image";
 import { twMerge } from "tailwind-merge";
 import classNames from "classnames";
 import { RiInformationLine as InformationCircleIcon } from "@remixicon/react";
+import React from "react";
 
 function Indicator({
   type = "info",
   children,
 }: {
   type?: "info" | "success" | "warning" | "error";
-  children: string;
+  children: React.ReactNode;
 }) {
   return (
-    <div className="-m-1 p-1 border bg-white/20 dark:bg-black/20 rounded-2xl">
+    <div className="my-4 flex items-start gap-3 rounded-md border border-zinc-200 p-4 text-[15px] leading-7 dark:border-zinc-800">
       <div
-        className={classNames("p-4 rounded-xl flex items-start", {
-          "bg-blue-500/10": type === "info",
-          "bg-green-500/10": type === "success",
-          "bg-orange-500/10": type === "warning",
-          "bg-red-500/10": type === "error",
+        className={classNames("shrink-0 pt-0.5", {
+          "text-blue-500": type === "info",
+          "text-green-500": type === "success",
+          "text-orange-500": type === "warning",
+          "text-red-500": type === "error",
         })}
       >
-        <div
-          className={classNames("mr-2", {
-            "text-blue-500": type === "info",
-            "text-green-500": type === "success",
-            "text-orange-500": type === "warning",
-            "text-red-500": type === "error",
-          })}
-        >
-          <InformationCircleIcon className="w-6 h-6" />
-        </div>
-        <div className="leading-6">{children}</div>
+        <InformationCircleIcon className="h-5 w-5" />
       </div>
+      <div className="text-zinc-900 dark:text-zinc-100">{children}</div>
     </div>
   );
 }
 
 const mdxComponents = {
-  h1({ className, ...props }: any) {
+  h1({ className, ...props }: React.ComponentPropsWithoutRef<"h1">) {
     return (
       <h1
-        id={props.children}
         className={twMerge(
+          "mb-3 mt-8 text-[15px] font-medium text-zinc-900 dark:text-zinc-100",
           className,
-          "text-xl font-bold font-serif mt-4 pl-2 border-l-[.25rem] -ml-3",
         )}
-        {...props}
-      ></h1>
-    );
-  },
-  h2({ className, ...props }: any) {
-    return (
-      <h2
-        id={props.children}
-        className={twMerge(
-          className,
-          "text-lg font-bold font-serif mt-4 pl-2 border-l-[.25rem] -ml-3",
-        )}
-        {...props}
-      ></h2>
-    );
-  },
-  a({ className, ...props }: any) {
-    return (
-      <a className={twMerge(className, "text-blue-500 underline")} {...props} />
-    );
-  },
-  p({ className, ...props }: any) {
-    return <p className={twMerge(className, "opacity-80")} {...props} />;
-  },
-  ul({ className, ...props }: any) {
-    return (
-      <ul className={twMerge(className, "list-disc opacity-80")} {...props} />
-    );
-  },
-  ol({ className, ...props }: any) {
-    return (
-      <ol
-        className={twMerge(className, "list-decimal opacity-80")}
         {...props}
       />
     );
   },
-  img({ className, ...props }: any) {
+  h2({ className, ...props }: React.ComponentPropsWithoutRef<"h2">) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-      <img className={twMerge(className, "rounded-xl border")} {...props} />
+      <h2
+        className={twMerge(
+          "mb-3 mt-8 text-[15px] font-medium text-zinc-900 dark:text-zinc-100",
+          className,
+        )}
+        {...props}
+      />
     );
   },
-  code({ className, ...props }: any) {
+  h3({ className, ...props }: React.ComponentPropsWithoutRef<"h3">) {
+    return (
+      <h3
+        className={twMerge(
+          "mb-2 mt-6 text-[15px] font-medium text-zinc-900 dark:text-zinc-100",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+  a({ className, ...props }: React.ComponentPropsWithoutRef<"a">) {
+    return (
+      <a
+        className={twMerge(
+          "underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+  p({ className, ...props }: React.ComponentPropsWithoutRef<"p">) {
+    return (
+      <p
+        className={twMerge(
+          "my-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+  ul({ className, ...props }: React.ComponentPropsWithoutRef<"ul">) {
+    return (
+      <ul
+        className={twMerge(
+          "my-4 list-disc space-y-1 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+  ol({ className, ...props }: React.ComponentPropsWithoutRef<"ol">) {
+    return (
+      <ol
+        className={twMerge(
+          "my-4 list-decimal space-y-1 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+  img({ className, ...props }: React.ComponentPropsWithoutRef<"img">) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+      <img
+        className={twMerge(
+          "my-6 rounded-md border border-zinc-200 dark:border-zinc-800",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+  code({ className, ...props }: React.ComponentPropsWithoutRef<"code">) {
     return (
       <code
         className={twMerge(
+          "rounded bg-zinc-100 px-1 py-0.5 font-mono text-[13px] font-normal text-inherit dark:bg-zinc-800",
+          "group-[.code-block]:border-none group-[.code-block]:bg-transparent group-[.code-block]:p-0",
           className,
-          "bg-zinc-500/10 dark:bg-black/20 rounded-xl border px-2 py-1 leading-normal",
-          "group-[.code-block]:bg-transparent group-[.code-block]:border-none",
         )}
         {...props}
       />
     );
   },
-  pre({ className, ...props }: any) {
+  pre({ className, ...props }: React.ComponentPropsWithoutRef<"pre">) {
     return (
       <pre
         className={twMerge(
+          "group code-block my-4 overflow-x-auto rounded-md border border-zinc-200 bg-zinc-50 p-4 text-[13px] dark:border-zinc-800 dark:bg-zinc-900",
           className,
-          "group code-block p-2 rounded-xl overflow-scroll",
         )}
         {...props}
       />
     );
   },
-  figure({ className, ...props }: any) {
-    return (
-      <figure
-        className={twMerge(
-          className,
-          "-m-1 p-1 border bg-white/10 dark:bg-black/10 rounded-2xl",
-        )}
-        {...props}
-      />
-    );
+  figure({ className, ...props }: React.ComponentPropsWithoutRef<"figure">) {
+    return <figure className={twMerge("my-6", className)} {...props} />;
   },
-  blockquote({ className, ...props }: any) {
+  blockquote({
+    className,
+    ...props
+  }: React.ComponentPropsWithoutRef<"blockquote">) {
     return (
       <blockquote
-        className={twMerge(className, "pl-4 border-l-4 opacity-80")}
+        className={twMerge(
+          "my-4 border-l-2 border-zinc-300 pl-4 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400",
+          className,
+        )}
         {...props}
       />
     );
@@ -142,7 +170,7 @@ const useMDXComponent = (code: string) => {
 
 interface MdxProps {
   code: string;
-  components?: Record<string, React.ComponentType>;
+  components?: Record<string, React.ComponentType<Record<string, unknown>>>;
 }
 
 export const MDXContent = ({ code, components }: MdxProps) => {
