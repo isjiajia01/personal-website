@@ -1,14 +1,9 @@
 import { Metadata } from "next";
-import { getDictionary, dictionaryKeys } from "../../dictionaries";
+import { getDictionary, dictionaryKeys, type Language } from "../../dictionaries";
 import { getAlternateLanguages } from "@/lib/metadata";
 import { generateWebSiteJsonLd } from "@/lib/json-ld";
-import PrinterShell from "../../components/printer-shell";
+import { SiteShell } from "../../components/site-shell";
 import { notFound } from "next/navigation";
-type ColorMode = "system" | "light" | "dark";
-
-function parseColorMode(value: string | undefined): ColorMode {
-  return value === "system" || value === "light" || value === "dark" ? value : "system";
-}
 
 export function generateStaticParams() {
   return dictionaryKeys.map((lang) => ({ lang }));
@@ -20,7 +15,7 @@ export async function generateMetadata(
   }
 ): Promise<Metadata> {
   const params = await props.params;
-  if (!dictionaryKeys.includes(params.lang as any)) return {};
+  if (!dictionaryKeys.includes(params.lang as Language)) return {};
   const dictionary = await getDictionary(params.lang);
 
   return {
@@ -33,15 +28,14 @@ export async function generateMetadata(
     openGraph: {
       type: "website",
       url: new URL(dictionary.urls.home, dictionary.meta.baseUrl).href,
+      siteName: dictionary.meta.websiteName,
       title: dictionary.meta.websiteName,
       description: dictionary.meta.motto,
-      siteName: dictionary.meta.websiteName,
-      locale: params.lang === "zh" ? "zh_CN" : "en_US",
       images: [
         {
-          url: "/opengraph-image",
-          width: 1200,
-          height: 630,
+          url: "/apple-icon.png",
+          width: 512,
+          height: 512,
           alt: dictionary.meta.websiteName,
         },
       ],
@@ -50,9 +44,8 @@ export async function generateMetadata(
       title: dictionary.meta.websiteName,
       description: dictionary.meta.motto,
       site: "@isjiajia01",
-      creator: "@isjiajia01",
       card: "summary_large_image",
-      images: ["/twitter-image"],
+      images: ["/apple-icon.png"],
     },
     alternates: {
       canonical: new URL(dictionary.urls.home, dictionary.meta.baseUrl).href,
@@ -77,25 +70,8 @@ export default async function RootLayout(
     children
   } = props;
 
-  if (!dictionaryKeys.includes(params.lang as any)) notFound();
+  if (!dictionaryKeys.includes(params.lang as Language)) notFound();
   const dictionary = await getDictionary(params.lang);
-  const initialColorMode = parseColorMode(undefined);
-  const printerShellProps = {
-    labels: {
-      home: dictionary.labels.home,
-      works: dictionary.labels.works,
-      resume: dictionary.labels.resume,
-      about: dictionary.labels.about,
-      brandName: dictionary.labels.brandName,
-      brandTagline: dictionary.labels.brandTagline,
-    },
-    urls: {
-      home: dictionary.urls.home,
-      works: dictionary.urls.works,
-      resume: dictionary.urls.resume,
-      about: dictionary.urls.about,
-    },
-  };
 
   return (
     <>
@@ -110,9 +86,30 @@ export default async function RootLayout(
           })),
         }}
       />
-      <PrinterShell dictionary={printerShellProps} lang={params.lang} initialColorMode={initialColorMode}>
+      <SiteShell
+        lang={params.lang}
+        authorName={dictionary.meta.authorName}
+        labels={{
+          skipToContent: dictionary.labels.skipToContent,
+          home: dictionary.labels.home,
+          works: dictionary.labels.works,
+          resume: dictionary.labels.resume,
+          about: dictionary.labels.about,
+          opensInNewTab: dictionary.labels.opensInNewTab,
+        }}
+        urls={{
+          home: dictionary.urls.home,
+          works: dictionary.urls.works,
+          resume: dictionary.urls.resume,
+          about: dictionary.urls.about,
+        }}
+        contacts={dictionary.contacts.map((c) => ({
+          label: c.label,
+          link: c.link,
+        }))}
+      >
         {children}
-      </PrinterShell>
+      </SiteShell>
     </>
   );
 }

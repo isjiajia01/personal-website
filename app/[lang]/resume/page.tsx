@@ -4,35 +4,11 @@ export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "zh" }];
 }
 
-import { getDictionary, Language } from "@/dictionaries";
+import { getDictionary, type Language } from "@/dictionaries";
 import { getAlternateLanguages } from "@/lib/metadata";
 import { resumeContent } from "@/lib/resume";
-import { SiGithub } from "@icons-pack/react-simple-icons";
-import {
-  RiApps2Line as BriefcaseIcon,
-  RiBookOpenLine as BookOpenIcon,
-  RiLinkedinBoxLine as LinkedInIcon,
-  RiMailLine as MailIcon,
-  RiPriceTag3Line as TagIcon,
-  RiSendPlaneLine as SendPlaneIcon,
-  RiUser4Line as IdentificationIcon,
-  RiWindowLine as WindowIcon,
-} from "@remixicon/react";
-import {
-  PrintedDivider,
-  PrintedLabel,
-  PrintedPageTitle,
-  PrintedSection,
-} from "@/components/printed-elements";
 
 const routePath = (lang: Language) => `/${lang}/resume`;
-
-const contactIcons = {
-  website: WindowIcon,
-  email: MailIcon,
-  github: SiGithub,
-  linkedin: LinkedInIcon,
-} as const;
 
 export async function generateMetadata(
   props: {
@@ -91,213 +67,200 @@ export default async function ResumePage(
 
   return (
     <div>
-      <PrintedSection className="!mb-8">
-        <PrintedPageTitle icon={IdentificationIcon}>
-          {content.pageTitle}
-        </PrintedPageTitle>
-        <p className="max-w-2xl font-serif text-[14px] leading-relaxed text-printer-ink-muted dark:text-printer-ink-muted-dark">
+      <h1 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+        {content.pageTitle}
+      </h1>
+
+      <div className="mt-4">
+        <h2 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+          {content.name}
+        </h2>
+        <p className="mt-2 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {content.summary}
         </p>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
           {content.contacts.map((contact) => {
-            const Icon = contactIcons[contact.kind];
-            const external = contact.href.startsWith("https://");
-
+            const isExternal = contact.href.startsWith("https://");
+            const isMail = contact.href.startsWith("mailto:");
             return (
               <a
                 key={contact.label}
                 href={contact.href}
-                target={external ? "_blank" : undefined}
-                rel={external ? "noopener" : undefined}
-                className="inline-flex min-h-11 sm:min-h-0 items-center gap-1.5 rounded-sm border border-printer-ink/8 px-2.5 py-1 font-mono text-[11px] tracking-[0.12em] text-printer-ink-muted transition-colors hover:border-printer-accent/20 hover:text-printer-accent dark:border-printer-ink-dark/8 dark:text-printer-ink-muted-dark dark:hover:border-printer-accent-dark/20 dark:hover:text-printer-accent-dark"
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                className="hover:text-zinc-900 dark:hover:text-zinc-100"
               >
-                <Icon className="h-3 w-3 shrink-0" />
-                <span className="uppercase">{contact.label}</span>
-                <span className="normal-case tracking-normal text-printer-ink/70 dark:text-printer-ink-dark/70">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  {contact.label}:{" "}
+                </span>
+                <span className="text-zinc-900 underline decoration-zinc-400 underline-offset-[3px] dark:text-zinc-100 dark:decoration-zinc-500">
                   {contact.value}
                 </span>
+                {isExternal && !isMail && (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="ml-0.5 inline-block text-zinc-400 dark:text-zinc-500"
+                    >
+                      ↗
+                    </span>
+                    <span className="sr-only">
+                      {" "}
+                      {dictionary.labels.opensInNewTab}
+                    </span>
+                  </>
+                )}
               </a>
             );
           })}
         </div>
-      </PrintedSection>
-      <PrintedSection
-        label={
-          <span className="inline-flex items-center gap-1.5">
-            <TagIcon className="h-3 w-3" />
-            <h2 className="label-text">{content.sectionLabels.preferences}</h2>
-          </span>
-        }
-      >
-        <div className="grid gap-4 sm:grid-cols-3">
+      </div>
+
+      {/* Preferences section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {content.sectionLabels.preferences}
+        </h2>
+        <div className="mt-4 space-y-3">
           {content.preferenceGroups.map((group) => (
             <div
               key={group.label}
-              className="rounded-md border border-printer-ink/8 bg-printer-ink/3 p-3 dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/3"
+              className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4"
             >
-              <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
+              <span className="w-32 shrink-0 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
                 {group.label}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {group.items.map((item) => (
-                  <PrintedLabel key={item} variant="default">
-                    {item}
-                  </PrintedLabel>
-                ))}
-              </div>
+              </span>
+              <span className="text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+                {group.items.join(" · ")}
+              </span>
             </div>
           ))}
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedDivider style="dashed" />
-
-      <PrintedSection
-        label={
-          <span className="inline-flex items-center gap-1.5">
-            <BriefcaseIcon className="h-3 w-3" />
-            <h2 className="label-text">{content.sectionLabels.experience}</h2>
-          </span>
-        }
-      >
-        <div className="flex flex-col gap-8">
+      {/* Experience section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {content.sectionLabels.experience}
+        </h2>
+        <div className="mt-6 space-y-8">
           {content.experiences.map((experience) => (
-            <div key={`${experience.role}-${experience.period}`}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div
+              key={`${experience.role}-${experience.period}`}
+              className="border-t border-zinc-200 pt-6 first:border-t-0 first:pt-0 dark:border-zinc-800"
+            >
+              <div className="flex items-baseline justify-between">
                 <div>
-                  <h3 className="font-serif text-lg text-printer-ink dark:text-printer-ink-dark">
+                  <h3 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
                     {experience.role}
                   </h3>
-                  <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
+                  <p className="mt-0.5 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
                     {experience.organization}
                     {experience.location ? ` · ${experience.location}` : ""}
                   </p>
                 </div>
-                <PrintedLabel variant="muted" className="min-h-11 sm:min-h-0">{experience.period}</PrintedLabel>
+                <span className="text-[13px] tabular-nums text-zinc-600 dark:text-zinc-400">
+                  {experience.period}
+                </span>
               </div>
 
-              <p className="mt-3 max-w-2xl font-serif text-xs leading-relaxed text-printer-ink-muted dark:text-printer-ink-muted-dark">
+              <p className="mt-2 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
                 {experience.summary}
               </p>
 
-              <div className="mt-5 flex flex-col">
-                {experience.projects.map((project, index) => (
+              <div className="mt-4 space-y-4">
+                {experience.projects.map((project) => (
                   <div key={project.name}>
-                    <div className="rounded-md px-0 py-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {project.href ? (
-                          <a
-                            href={project.href}
-                            target="_blank"
-                            rel="noopener"
-                            className="font-mono text-sm font-medium text-printer-ink transition-colors hover:text-printer-accent dark:text-printer-ink-dark dark:hover:text-printer-accent-dark"
+                    <div className="flex items-baseline gap-2">
+                      {project.href ? (
+                        <a
+                          href={project.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[15px] font-medium text-zinc-900 underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:text-zinc-100 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+                        >
+                          {project.name}
+                          <span
+                            aria-hidden="true"
+                            className="ml-0.5 inline-block text-zinc-400 dark:text-zinc-500"
                           >
-                            {project.name}
-                          </a>
-                        ) : (
-                          <span className="font-mono text-sm font-medium text-printer-ink dark:text-printer-ink-dark">
-                            {project.name}
+                            ↗
                           </span>
-                        )}
-                        {project.note && (
-                          <span className="font-mono text-[11px] text-printer-ink-muted dark:text-printer-ink-muted-dark">
-                            {project.note}
+                          <span className="sr-only">
+                            {" "}
+                            {dictionary.labels.opensInNewTab}
                           </span>
-                        )}
-                      </div>
-
-                      <p className="mt-2 font-serif text-xs leading-relaxed text-printer-ink-muted dark:text-printer-ink-muted-dark">
-                        {project.description}
-                      </p>
-
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {project.stack.map((item) => (
-                          <PrintedLabel key={item} variant="default">
-                            {item}
-                          </PrintedLabel>
-                        ))}
-                      </div>
+                        </a>
+                      ) : (
+                        <span className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+                          {project.name}
+                        </span>
+                      )}
+                      {project.note && (
+                        <span className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+                          {project.note}
+                        </span>
+                      )}
                     </div>
 
-                    {index < experience.projects.length - 1 && (
-                      <div className="border-b border-dotted border-printer-ink/5 dark:border-printer-ink-dark/5" />
-                    )}
+                    <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+                      {project.description}
+                    </p>
+
+                    <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+                      {project.stack.join(" · ")}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           ))}
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedDivider style="dashed" />
-
-      <PrintedSection
-        label={
-          <span className="inline-flex items-center gap-1.5">
-            <SendPlaneIcon className="h-3 w-3" />
-            <h2 className="label-text">{content.sectionLabels.skills}</h2>
-          </span>
-        }
-      >
-        <div className="grid gap-4 sm:grid-cols-3">
+      {/* Skills section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {content.sectionLabels.skills}
+        </h2>
+        <div className="mt-4 space-y-3">
           {content.skillGroups.map((group) => (
             <div
               key={group.label}
-              className="rounded-md border border-printer-ink/8 bg-printer-ink/3 p-3 dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/3"
+              className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4"
             >
-              <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
+              <span className="w-32 shrink-0 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
                 {group.label}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {group.items.map((item) => (
-                  <PrintedLabel key={item} variant="default">
-                    {item}
-                  </PrintedLabel>
-                ))}
-              </div>
+              </span>
+              <span className="text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+                {group.items.join(" · ")}
+              </span>
             </div>
           ))}
         </div>
-      </PrintedSection>
+      </section>
 
-      <PrintedDivider style="dashed" />
-
-      <PrintedSection
-        label={
-          <span className="inline-flex items-center gap-1.5">
-            <BookOpenIcon className="h-3 w-3" />
-            <h2 className="label-text">{content.sectionLabels.education}</h2>
-          </span>
-        }
-      >
-        <div className="flex flex-col gap-3 rounded-md border border-printer-ink/8 bg-printer-ink/3 p-4 dark:border-printer-ink-dark/8 dark:bg-printer-ink-dark/3 sm:flex-row sm:items-start sm:justify-between">
+      {/* Education section */}
+      <section className="mt-16">
+        <h2 className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {content.sectionLabels.education}
+        </h2>
+        <div className="mt-4 flex items-baseline justify-between border-t border-zinc-200 pt-6 dark:border-zinc-800">
           <div>
-            <h3 className="font-serif text-lg text-printer-ink dark:text-printer-ink-dark">
+            <h3 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
               {content.education.school}
             </h3>
-            <p className="mt-1 font-serif text-xs text-printer-ink-muted dark:text-printer-ink-muted-dark">
+            <p className="mt-0.5 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
               {content.education.degree}
+              {content.education.location ? ` · ${content.education.location}` : ""}
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:items-end">
-            <PrintedLabel variant="muted" className="min-h-11 sm:min-h-0">{content.education.period}</PrintedLabel>
-            <div className="inline-flex min-h-11 sm:min-h-0 items-center font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
-              {content.education.location}
-            </div>
-          </div>
+          <span className="text-[13px] tabular-nums text-zinc-600 dark:text-zinc-400">
+            {content.education.period}
+          </span>
         </div>
-      </PrintedSection>
-
-      <div className="mt-8 border-t border-dotted border-printer-ink/10 pt-4 dark:border-printer-ink-dark/10">
-        <div className="flex items-center justify-between gap-3">
-          <div className="inline-flex min-h-11 sm:min-h-0 items-center font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark">
-            {dictionary.labels.printedOn} {new Date().toISOString().split("T")[0]}
-          </div>
-          <PrintedLabel variant="muted" className="min-h-11 sm:min-h-0">resume</PrintedLabel>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

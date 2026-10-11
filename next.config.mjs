@@ -8,7 +8,7 @@ if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
+  ...(process.env.NEXT_PRIVATE_STANDALONE ? {} : { output: "export" }),
   trailingSlash: true,
   images: {
     unoptimized: true,

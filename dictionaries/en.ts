@@ -1,20 +1,13 @@
-import {
-  RiLinkedinBoxLine as LinkedInIcon,
-  RiMailLine as EnvelopeIcon,
-  RiSendPlaneLine as PaperAirplaneIcon,
-} from "@remixicon/react";
-import { SiGithub } from "@icons-pack/react-simple-icons";
-import type { WorkItem } from "./index";
-
 const dictionary = {
   meta: {
     baseUrl: "https://me.zhangjiajia.me",
     websiteName: "Jiajia Zhang",
+    authorName: "Jiajia Zhang",
     motto: "Junior product/full-stack candidate for internal tools and workflow systems.",
     mottos: [
       "I build internal tools and workflow systems with clear evidence, human review, and practical decision support.",
       "Best fit: junior product/full-stack roles around internal tools, support automation, and operational decision systems.",
-      "A job-facing portfolio for hiring conversations — still printed on slightly playful paper.",
+      "A job-facing portfolio for hiring conversations.",
     ],
     bio: `
 A Copenhagen-based DTU MSc Engineering graduate in Mathematical Modelling and Computation, building practical systems for complex operational work.
@@ -50,61 +43,92 @@ My strongest work sits around internal tools, workflow automation with human rev
     works: "Work",
     resume: "Resume",
     about: "About",
-    viewResume: "View Resume",
-    emailMe: "Email me",
-    seeWork: "See the work",
     featured: "Best Starting Points",
     archive: "Supporting Material",
-    brandName: "JIAJIA",
-    brandTagline: "Workflow & Product Systems",
     notFoundStatus: "Paper Tray Empty",
     notFoundTitle: "Out of Paper",
     notFoundSubtitle: "Please insert paper correctly to print content.",
     notFoundButton: "← Print Home",
     notFoundError: "ERR 404 · PAPER_NOT_FOUND",
-    printedOn: "Printed on",
     viewAllWorkEvidence: "View full project evidence",
     noocWorks: "Start with the projects most relevant to internal tools, workflow automation, and operational decision support.",
     aboutTitle: "About",
     aboutSubtitle: "How I think about workflow systems, evidence, and practical automation",
-    focus: "Best Fit",
-    evidence: "Strongest Evidence",
-    roleFit: "Candidate Focus",
-    stack: "Stack",
     openProject: "Open",
-    contactMe: "Contact",
-    analyticalProof: "Planning / Analytics Proof",
-    language: "Language",
-    theme: "Theme",
-    themeSystem: "System",
-    themeLight: "Light",
-    themeDark: "Dark",
-    icon(label: string) {
-      return `Icon for ${label}`;
-    },
+    skipToContent: "Skip to content",
+    opensInNewTab: "(opens in a new tab)",
   },
   homepage: {
-    headline:
-      "I build internal tools and workflow systems — clearer evidence, safer automation, better decisions.",
-    subline:
-      "Best fit: junior product/full-stack roles around internal tools, support automation, and operational decision support. iOS product work and optimization research are adjacent proof, not separate directions.",
-    proofPoints: [
-      "OpsDesk: a deployed support/operations demo with evidence packages, draft actions, approval gates, feedback memory, and audit replay.",
-      "Afgang: a local-first transport utility with scheduled reachability, conservative map surfaces, transactional data updates, and cross-browser verification.",
-      "DTU × Mover Thesis: a real logistics planning project that turns routing constraints into decision-support evidence.",
+    bioParagraphs: [
+      [
+        {
+          type: "text" as const,
+          value:
+            "Copenhagen-based MSc Engineering graduate in Mathematical Modelling and Computation from ",
+        },
+        {
+          type: "org" as const,
+          id: "org-dtu",
+          name: "DTU",
+          href: "https://www.dtu.dk/",
+          description:
+            "Technical University of Denmark — MSc in Mathematical Modelling and Computation, completed July 2026.",
+        },
+        {
+          type: "text" as const,
+          value: ", where I wrote my thesis on multi-day delivery planning with ",
+        },
+        {
+          type: "org" as const,
+          id: "org-mover",
+          name: "Mover",
+          href: "https://www.mover.dk/",
+          description:
+            "Copenhagen last-mile logistics platform for multi-day delivery and routing operations.",
+        },
+        {
+          type: "text" as const,
+          value: ".",
+        },
+      ],
+      [
+        {
+          type: "text" as const,
+          value:
+            "My strongest work sits around internal tools, workflow automation with human review, data-quality workflows, and decision-support systems — building on earlier engineering experience with ",
+        },
+        {
+          type: "org" as const,
+          id: "org-deloitte",
+          name: "Deloitte",
+          href: "https://www.deloitte.com/",
+          description:
+            "Earlier engineering and enterprise systems foundation.",
+        },
+        {
+          type: "text" as const,
+          value: " and undergraduate studies at ",
+        },
+        {
+          type: "org" as const,
+          id: "org-gdut",
+          name: "GDUT",
+          href: "https://www.gdut.edu.cn/",
+          description:
+            "Guangdong University of Technology — undergraduate engineering and computer science foundation.",
+        },
+        {
+          type: "text" as const,
+          value: ".",
+        },
+      ],
     ],
-    roleTargets: [
-      "Junior Product / Full-stack Engineer",
-      "Internal Tools / Workflow Automation Builder",
-    ],
-    evidenceLead:
-      "Targeting Junior Product / Full-stack Engineer and Internal Tools / Workflow Automation Builder roles.",
-    note:
-      "The site keeps a little personality, but the path is practical: start with Work, then Resume if you want the compact hiring version.",
   },
   works: [
     {
+      slug: "opsdesk",
       name: "OpsDesk",
+      year: "2026",
       summary:
         "A support/operations demo that turns cases into evidence, draft actions, approvals, feedback memory, and replayable logs.",
       roleFit: "Internal tools · workflow automation with human review · support operations",
@@ -114,21 +138,15 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Useful for explaining customer-support automation and operations guardrails without claiming enterprise-scale production",
       ],
       stack: ["Next.js", "TypeScript", "Postgres", "Docker", "Workflow design", "Oracle deploy"],
-      domain: "jobops.zhangjiajia.me",
-      image: {
-        src: "/images/projects/opsdesk/opsdesk-1200.webp",
-        srcSmall: "/images/projects/opsdesk/opsdesk-600.webp",
-        width: 1200,
-        height: 750,
-        alt: "A high-risk support ticket review screen with a structured evidence package and human approval actions",
-      },
       link: "https://jobops.zhangjiajia.me/opsdesk",
       color: "blue",
       primary: true,
       homeFeatured: true,
     },
     {
+      slug: "denmark-flex-planner",
       name: "Denmark Flex Planner",
+      year: "2026",
       summary:
         "A live, map-first decision-support tool for prioritizing Danish EV charging and local flexibility investments under budget, grid-zone, and regional constraints.",
       roleFit: "Energy infrastructure · constrained optimization · data product",
@@ -138,21 +156,15 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Deployed FastAPI and Next.js product with a public interactive map, API health checks, and reproducible smoke tests",
       ],
       stack: ["Python", "FastAPI", "Next.js", "Public data", "Constrained optimization", "Oracle deploy"],
-      domain: "flex.zhangjiajia.me",
-      image: {
-        src: "/images/projects/flex/flex-1200.webp",
-        srcSmall: "/images/projects/flex/flex-600.webp",
-        width: 1200,
-        height: 750,
-        alt: "A national municipality priority map with grid-stress and renewable metrics plus budget controls",
-      },
       link: "https://flex.zhangjiajia.me",
       color: "green",
       primary: true,
       homeFeatured: true,
     },
     {
+      slug: "afgang",
       name: "Afgang",
+      year: "2026",
       summary:
         "A local-first Copenhagen transport utility combining commute decisions with conservative, timetable-based reachability maps.",
       roleFit: "Full-stack engineering · transit data · geospatial reliability",
@@ -162,20 +174,15 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Verified by 86 tests, Chromium and WebKit across four viewports, and 12 boundary checks with zero optimistic contour buckets",
       ],
       stack: ["Python", "FastAPI", "r5py/R5", "GTFS", "GeoPandas", "MapLibre", "Lifecycle design"],
-      image: {
-        src: "/images/projects/afgang/reachability-desktop.webp",
-        srcSmall: "/images/projects/afgang/reachability-desktop-600.webp",
-        width: 1440,
-        height: 900,
-        alt: "A Copenhagen reachability map",
-      },
       link: "/en/projects/afgang",
       color: "emerald",
       primary: true,
       homeFeatured: true,
     },
     {
+      slug: "cargo-guard",
       name: "Cargo Guard",
+      year: "2025",
       summary:
         "A small Python demo that checks whether logistics data is complete, fresh, valid, and ready to trust before teams use it.",
       roleFit: "Data quality · operational checks · supporting evidence",
@@ -185,13 +192,15 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Useful as supporting proof for data-quality thinking, but not the main portfolio story",
       ],
       stack: ["Python", "JSON contracts", "Data validation", "HTML report", "Logistics demo data"],
-      link: "#",
+      link: "/en/works#cargo-guard",
       color: "yellow",
       primary: false,
       homeFeatured: false,
     },
     {
+      slug: "nimbus",
       name: "Nimbus Weather Journal",
+      year: "2025",
       summary:
         "A polished iOS weather-journal product with SwiftUI surfaces, shared settings, weather data flows, radar/wind features, and fallback behavior.",
       roleFit: "Product engineering · SwiftUI · API-backed consumer app",
@@ -204,10 +213,12 @@ My strongest work sits around internal tools, workflow automation with human rev
       link: "https://github.com/isjiajia01/10.01_Nimbus",
       color: "cyan",
       primary: true,
-      homeFeatured: false,
+      homeFeatured: true,
     },
     {
+      slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
+      year: "2026",
       summary:
         "A real logistics planning project with Mover context: decide how multi-day deliveries should be admitted, routed, and recovered when depots are under stress.",
       roleFit: "Logistics planning · optimization · operational decision support",
@@ -217,19 +228,20 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Strong proof for analytical thinking, complex systems, and operations-facing product work",
       ],
       stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
-      link: "#",
+      link: "/en/works#dtu-mover-thesis",
       color: "orange",
       primary: true,
-      homeFeatured: false,
+      homeFeatured: true,
     },
     {
+      slug: "this-website",
       name: "This Website",
+      year: "2026",
       summary:
-        "A printer-paper portfolio adapted from the nooc.me codebase and reshaped into a compact, job-facing personal index.",
+        "A minimalist single-column portfolio reshaped into a compact, job-facing personal index.",
       roleFit: "Frontend polish · content systems · deployment hygiene",
       evidence: [
-        "Preserves a distinctive visual shell while reorganizing the content around hiring conversations",
-        "Static-export Next.js site deployed through GitHub Actions to a personal Oracle host",
+        "Organizes project evidence, case studies, and resume around hiring conversations",
         "Shows taste, speed, and willingness to iterate from feedback",
       ],
       stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
@@ -238,7 +250,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       primary: false,
       homeFeatured: false,
     },
-  ] as WorkItem[],
+  ],
   afgangCase: {
     title: "Afgang",
     eyebrow: "Owner-local transport utility · Copenhagen · 2026",
@@ -338,25 +350,21 @@ My strongest work sits around internal tools, workflow automation with human rev
       label: "GitHub",
       name: "@isjiajia01",
       link: "https://github.com/isjiajia01",
-      icon: SiGithub,
     },
     {
       label: "LinkedIn",
       name: "Jiajia Zhang",
       link: "https://www.linkedin.com/in/jiajia-zhang-0a8a40289",
-      icon: LinkedInIcon,
     },
     {
       label: "Email",
       name: "isjiajiazhang@gmail.com",
       link: "mailto:isjiajiazhang@gmail.com",
-      icon: EnvelopeIcon,
     },
     {
       label: "Website",
       name: "me.zhangjiajia.me",
       link: "https://me.zhangjiajia.me",
-      icon: PaperAirplaneIcon,
     },
   ],
   aboutContent: `

@@ -1,4 +1,4 @@
-import { getDictionary, Language } from "@/dictionaries";
+import { getDictionary, type Language } from "@/dictionaries";
 
 export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "zh" }];
@@ -6,12 +6,6 @@ export function generateStaticParams() {
 
 import { Metadata } from "next";
 import { getAlternateLanguages } from "@/lib/metadata";
-import { RiUser4Line as IdentificationIcon } from "@remixicon/react";
-import {
-  PrintedSection,
-  PrintedDivider,
-  PrintedPageTitle,
-} from "@/components/printed-elements";
 import { PostContent } from "@/components/post-content";
 
 export async function generateMetadata(
@@ -45,7 +39,7 @@ export async function generateMetadata(
     alternates: {
       canonical: new URL(dictionary.urls.about, dictionary.meta.baseUrl).href,
       languages: await getAlternateLanguages(
-        (dictionary) => dictionary.urls.about,
+        (alternateDictionary) => alternateDictionary.urls.about,
       ),
     },
   };
@@ -65,13 +59,12 @@ export default async function AboutPage(
   // Convert markdown-like content to simple HTML
   const aboutHtml = dictionary.aboutContent
     .trim()
-    .replace(/#### (.+)/g, "<h3>$1</h3>")
-    .replace(/### (.+)/g, "<h2>$1</h2>")
+    .replace(/### (.+)/g, "<h3>$1</h3>")
     .replace(/## (.+)/g, "<h2>$1</h2>")
-    .replace(/# (.+)/g, "<h2>$1</h2>")
+    .replace(/# (.+)/g, "<h1>$1</h1>")
     .replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener">$1</a>',
+      `<a href="$2" target="_blank" rel="noopener noreferrer">$1<span aria-hidden="true" class="ml-0.5 inline-block">↗</span><span class="sr-only"> ${dictionary.labels.opensInNewTab}</span></a>`,
     )
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\n\n/g, "</p><p>")
@@ -84,26 +77,24 @@ export default async function AboutPage(
   return (
     <div>
       {/* Header */}
-      <PrintedSection className="!mb-8">
-        <PrintedPageTitle icon={IdentificationIcon}>
+      <div>
+        <h1 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
           {dictionary.labels.aboutTitle}
-        </PrintedPageTitle>
+        </h1>
         {subtitle && (
-          <p className="font-serif text-[14px] leading-relaxed text-printer-ink-muted dark:text-printer-ink-muted-dark">
+          <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
             {subtitle}
           </p>
         )}
-      </PrintedSection>
-
-      <PrintedDivider style="solid" />
+      </div>
 
       {/* About content */}
-      <PostContent html={aboutHtml} />
-
-      <PrintedDivider style="dashed" />
+      <div className="mt-10">
+        <PostContent html={aboutHtml} />
+      </div>
 
       {/* Footer */}
-      <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-printer-ink-muted dark:text-printer-ink-muted-dark text-center py-4">
+      <div className="mt-12 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
         {params.lang === "zh" ? "就酱～" : "That's about it~"}
       </div>
     </div>

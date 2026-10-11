@@ -36,43 +36,59 @@ const faqs = [
 
 export default function ThreadLiteSupportPage() {
   return (
-    <main className="min-h-screen bg-[#0a0c10] px-5 py-12 text-white sm:px-8">
-      <article className="mx-auto max-w-3xl">
-        <p className="font-mono text-xs uppercase tracking-[0.24em] text-emerald-400/80">
+    <main className="mx-auto max-w-xl px-6 py-16 sm:py-24">
+      <article>
+        <p className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
           ThreadLite
         </p>
-        <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-          Support & FAQ
+        <h1 className="mt-1 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+          Support &amp; FAQ
         </h1>
-        <p className="mt-5 max-w-2xl font-serif text-base leading-7 text-white/70">
-          Need help setting up or troubleshooting ThreadLite for Safari? Here are answers to common questions.
+        <p className="mt-3 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
+          Need help setting up or troubleshooting ThreadLite for Safari? Here are
+          answers to common questions.
         </p>
 
-        <div className="mt-10 space-y-6">
+        <div className="mt-12 space-y-12">
           {faqs.map((faq) => (
-            <section key={faq.q} className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-              <h2 className="font-serif text-xl font-medium text-white">{faq.q}</h2>
-              <p className="mt-3 text-[15px] leading-7 text-white/70">{faq.a}</p>
+            <section key={faq.q}>
+              <h2 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+                {faq.q}
+              </h2>
+              <p className="mt-2 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
+                {faq.a}
+              </p>
             </section>
           ))}
         </div>
 
-        <section className="mt-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-6">
-          <h2 className="font-serif text-2xl font-medium">Contact Support</h2>
-          <p className="mt-3 leading-7 text-white/70">
+        <section className="mt-12">
+          <h2 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+            Contact Support
+          </h2>
+          <p className="mt-2 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
             For direct assistance, email{" "}
-            <a className="text-emerald-300 underline underline-offset-4" href={`mailto:${contactEmail}`}>
+            <a
+              className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+              href={`mailto:${contactEmail}`}
+            >
               {contactEmail}
             </a>
             . We typically respond within 1–2 business days.
           </p>
         </section>
 
-        <div className="mt-10 flex flex-wrap gap-4 border-t border-white/10 pt-6 text-sm">
-          <Link className="text-emerald-300 underline underline-offset-4" href="/threadlite/privacy/">
+        <div className="mt-16 flex flex-wrap gap-4 border-t border-zinc-200 pt-6 text-[13px] leading-5 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+          <Link
+            className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+            href="/threadlite/privacy/"
+          >
             Privacy Policy
           </Link>
-          <Link className="text-white/65 underline underline-offset-4" href="/">
+          <Link
+            className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+            href="/"
+          >
             Jiajia Zhang
           </Link>
         </div>
