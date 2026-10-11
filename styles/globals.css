@@ -1,13 +1,52 @@
+@theme {
+  --font-sans: var(--font-inter), "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --ease-snap: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+:root {
+  --motion-link: 150ms;
+  --motion-in: 160ms;
+  --motion-out: 100ms;
+  --motion-page: 220ms;
+}
+
+html:lang(en) {
+  letter-spacing: -0.01em;
+  --leading-body: 26px;
+}
+
+html:lang(zh),
+html:lang(zh-Hans) {
+  letter-spacing: 0;
+  --leading-body: 28px;
+}
+
+html {
+  text-autospace: normal;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+a {
+  transition-property: color, text-decoration-color;
+  transition-duration: var(--motion-link);
+  transition-timing-function: var(--ease-snap);
+}
+
 @config "../tailwind.config.js";
 @import "tailwindcss";
 
 @layer base {
   html {
-    @apply min-h-screen bg-[#e0e0d8] text-[15px] leading-7 text-zinc-900 dark:bg-[#0a0c12] dark:text-zinc-100;
+    @apply min-h-screen bg-[#e0e0d8] text-[15px] leading-(--leading-body) text-zinc-900 dark:bg-[#0a0c12] dark:text-zinc-100;
   }
 
   body {
-    @apply min-h-screen bg-transparent text-[15px] leading-7 text-zinc-900 dark:text-zinc-100;
+    @apply min-h-screen bg-transparent text-[15px] leading-(--leading-body) text-zinc-900 dark:text-zinc-100;
   }
 
   *,
@@ -35,6 +74,61 @@
   }
 }
 
+p,
+li,
+blockquote {
+  text-wrap: pretty;
+}
+
+time {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-in {
+    animation: page-in var(--motion-page) var(--ease-snap) both;
+  }
+}
+
+@keyframes page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.org-tooltip {
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity var(--motion-out) var(--ease-snap), transform 0s linear var(--motion-out);
+}
+
+.org-tooltip[data-state="open"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: opacity var(--motion-in) var(--ease-snap), transform var(--motion-in) var(--ease-snap);
+}
+
+.org-tooltip[data-state="open"][data-source="focus"] {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-tooltip,
+  .org-tooltip[data-state="open"] {
+    transition: none;
+    transform: none;
+  }
+}
+
+
 .post-content h1,
 .post-content h2 {
   @apply mt-8 mb-3 scroll-mt-24 text-[15px] font-medium text-zinc-900 dark:text-zinc-100;
@@ -45,23 +139,25 @@
 }
 
 .post-content p {
-  @apply my-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100;
+  @apply my-4 text-[15px] leading-(--leading-body) text-zinc-900 dark:text-zinc-100;
 }
+
 
 .post-content strong {
   @apply font-medium text-zinc-900 dark:text-zinc-100;
 }
 
 .post-content ul {
-  @apply my-4 list-disc space-y-1 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100;
+  @apply my-4 list-disc space-y-1 pl-4 text-[15px] leading-(--leading-body) text-zinc-900 dark:text-zinc-100;
 }
 
 .post-content ol {
-  @apply my-4 list-decimal space-y-1 pl-4 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100;
+  @apply my-4 list-decimal space-y-1 pl-4 text-[15px] leading-(--leading-body) text-zinc-900 dark:text-zinc-100;
 }
 
+
 .post-content li {
-  @apply my-1 leading-7 text-zinc-900 dark:text-zinc-100;
+  @apply my-1 leading-(--leading-body) text-zinc-900 dark:text-zinc-100;
 }
 
 .post-content blockquote {
@@ -85,5 +181,13 @@
 }
 
 .post-content a {
-  @apply font-normal text-inherit underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100;
+  @apply font-normal text-inherit underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 hover:decoration-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100 dark:hover:decoration-zinc-100;
 }
+
+@media print {
+  html,
+  body {
+    color: #18181b;
+  }
+}
+

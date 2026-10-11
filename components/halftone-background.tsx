@@ -51,6 +51,7 @@ export default function HalftoneBackground({
     const count = 4; // 4 wandering Lissajous metaballs (D8: 3-5 blobs)
     const reducedMotionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const darkModeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    const narrowMq = window.matchMedia("(max-width: 896px)"); // 896px = SiteShell max-w-4xl
 
     // Initial dark mode detection
     isDarkRef.current = resolvedMode
@@ -66,6 +67,7 @@ export default function HalftoneBackground({
     let xOdd = new Float32Array(0);
     let attenEven = new Float32Array(0);
     let attenOdd = new Float32Array(0);
+    let skipEvenStart = 0, skipEvenEnd = 0, skipOddStart = 0, skipOddEnd = 0;
     let frame = 0;
     let previous = 0;
     let lastDraw = 0;
@@ -73,7 +75,6 @@ export default function HalftoneBackground({
     let hasDrawnInitial = false;
     const maxRadius = pitch * 0.44; // 4.4px (D5)
     const tau = Math.PI * 2;
-    // Palette per D2, D3, D4
     const getColors = () => {
       if (isDarkRef.current) {
         return {
@@ -140,14 +141,16 @@ export default function HalftoneBackground({
         const xRow = isOdd ? xOdd : xEven;
         const attenRow = isOdd ? attenOdd : attenEven;
         const y = row * pitch;
-
         // Precompute y-distance squared to blobs
         const dy0 = y - c0y; const dy0_sq = dy0 * dy0 + 1;
         const dy1 = y - c1y; const dy1_sq = dy1 * dy1 + 1;
         const dy2 = y - c2y; const dy2_sq = dy2 * dy2 + 1;
         const dy3 = y - c3y; const dy3_sq = dy3 * dy3 + 1;
 
+        const skipStart = isOdd ? skipOddStart : skipEvenStart;
+        const skipEnd = isOdd ? skipOddEnd : skipEvenEnd;
         for (let col = 0; col < columns; col++) {
+          if (col >= skipStart && col < skipEnd) continue;
           const x = xRow[col];
 
           const dx0 = x - c0x;
@@ -179,7 +182,12 @@ export default function HalftoneBackground({
     drawRef.current = draw;
 
     const tick = (now: number) => {
-      if (document.hidden || reducedMotionMq.matches) {
+      if (document.hidden) {
+        frame = 0;
+        return;
+      }
+      if (reducedMotionMq.matches || narrowMq.matches) {
+        draw();
         frame = 0;
         return;
       }
@@ -209,8 +217,7 @@ export default function HalftoneBackground({
         return;
       }
 
-      // Static single frame when reduced motion is preferred (M5)
-      if (reducedMotionMq.matches) {
+      if (reducedMotionMq.matches || narrowMq.matches) {
         draw();
         return;
       }
@@ -247,6 +254,12 @@ export default function HalftoneBackground({
       xOdd = new Float32Array(columns);
       attenEven = new Float32Array(columns);
       attenOdd = new Float32Array(columns);
+      const sheetLeft = nextWidth > 896 ? (host.clientWidth - 896) / 2 : 0;
+      const sheetRight = nextWidth > 896 ? sheetLeft + 896 : 0;
+      skipEvenStart = columns;
+      skipEvenEnd = columns;
+      skipOddStart = columns;
+      skipOddEnd = columns;
 
       // Center attenuation band (D6, STATES.mobile)
       const halfCenter = Math.min(width * 0.48, 504);
@@ -257,7 +270,16 @@ export default function HalftoneBackground({
         const xo = xe + pitch / 2;
         xEven[col] = xe;
         xOdd[col] = xo;
-
+        if (nextWidth > 896) {
+          if (xe - maxRadius >= sheetLeft && xe + maxRadius <= sheetRight) {
+            skipEvenStart = Math.min(skipEvenStart, col);
+            skipEvenEnd = col + 1;
+          }
+          if (xo - maxRadius >= sheetLeft && xo + maxRadius <= sheetRight) {
+            skipOddStart = Math.min(skipOddStart, col);
+            skipOddEnd = col + 1;
+          }
+        }
         const distE = Math.abs(xe - centerX);
         attenEven[col] =
           distE < halfCenter
@@ -286,6 +308,7 @@ export default function HalftoneBackground({
     document.addEventListener("visibilitychange", startOrStop);
     reducedMotionMq.addEventListener("change", startOrStop);
     darkModeMq.addEventListener("change", startOrStop);
+    narrowMq.addEventListener("change", startOrStop);
 
     resize();
     startOrStop();
@@ -297,6 +320,7 @@ export default function HalftoneBackground({
       document.removeEventListener("visibilitychange", startOrStop);
       reducedMotionMq.removeEventListener("change", startOrStop);
       darkModeMq.removeEventListener("change", startOrStop);
+      narrowMq.removeEventListener("change", startOrStop);
     };
   }, [resolvedMode]);
 
@@ -304,7 +328,7 @@ export default function HalftoneBackground({
     <div
       ref={hostRef}
       aria-hidden="true"
-      className={`fixed inset-0 -z-10 pointer-events-none select-none overflow-hidden motion-reduce:transition-none transition-opacity duration-500 ${
+      className={`fixed inset-0 -z-10 pointer-events-none print:hidden select-none overflow-hidden motion-reduce:transition-none transition-opacity duration-500 ${
         mounted ? "opacity-100" : "opacity-0"
       } bg-[#e0e0d8] dark:bg-[#0a0c12] ${className}`}
       style={

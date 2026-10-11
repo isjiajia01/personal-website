@@ -101,7 +101,7 @@ export default function PunctumPrivacyPage() {
           </Link>
         </div>
 
-        <p className="mt-8 font-mono text-xs uppercase tracking-wider text-white/35">
+        <p className="mt-8 font-mono text-xs tabular-nums uppercase tracking-wider text-white/35">
           Last updated October 6, 2026
         </p>
       </article>

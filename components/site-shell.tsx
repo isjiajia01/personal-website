@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 
 export interface SiteShellProps {
   children: React.ReactNode;
@@ -37,10 +36,6 @@ export function SiteShell({
   contacts,
 }: SiteShellProps) {
   const pathname = usePathname() || `/${lang}`;
-
-  useEffect(() => {
-    document.documentElement.lang = lang;
-  }, [lang]);
 
   const otherLang = lang === "zh" ? "en" : "zh";
   const otherLangLabel = lang === "zh" ? "English" : "中文";
@@ -84,19 +79,19 @@ export function SiteShell({
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-4xl bg-white border-x-0 md:border-x border-zinc-300 dark:bg-zinc-950 dark:border-zinc-800">
+    <div className="mx-auto min-h-screen w-full max-w-4xl bg-white border-x-0 print:border-x-0 md:border-x border-zinc-300 dark:bg-zinc-950 dark:border-zinc-800">
       <div className="mx-auto max-w-xl px-6 pt-16 pb-16 sm:pt-24">
       {/* Skip to content link */}
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:border focus:border-zinc-300 focus:bg-white focus:px-3 focus:py-1.5 focus:text-[13px] focus:text-zinc-900 focus:shadow-sm dark:focus:border-zinc-700 dark:focus:bg-zinc-900 dark:focus:text-zinc-100"
+        className="sr-only print:hidden focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:border focus:border-zinc-300 focus:bg-white focus:px-3 focus:py-1.5 focus:text-[13px] focus:text-zinc-900 focus:shadow-sm dark:focus:border-zinc-700 dark:focus:bg-zinc-900 dark:focus:text-zinc-100"
       >
         {labels.skipToContent}
       </a>
 
       {/* Navigation */}
       <nav
-        className="mb-16 flex items-center justify-between text-[15px]"
+        className="mb-16 flex items-center justify-between text-[15px] print:hidden"
         aria-label="Main"
       >
         <div className="flex items-center gap-6">
@@ -107,7 +102,7 @@ export function SiteShell({
               aria-current={item.active ? "page" : undefined}
               className={
                 item.active
-                  ? "font-medium text-zinc-900 dark:text-zinc-100"
+                  ? "underline decoration-zinc-400 underline-offset-[6px] font-normal text-zinc-900 dark:decoration-zinc-500 dark:text-zinc-100"
                   : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
               }
             >
@@ -117,7 +112,7 @@ export function SiteShell({
         </div>
         <Link
           href={switchPath}
-          hrefLang={otherLang}
+          hrefLang={otherLang === "zh" ? "zh-Hans" : "en"}
           className="text-[13px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
           {otherLangLabel}
@@ -148,12 +143,12 @@ export function SiteShell({
                   href={contact.link}
                   target={isMail ? undefined : "_blank"}
                   rel={isMail ? undefined : "noopener noreferrer"}
-                  className="hover:text-zinc-900 dark:hover:text-zinc-100"
+                  className="group hover:text-zinc-900 dark:hover:text-zinc-100"
                 >
                   {contact.label}
                   {!isMail && (
                     <>
-                      <span aria-hidden="true" className="ml-0.5 inline-block">
+                      <span aria-hidden="true" className="ml-0.5 inline-block motion-safe:transition-transform motion-safe:duration-(--motion-link) motion-safe:ease-snap motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-focus-visible:translate-x-0.5 motion-safe:group-focus-visible:-translate-y-0.5">
                         ↗
                       </span>
                       <span className="sr-only"> {labels.opensInNewTab}</span>
