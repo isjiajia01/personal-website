@@ -1,0 +1,37 @@
+name: Deploy me.isjia.page to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Point canonical URLs at me.isjia.page (this deployment only)
+        run: |
+          grep -rl 'me\.zhangjiajia\.me' --exclude-dir=.git --exclude-dir=.github --exclude-dir=node_modules . | xargs sed -i 's/me\.zhangjiajia\.me/me.isjia.page/g'
+          echo 'me.isjia.page' > public/CNAME
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+      - id: deployment
+        uses: actions/deploy-pages@v4
