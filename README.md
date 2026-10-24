@@ -10,10 +10,7 @@ This is the source code of My Homepage.
 - [Next.js](https://nextjs.org)
 - [TailwindCSS](https://tailwindcss.com)
 - [Velite](https://velite.js.org)
-- [OpenNext for Cloudflare](https://opennext.js.org/cloudflare)
 
 ## Deploy
 
-- `npm run preview`: Build with OpenNext and preview locally in the Workers runtime.
-- `npm run deploy`: Build with OpenNext and deploy to Cloudflare Workers.
-- `npm run upload`: Build with OpenNext and upload the worker bundle without deploying.
+Deployed to GitHub Pages at https://me.isjia.page by `.github/workflows/pages.yml` on every push to `main` (static export to `out/`, custom domain via `public/CNAME`).

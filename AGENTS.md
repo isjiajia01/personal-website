@@ -15,8 +15,6 @@
 - `npm run dev`: Start local dev server.
 - `npm run lint`: Run ESLint.
 - `npm run build`: Production build.
-- `npm run preview`: Build with OpenNext and preview in the Cloudflare Workers runtime.
-- `npm run deploy`: Build with OpenNext and deploy to Cloudflare Workers.
 - `npm start`: Serve the production build.
 CI runs lint and build on push via `.github/workflows/ci.yml`.
 
@@ -40,4 +38,4 @@ CI runs lint and build on push via `.github/workflows/ci.yml`.
 
 ## Security & Configuration Tips
 - Do not commit secrets. Use environment variables for any local credentials.
-- Target Node 18+ locally to match Next.js and Cloudflare Workers tooling.
+- Target Node 18+ locally to match Next.js.

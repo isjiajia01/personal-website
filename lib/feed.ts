@@ -1,4 +1,4 @@
-const BASE_URL = "https://me.zhangjiajia.me";
+const BASE_URL = "https://me.isjia.page";
 
 interface FeedItem {
   title: string;

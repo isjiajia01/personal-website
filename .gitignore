@@ -48,8 +48,6 @@ next-env.d.ts
 .velite
 public/static/posts
 
-# Cloudflare
-.wrangler
 .open-next
 .dev.vars
 

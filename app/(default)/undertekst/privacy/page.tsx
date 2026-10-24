@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Undertekst Privacy Policy",
   description: "Privacy information for the Undertekst Safari extension.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/undertekst/privacy/",
+    canonical: "https://me.isjia.page/undertekst/privacy/",
   },
 };
 

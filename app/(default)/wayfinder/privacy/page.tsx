@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Wayfinder Privacy Policy",
   description: "Privacy information for Wayfinder for Safari and Wayfinder for Chrome.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/wayfinder/privacy/",
+    canonical: "https://me.isjia.page/wayfinder/privacy/",
   },
 };
 

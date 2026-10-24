@@ -1,4 +1,4 @@
-const BASE_URL = "https://me.zhangjiajia.me";
+const BASE_URL = "https://me.isjia.page";
 
 export interface JsonLdWebSite {
   name: string;
@@ -24,7 +24,7 @@ export function generateWebSiteJsonLd(options: JsonLdWebSite): object {
       sameAs: [
         "https://github.com/isjiajia01",
         "https://github.com/isjiajia01",
-        "https://me.zhangjiajia.me",
+        "https://me.isjia.page",
       ],
     },
   };

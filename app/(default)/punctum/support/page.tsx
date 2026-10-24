@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Punctum Support",
   description: "Support, troubleshooting and purchase restoration help for Punctum.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/punctum/support/",
+    canonical: "https://me.isjia.page/punctum/support/",
   },
 };
 

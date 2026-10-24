@@ -1,6 +1,6 @@
 const dictionary = {
   meta: {
-    baseUrl: "https://me.zhangjiajia.me",
+    baseUrl: "https://me.isjia.page",
     websiteName: "Jiajia Zhang",
     authorName: "Jiajia Zhang",
     motto: "Junior product/full-stack candidate for internal tools and workflow systems.",
@@ -245,7 +245,7 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Shows taste, speed, and willingness to iterate from feedback",
       ],
       stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
-      link: "https://me.zhangjiajia.me",
+      link: "https://me.isjia.page",
       color: "rose",
       primary: false,
       homeFeatured: false,
@@ -363,12 +363,12 @@ My strongest work sits around internal tools, workflow automation with human rev
     },
     {
       label: "Website",
-      name: "me.zhangjiajia.me",
-      link: "https://me.zhangjiajia.me",
+      name: "me.isjia.page",
+      link: "https://me.isjia.page",
     },
   ],
   aboutContent: `
-This is a job-facing personal index for [Jiajia Zhang](https://me.zhangjiajia.me), based in Copenhagen. I completed the DTU MSc Engineering degree in Mathematical Modelling and Computation in July 2026.
+This is a job-facing personal index for [Jiajia Zhang](https://me.isjia.page), based in Copenhagen. I completed the DTU MSc Engineering degree in Mathematical Modelling and Computation in July 2026.
 
 ### Why these projects
 

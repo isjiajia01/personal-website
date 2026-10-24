@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Wayfinder",
   description: "Save, find and resume your tabs. A command palette, sessions and a calm new tab for Safari and Chrome.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/wayfinder/",
+    canonical: "https://me.isjia.page/wayfinder/",
   },
 };
 

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "ThreadLite Support",
   description: "Customer support, troubleshooting, and setup for ThreadLite for Safari.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/threadlite/support/",
+    canonical: "https://me.isjia.page/threadlite/support/",
   },
 };
 

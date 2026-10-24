@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Wayfinder Support",
   description: "Setup, troubleshooting and support for Wayfinder for Safari and Chrome.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/wayfinder/support/",
+    canonical: "https://me.isjia.page/wayfinder/support/",
   },
 };
 

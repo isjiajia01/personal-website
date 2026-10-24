@@ -19,10 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Point canonical URLs at me.isjia.page (this deployment only)
-        run: |
-          grep -rl 'me\.zhangjiajia\.me' --exclude-dir=.git --exclude-dir=.github --exclude-dir=node_modules . | xargs sed -i 's/me\.zhangjiajia\.me/me.isjia.page/g'
-          echo 'me.isjia.page' > public/CNAME
       - uses: actions/setup-node@v4
         with:
           node-version: 22

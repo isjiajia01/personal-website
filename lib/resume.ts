@@ -78,8 +78,8 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       {
         kind: "website",
         label: "网站",
-        value: "me.zhangjiajia.me",
-        href: "https://me.zhangjiajia.me",
+        value: "me.isjia.page",
+        href: "https://me.isjia.page",
       },
       {
         kind: "email",
@@ -252,8 +252,8 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       {
         kind: "website",
         label: "Website",
-        value: "me.zhangjiajia.me",
-        href: "https://me.zhangjiajia.me",
+        value: "me.isjia.page",
+        href: "https://me.isjia.page",
       },
       {
         kind: "email",

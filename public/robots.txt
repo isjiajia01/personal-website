@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://me.zhangjiajia.me/sitemap.xml
+Sitemap: https://me.isjia.page/sitemap.xml

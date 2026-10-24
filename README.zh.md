@@ -10,10 +10,7 @@
 - [Next.js](https://nextjs.org)
 - [TailwindCSS](https://tailwindcss.com)
 - [Velite](https://velite.js.org)
-- [OpenNext for Cloudflare](https://opennext.js.org/cloudflare)
 
 ## 部署
 
-- `npm run preview`：使用 OpenNext 构建，并在 Workers 运行时中本地预览。
-- `npm run deploy`：使用 OpenNext 构建并部署到 Cloudflare Workers。
-- `npm run upload`：使用 OpenNext 构建，并仅上传 Worker 产物而不发布。
+通过 GitHub Pages 部署到 https://me.isjia.page,由 `.github/workflows/pages.yml` 在每次推送到 `main` 时触发(静态导出到 `out/`,自定义域名见 `public/CNAME`).

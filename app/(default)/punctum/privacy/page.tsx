@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Punctum Privacy Policy",
   description: "Privacy information for Punctum, the dot-matrix clock for iPhone, iPad, Apple Watch and Apple TV.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/punctum/privacy/",
+    canonical: "https://me.isjia.page/punctum/privacy/",
   },
 };
 

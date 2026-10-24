@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Solis Privacy Policy",
   description: "Privacy information for the Solis daylight and astronomy app.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/solis/privacy/",
+    canonical: "https://me.isjia.page/solis/privacy/",
   },
 };
 

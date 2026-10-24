@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Solis Support",
   description: "Support, troubleshooting, and purchase restoration help for Solis.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/solis/support/",
+    canonical: "https://me.isjia.page/solis/support/",
   },
 };
 

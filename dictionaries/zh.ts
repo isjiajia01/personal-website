@@ -1,6 +1,6 @@
 const dictionary = {
   meta: {
-    baseUrl: "https://me.zhangjiajia.me",
+    baseUrl: "https://me.isjia.page",
     websiteName: "Jiajia Zhang 的作品集",
     authorName: "Jiajia Zhang",
     motto: "面向 internal tools 和 workflow systems 的 junior product/full-stack candidate。",
@@ -242,7 +242,7 @@ const dictionary = {
         "体现审美、迭代速度，以及根据反馈快速调整的能力",
       ],
       stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
-      link: "https://me.zhangjiajia.me",
+      link: "https://me.isjia.page",
       color: "rose",
       primary: false,
       homeFeatured: false,
@@ -360,12 +360,12 @@ const dictionary = {
     },
     {
       label: "网站",
-      name: "me.zhangjiajia.me",
-      link: "https://me.zhangjiajia.me",
+      name: "me.isjia.page",
+      link: "https://me.isjia.page",
     },
   ],
   aboutContent: `
-这里是 [Jiajia Zhang](https://me.zhangjiajia.me) 的求职向个人索引。我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
+这里是 [Jiajia Zhang](https://me.isjia.page) 的求职向个人索引。我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
 
 ### 为什么是这些项目
 

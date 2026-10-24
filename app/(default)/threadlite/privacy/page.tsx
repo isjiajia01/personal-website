@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "ThreadLite Privacy Policy",
   description: "Privacy information for the ThreadLite Safari extension.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/threadlite/privacy/",
+    canonical: "https://me.isjia.page/threadlite/privacy/",
   },
 };
 

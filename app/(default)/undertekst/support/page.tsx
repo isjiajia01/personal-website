@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Undertekst Support",
   description: "Setup, troubleshooting and support for Undertekst for Safari.",
   alternates: {
-    canonical: "https://me.zhangjiajia.me/undertekst/support/",
+    canonical: "https://me.isjia.page/undertekst/support/",
   },
 };
 
