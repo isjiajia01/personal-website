@@ -1,0 +1,39 @@
+# Portfolio presentation seam — reference-led paper layout
+
+Scope: shell, home, shared motion, org-link annotation. Works/resume/about/project routes keep their content and inherit the shell and serif page titles. Product/legal routes keep their standalone layouts and one main landmark.
+Reference studied: suepark.xyz layout and motion only (no content, assets, identity, Rive).
+
+## Intent
+A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fits in one screen, sees five real projects with a one-line description each, and reaches Work / Resume / About without a menu.
+
+## Layout
+- Page: `#fafaf9` (dark `#0b0b0d`) with 20px grid (minor) and 100px grid (major), centred, lines align to paper edges.
+- Paper: white (dark `#18181b`), max 1040px, 100px below viewport top from `md` (768px); full-bleed, no shadow, no top gap below `md`. Soft side shadow. Print: no grid, shadow or margin.
+- Column: 592px max, 24px side padding. Nav sits at the top of the column; `main` starts 80px (mobile) / 112px (≥640) below it.
+- Type: Crimson Pro (serif) for name, page titles, project titles; Inter/PingFang for body. Body 15px/26 (zh /28). Home intro 16px.
+- Colour: body stone-600 `#57534e` (7.5:1 on white), meta stone-500 `#78716c` (4.8:1), hover rose-700 `#be123c` (6.0:1) / dark rose-400 `#fb7185` on `#18181b` (6.3:1).
+
+## Home order
+1. Name (h1, serif 32px) 2. Positioning sentence (existing motto) 3. Bio paragraphs with org links 4. Work index 5. “view all evidence” link 6. `* * *` ornament + footer contacts.
+Work index row: serif title (+ ↗ if external) · dotted leader · year; below it the existing `summary` at 14px stone-500, unclamped. Whole row is one link. Rows are the `homeFeatured` works in dictionary order. No data change.
+
+## Behaviour
+- Navigation: always-visible inline row (Home Work Resume About · language). No overlay menu: five short labels fit at 320px, so an overlay would add steps. Targets ≥ 40px tall via padding. `aria-current="page"` on active.
+- Org links: hover intent 120ms / focus opens annotation; Escape closes; closed annotation is `visibility:hidden`.
+- Content is server-rendered and visible with JS disabled; all motion is CSS and ends at the final visible state.
+- Product/privacy/support pages bypass the portfolio shell to preserve their own layout and avoid nested main landmarks or unavailable locale links.
+- Print forces the paper and its text to white/ink even when the browser prefers dark mode.
+
+## Motion (all CSS; one token set)
+| What | Spec | Reference evidence |
+|---|---|---|
+| Content rise | opacity 0→1, translateY 20px→0, blur 1.5px→0, 500ms `cubic-bezier(.23,1,.32,1)`, fill backwards | nav item transition, `home-content-rise` 0.5s |
+| Stagger | delay = 60 + 40·i ms, i capped at 9 | nav items `60+40*r` |
+| Route change | template remounts → same stagger on page blocks (enter only) | ~400ms nav transitions |
+| Colour hover | 150ms ease-snap, rose | link transitions |
+| Press | `scale(.97)` 150ms on inline-block links | `active:scale-[0.97]` |
+| Org annotation | 180ms `cubic-bezier(.25,.1,.25,1)`, blur 1.5px + 4px rise; exit 120ms | tooltip `initial/animate/exit` |
+Reduced motion (`prefers-reduced-motion: reduce`) and print: `animation`/`transition` none, no scale, no smooth scroll.
+
+## Acceptance
+`npm run lint`, `npm run build`. Manually: /en /zh home, works, resume, about, afgang; 375px no horizontal scroll; dark; reduced motion shows instantly; JS disabled shows everything; Tab reaches skip link → nav → rows; Escape closes annotation; print resume has no grid/paper chrome.

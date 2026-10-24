@@ -69,7 +69,7 @@ function WorkArticle({
       className="scroll-mt-24 border-t border-zinc-200 py-8 dark:border-zinc-800"
     >
       <div className="flex items-baseline justify-between">
-        <h3 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+        <h3 className="project-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
           {work.name}
         </h3>
         <span className="text-[13px] tabular-nums text-zinc-600 dark:text-zinc-400">
@@ -133,7 +133,7 @@ export default async function WorksPage(
 
   return (
     <div>
-      <h1 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+      <h1 className="page-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
         {dictionary.labels.works}
       </h1>
       <p className="mt-2 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">

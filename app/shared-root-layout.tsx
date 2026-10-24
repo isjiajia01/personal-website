@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Crimson_Pro, Inter } from "next/font/google";
 import type { ReactNode } from "react";
-import HalftoneBackground from "@/components/halftone-background";
 import "../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+const crimson = Crimson_Pro({ subsets: ["latin"], display: "swap", variable: "--font-crimson" });
 
 export const metadata: Metadata = {
   title: "Jiajia Zhang",
@@ -20,9 +20,8 @@ export function SharedRootLayout({
   lang: "en" | "zh-Hans";
 }) {
   return (
-    <html lang={lang} className={inter.variable} suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang={lang} className={`${inter.variable} ${crimson.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
       <body className="text-[15px] leading-(--leading-body) text-zinc-900 antialiased dark:text-zinc-100">
-        <HalftoneBackground />
         {children}
       </body>
     </html>

@@ -103,7 +103,7 @@ export default async function AfgangCasePage(
       </p>
 
       {/* Title */}
-      <h1 className="mt-1 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+      <h1 className="page-title mt-1 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
         {project.title}
       </h1>
 

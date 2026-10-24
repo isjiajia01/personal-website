@@ -67,7 +67,7 @@ export default async function ResumePage(
 
   return (
     <div>
-      <h1 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+      <h1 className="page-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
         {content.pageTitle}
       </h1>
 

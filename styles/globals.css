@@ -1,5 +1,6 @@
 @theme {
   --font-sans: var(--font-inter), "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-serif: var(--font-crimson), "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "STSong", Georgia, serif;
   --ease-snap: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -7,7 +8,27 @@
   --motion-link: 150ms;
   --motion-in: 160ms;
   --motion-out: 100ms;
-  --motion-page: 220ms;
+  --motion-page: 500ms;
+  --content-w: 592px;
+  --page-bg: #fafaf9;
+  --paper-bg: #fff;
+  --paper-edge: rgb(120 113 108 / 0.2);
+  --paper-shadow: 0 0 48px rgb(0 0 0 / 0.07);
+  --grid-minor: rgb(120 113 108 / 0.08);
+  --grid-major: rgb(120 113 108 / 0.13);
+  --rose: #be123c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-bg: #0b0b0d;
+    --paper-bg: #18181b;
+    --paper-edge: rgb(161 161 170 / 0.18);
+    --paper-shadow: 0 0 48px rgb(0 0 0 / 0.55);
+    --grid-minor: rgb(161 161 170 / 0.06);
+    --grid-major: rgb(161 161 170 / 0.1);
+    --rose: #fb7185;
+  }
 }
 
 html:lang(en) {
@@ -32,7 +53,7 @@ html {
 }
 
 a {
-  transition-property: color, text-decoration-color;
+  transition-property: color, text-decoration-color, scale;
   transition-duration: var(--motion-link);
   transition-timing-function: var(--ease-snap);
 }
@@ -42,7 +63,15 @@ a {
 
 @layer base {
   html {
-    @apply min-h-screen bg-[#e0e0d8] text-[15px] leading-(--leading-body) text-zinc-900 dark:bg-[#0a0c12] dark:text-zinc-100;
+    @apply min-h-screen text-[15px] leading-(--leading-body) text-zinc-900 dark:text-zinc-100;
+    background-color: var(--page-bg);
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: calc(50% + 50px) 0, calc(50% + 50px) 0, calc(50% + 10px) 0, calc(50% + 10px) 0;
   }
 
   body {
@@ -89,31 +118,202 @@ time {
   body {
     background: #fff;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .page-in {
-    animation: page-in var(--motion-page) var(--ease-snap) both;
+  html {
+    background-image: none;
   }
 }
 
-@keyframes page-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Content rise: opacity + 20px translate + 1.5px blur, 500ms ease-snap, 60+40i ms stagger.
+   Defined only for no-preference and screen, so the base state is always final and visible. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(1.5px);
+  }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  @media screen {
+    .rise,
+    .stagger > * > *:not(.rise-own) {
+      animation: rise var(--motion-page) var(--ease-snap) backwards;
+      animation-delay: calc(60ms + 40ms * min(var(--i, 0), 9));
+    }
+
+    .stagger > * > :nth-child(2) { --i: 1; }
+    .stagger > * > :nth-child(3) { --i: 2; }
+    .stagger > * > :nth-child(4) { --i: 3; }
+    .stagger > * > :nth-child(5) { --i: 4; }
+    .stagger > * > :nth-child(6) { --i: 5; }
+    .stagger > * > :nth-child(7) { --i: 6; }
+    .stagger > * > :nth-child(8) { --i: 7; }
+    .stagger > * > :nth-child(n + 9) { --i: 8; }
+
+    .press:active {
+      scale: 0.97;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Paper */
+.paper {
+  position: relative;
+  margin-inline: auto;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1040px;
+  overflow-x: clip;
+  background: var(--paper-bg);
+}
+
+@media (min-width: 768px) {
+  .paper {
+    margin-top: 100px;
+    min-height: calc(100vh - 100px);
+    border-top: 1px solid var(--paper-edge);
+    box-shadow: var(--paper-shadow);
+  }
+}
+
+@media print {
+  .paper {
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+    min-height: 0;
+    background: #fff;
+    color: #18181b;
+  }
+
+  .paper * {
+    color: inherit !important;
+  }
+}
+
+.paper-column {
+  margin-inline: auto;
+  max-width: var(--content-w);
+  padding-inline: 24px;
+}
+
+@media (min-width: 768px) {
+  .paper-column {
+    padding-inline: 0;
+    width: var(--content-w);
+  }
+}
+
+/* Serif titles, screen only so the printed resume keeps its layout */
+@media screen {
+  .page-title {
+    font-family: var(--font-serif);
+    font-size: clamp(26px, calc(1.5625vw + 16px), 32px);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #44403c;
+  }
+
+  .project-title {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  .page-title {
+    color: #e4e4e7;
+  }
+}
+
+/* Dotted leader (reference: 1.5px dots, 5px pitch, space-repeat) */
+.leader {
+  flex: 1 1 auto;
+  min-width: 16px;
+  height: 1.5px;
+  align-self: center;
+  color: #d6d3d1;
+  background-image: radial-gradient(circle, currentColor 0.75px, transparent 0.75px);
+  background-size: 5px 1.5px;
+  background-repeat: space no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+  .leader {
+    color: #52525b;
+  }
+}
+
+/* Work index row */
+.work-row .work-title {
+  transition: color var(--motion-link) var(--ease-snap);
+}
+
+.work-row:hover .work-title,
+.work-row:focus-visible .work-title,
+.work-row:active .work-title {
+  color: var(--rose);
+}
+
+.work-row:hover .leader,
+.work-row:focus-visible .leader {
+  color: var(--rose);
+}
+
+.link-arrow {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .link-arrow {
+    transition: translate var(--motion-link) var(--ease-snap);
+  }
+
+  .group:hover .link-arrow,
+  .group:focus-visible .link-arrow {
+    translate: 2px -2px;
+  }
+}
+
+/* Org annotation: 180ms in (blur 1.5px + 4px), 120ms out */
 .org-tooltip {
+  visibility: hidden;
   opacity: 0;
+  filter: blur(1px);
   transform: translateY(4px);
   pointer-events: none;
-  transition: opacity var(--motion-out) var(--ease-snap), transform 0s linear var(--motion-out);
+  transition:
+    opacity 120ms ease-out,
+    filter 120ms ease-out,
+    transform 0s linear 120ms,
+    visibility 0s linear 120ms;
 }
 
 .org-tooltip[data-state="open"] {
+  visibility: visible;
   opacity: 1;
+  filter: blur(0);
   transform: translateY(0);
   pointer-events: auto;
-  transition: opacity var(--motion-in) var(--ease-snap), transform var(--motion-in) var(--ease-snap);
+  transition:
+    opacity 180ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    filter 180ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 180ms cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .org-tooltip[data-state="open"][data-source="focus"] {
@@ -125,9 +325,9 @@ time {
   .org-tooltip[data-state="open"] {
     transition: none;
     transform: none;
+    filter: none;
   }
 }
-
 
 .post-content h1,
 .post-content h2 {

@@ -98,13 +98,13 @@ export function OrgLink({
         rel="noopener noreferrer"
         aria-describedby={isOpen ? tooltipId : undefined}
         onPointerEnter={schedulePointerShow}
-        onPointerLeave={cancelPointerIntent}
+        onPointerLeave={hide}
         onFocus={() => show("focus")}
         onBlur={hide}
-        className="group underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 hover:decoration-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100 dark:hover:decoration-zinc-100"
+        className="group whitespace-nowrap italic underline decoration-stone-300 underline-offset-[3px] hover:text-(--rose) hover:decoration-(--rose) dark:decoration-zinc-600"
       >
         {name}
-        <span aria-hidden="true" className="ml-0.5 inline-block motion-safe:transition-transform motion-safe:duration-(--motion-link) motion-safe:ease-snap motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-focus-visible:translate-x-0.5 motion-safe:group-focus-visible:-translate-y-0.5">
+        <span aria-hidden="true" className="link-arrow ml-0.5 text-[0.8em] not-italic">
           ↗
         </span>
         <span className="sr-only"> {opensInNewTab}</span>
@@ -116,7 +116,7 @@ export function OrgLink({
         role="tooltip"
         onPointerEnter={() => show("pointer")}
         onPointerLeave={hide}
-        className="org-tooltip absolute bottom-full z-20 mb-2 w-64 rounded-md border border-zinc-200 bg-white p-3 text-[13px] leading-5 text-zinc-600 shadow-sm dark:border-zinc-800 dark:bg-[#18181b] dark:text-zinc-400"
+        className="org-tooltip absolute bottom-full z-20 mb-2 w-64 rounded-md border border-stone-200 bg-(--paper-bg) p-3 text-[13px] not-italic leading-5 text-stone-600 shadow-sm dark:border-zinc-700 dark:text-zinc-300"
         data-state={isOpen ? "open" : "closed"}
         data-source={source}
       >

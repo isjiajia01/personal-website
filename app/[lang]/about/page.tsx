@@ -78,7 +78,7 @@ export default async function AboutPage(
     <div>
       {/* Header */}
       <div>
-        <h1 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+        <h1 className="page-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
           {dictionary.labels.aboutTitle}
         </h1>
         {subtitle && (
