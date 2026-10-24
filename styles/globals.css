@@ -191,29 +191,3 @@ time {
   }
 }
 
-
-
-/* --- Reading-measure ruler & paper palette (inspired by glenn.me's design language) --- */
-:root {
-  --ground: #d3d5d8;
-  --ink: #141414;
-  --muted: #6e6e6b;
-  --faint: #84878d;
-  --hairline: #14141429;
-  --accent: #d92020;
-  --measure: 80ch;
-  --ruler-h: 2.1rem;
-}
-html:not(.dark) body { background: var(--ground); }
-::selection { background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent); }
-.ch-ruler { position: fixed; top: 0; left: 0; right: 0; z-index: 30; height: var(--ruler-h); background: var(--ground); box-shadow: inset 0 -1px 0 var(--faint); cursor: ew-resize; touch-action: none; user-select: none; font-size: 0.9rem; line-height: 1; }
-.ch-ruler-scale { position: absolute; inset: 0; left: 1.5rem; }
-.ch-ruler-track { position: absolute; left: 0; bottom: 0; height: 1px; width: calc(80ch + 1px); max-width: 100%; }
-.ch-ruler-tick { position: absolute; bottom: 0; left: calc(var(--n, 0) * 1ch); width: 1px; height: 6px; background: var(--faint); }
-.ch-ruler-tick-major { height: 11px; }
-.ch-ruler-num { position: absolute; bottom: 0.82rem; left: 0; transform: translateX(-50%); font-size: 0.68rem; color: var(--faint); }
-.ch-ruler-index { position: absolute; top: calc(-1 * var(--ruler-h)); bottom: 0; left: var(--at, 80ch); width: 1px; background: var(--accent); }
-@media (max-width: 768px) { .ch-ruler { display: none; } }
-.link { text-decoration: underline; text-decoration-color: var(--hairline); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
-.link:hover { color: var(--accent); text-decoration-color: var(--accent); }
-.meta-muted { color: var(--faint); }

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CharRuler } from "./char-ruler";
 
 export interface SiteShellProps {
   children: React.ReactNode;
@@ -80,9 +79,8 @@ export function SiteShell({
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen w-full dark:bg-zinc-950">
-      <CharRuler />
-      <div className="px-6 pt-16 pb-16 sm:pt-24" style={{ maxWidth: "calc(var(--measure, 80ch) + 3rem)" }}>
+    <div className="mx-auto min-h-screen w-full max-w-4xl bg-white border-x-0 print:border-x-0 md:border-x border-zinc-300 dark:bg-zinc-950 dark:border-zinc-800">
+      <div className="mx-auto max-w-xl px-6 pt-16 pb-16 sm:pt-24">
       {/* Skip to content link */}
       <a
         href="#main"
