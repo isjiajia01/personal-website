@@ -1,3 +1,4 @@
+import { sharePreview } from "@/lib/share-preview";
 import { getDictionary, type Language } from "@/dictionaries";
 
 export function generateStaticParams() {
@@ -24,6 +25,7 @@ export async function generateMetadata(
     description,
     keywords: dictionary.meta.fillKeywords([]),
     openGraph: {
+      ...sharePreview("about", params.lang as Language),
       type: "website",
       url: new URL(dictionary.urls.about, dictionary.meta.baseUrl).href,
       siteName: dictionary.meta.websiteName,
@@ -31,6 +33,7 @@ export async function generateMetadata(
       description,
     },
     twitter: {
+      ...sharePreview("about", params.lang as Language),
       title: dictionary.labels.aboutTitle,
       description,
       site: "@isjiajia01",

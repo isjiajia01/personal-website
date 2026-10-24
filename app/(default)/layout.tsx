@@ -3,6 +3,7 @@ import { SiteShell } from "../../components/site-shell";
 import { SharedRootLayout } from "../shared-root-layout";
 
 export const metadata = {
+  metadataBase: new URL("https://me.isjia.page"),
   title: "Jiajia Zhang",
   description: "Junior product/full-stack candidate for internal tools and workflow systems.",
 };

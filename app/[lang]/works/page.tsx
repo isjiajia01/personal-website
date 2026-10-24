@@ -1,3 +1,4 @@
+import { sharePreview } from "@/lib/share-preview";
 export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "zh" }];
 }
@@ -21,6 +22,7 @@ export async function generateMetadata(
     description: dictionary.labels.noocWorks,
     keywords: dictionary.meta.fillKeywords(["portfolio", "projects", "work evidence"]),
     openGraph: {
+      ...sharePreview("works", params.lang as Language),
       type: "website",
       url: new URL(dictionary.urls.works, dictionary.meta.baseUrl).href,
       siteName: dictionary.meta.websiteName,
@@ -28,6 +30,7 @@ export async function generateMetadata(
       description: dictionary.labels.noocWorks,
     },
     twitter: {
+      ...sharePreview("works", params.lang as Language),
       title: dictionary.labels.works,
       description: dictionary.labels.noocWorks,
       site: "@isjiajia01",
