@@ -87,14 +87,14 @@ export default async function Home(props: {
                     href={work.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group -mx-2 flex items-baseline justify-between rounded-md px-2 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="group -mx-2 flex items-baseline justify-between rounded-md px-2 py-1.5 hover:text-(--accent) dark:hover:bg-zinc-800"
                   >
                     {rowContent}
                   </a>
                 ) : (
                   <Link
                     href={work.link}
-                    className="group -mx-2 flex items-baseline justify-between rounded-md px-2 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="group -mx-2 flex items-baseline justify-between rounded-md px-2 py-1.5 hover:text-(--accent) dark:hover:bg-zinc-800"
                   >
                     {rowContent}
                   </Link>
@@ -106,7 +106,7 @@ export default async function Home(props: {
         <div className="mt-4">
           <Link
             href={dictionary.urls.works}
-            className="text-[13px] leading-5 text-zinc-600 underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:text-zinc-400 dark:decoration-zinc-500 dark:hover:text-zinc-100"
+            className="link text-[13px] leading-5 text-zinc-700 dark:text-zinc-400"
           >
             {dictionary.labels.viewAllWorkEvidence}
           </Link>
