@@ -4,7 +4,7 @@ Scope: shell, home, shared motion, org-link annotation. Works/resume/about/proje
 Reference studied: suepark.xyz layout and motion only (no content, assets, identity, Rive).
 
 ## Intent
-A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fits in one screen, sees five real projects with a one-line description each, and reaches Work / Resume / About without a menu.
+A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fits in one screen, sees four real projects with a one-line description each, and reaches Work / Resume / About without a menu.
 
 ## Layout
 - Page: `#fafaf9` (dark `#0b0b0d`) with 20px grid (minor) and 100px grid (major), centred, lines align to paper edges.

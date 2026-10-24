@@ -198,24 +198,6 @@ My strongest work sits around internal tools, workflow automation with human rev
       homeFeatured: false,
     },
     {
-      slug: "nimbus",
-      name: "Nimbus Weather Journal",
-      year: "2025",
-      summary:
-        "A polished iOS weather-journal product with SwiftUI surfaces, shared settings, weather data flows, radar/wind features, and fallback behavior.",
-      roleFit: "Product engineering · SwiftUI · API-backed consumer app",
-      evidence: [
-        "Includes TestFlight distribution, CI checks, and feature-level implementation details",
-        "Moon/illumination and weather features show feature separation, service layers, and UI state handling",
-        "Good proof for SwiftUI, product polish, and backend/API integration discussions",
-      ],
-      stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets", "Backend APIs"],
-      link: "https://github.com/isjiajia01/10.01_Nimbus",
-      color: "cyan",
-      primary: true,
-      homeFeatured: true,
-    },
-    {
       slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
       year: "2026",
@@ -366,6 +348,11 @@ My strongest work sits around internal tools, workflow automation with human rev
       name: "me.isjia.page",
       link: "https://me.isjia.page",
     },
+    {
+      label: "Apps",
+      name: "app.isjia.page",
+      link: "https://app.isjia.page",
+    },
   ],
   aboutContent: `
 This is a job-facing personal index for [Jiajia Zhang](https://me.isjia.page), based in Copenhagen. I completed the DTU MSc Engineering degree in Mathematical Modelling and Computation in July 2026.
@@ -380,7 +367,7 @@ I usually start from the operating problem. What is the queue? What does a revie
 
 ### Where I fit first
 
-I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Afgang, Nimbus, and the DTU × Mover thesis are the best starting points; Cargo Guard is supporting proof for data-quality thinking.
+I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Afgang, and the DTU × Mover thesis are the best starting points; Cargo Guard is supporting proof for data-quality thinking.
 
 This portfolio itself is also a small content-and-deployment project built with Next.js static export. You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
   `,

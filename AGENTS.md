@@ -39,3 +39,7 @@ CI runs lint and build on push via `.github/workflows/ci.yml`.
 ## Security & Configuration Tips
 - Do not commit secrets. Use environment variables for any local credentials.
 - Target Node 18+ locally to match Next.js.
+
+## Related sites
+- This site is served at `https://me.isjia.page`. The App family site (hand-written static, separate repo `isjiajia01/isjia.page`) lives at `https://app.isjia.page` and is linked from the footer contacts in `dictionaries/en.ts` and `zh.ts` (keep both in sync).
+- Legacy per-app privacy/support routes here (`app/(default)/<app>/privacy|support`) still back URLs stored in live App Store versions. Do not delete them until those apps ship a version pointing at `app.isjia.page` (see each app's AGENTS.md "Pending: App Store Connect URLs").

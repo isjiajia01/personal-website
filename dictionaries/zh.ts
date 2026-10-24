@@ -195,24 +195,6 @@ const dictionary = {
       homeFeatured: false,
     },
     {
-      slug: "nimbus",
-      name: "Nimbus Weather Journal",
-      year: "2025",
-      summary:
-        "一个 SwiftUI 天气日记产品，覆盖天气数据、shared settings、radar/wind features 和 fallback 行为。",
-      roleFit: "Product engineering · SwiftUI · API-backed consumer app",
-      evidence: [
-        "包含 TestFlight distribution、CI checks 和 feature-level implementation details",
-        "月相/illumination 和天气功能能说明 feature separation、service layer、UI state handling",
-        "适合用来讲 SwiftUI、产品细节和 API integration",
-      ],
-      stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets", "Backend APIs"],
-      link: "https://github.com/isjiajia01/10.01_Nimbus",
-      color: "cyan",
-      primary: true,
-      homeFeatured: true,
-    },
-    {
       slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
       year: "2026",
@@ -363,6 +345,11 @@ const dictionary = {
       name: "me.isjia.page",
       link: "https://me.isjia.page",
     },
+    {
+      label: "应用",
+      name: "app.isjia.page",
+      link: "https://app.isjia.page",
+    },
   ],
   aboutContent: `
 这里是 [Jiajia Zhang](https://me.isjia.page) 的求职向个人索引。我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
@@ -377,7 +364,7 @@ const dictionary = {
 
 ### 我最适合什么团队
 
-我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Afgang、Nimbus 和 DTU × Mover thesis 是最好的起点；Cargo Guard 只是 data-quality thinking 的补充证据。
+我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Afgang 和 DTU × Mover thesis 是最好的起点；Cargo Guard 只是 data-quality thinking 的补充证据。
 
 这个 portfolio 本身也是一个 Next.js static export 的内容和部署小项目。可以通过 [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com)、[LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289) 或 [GitHub](https://github.com/isjiajia01) 联系我。
   `,

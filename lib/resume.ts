@@ -64,7 +64,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "简历索引",
     name: "Jiajia Zhang",
     summary:
-      "已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位，面向初级产品 / 全栈（junior product/full-stack）角色，主线是内部工具（internal tools）、有人工审核的工作流自动化（workflow automation with human review）与运营决策支持（operational decision support）。最强证据是 OpsDesk、Nimbus 与 DTU × Mover 硕士论文（thesis）；Cargo Guard 只是数据质量补充证据。",
+      "已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位，面向初级产品 / 全栈（junior product/full-stack）角色，主线是内部工具（internal tools）、有人工审核的工作流自动化（workflow automation with human review）与运营决策支持（operational decision support）。最强证据是 OpsDesk 与 DTU × Mover 硕士论文（thesis）；Cargo Guard 只是数据质量补充证据。",
     imageDescription:
       "Jiajia Zhang，构建内部工具（internal tools）、工作流自动化（workflow automation）、数据质量工作流（data-quality workflows）、SwiftUI 产品与决策支持。",
     highlights: [],
@@ -150,14 +150,6 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
               "小型 Python 数据检查演示：检查物流记录是否缺字段、重复、过期或包含无效值，并输出 JSON 运行结果与 HTML 报告方便审核（review）。",
             stack: ["Python", "JSON contracts", "Data validation", "HTML report"],
           },
-          {
-            name: "Nimbus Weather Journal",
-            note: "SwiftUI / iOS 产品（SwiftUI / iOS product）",
-            href: "https://github.com/isjiajia01/10.01_Nimbus",
-            description:
-              "SwiftUI 天气日记项目，覆盖天气数据、小组件与共享设置（widget/shared settings）、雷达与风场特性（radar/wind features）、月相照明（moon illumination）与兜底（fallback）行为。",
-            stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets"],
-          },
         ],
       },
       {
@@ -238,7 +230,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "Resume Index",
     name: "Jiajia Zhang",
     summary:
-      "DTU MSc Engineering graduate in Mathematical Modelling and Computation, with the degree completed in July 2026. Targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, Nimbus, and the DTU × Mover thesis; Cargo Guard is supporting data-quality evidence.",
+      "DTU MSc Engineering graduate in Mathematical Modelling and Computation, with the degree completed in July 2026. Targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk and the DTU × Mover thesis; Cargo Guard is supporting data-quality evidence.",
     imageDescription:
       "Jiajia Zhang building internal tools, workflow automation, data-quality workflows, SwiftUI products, and decision support.",
     highlights: [],
@@ -314,14 +306,6 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
             description:
               "Built a small Python data-checking demo for logistics records: missing fields, duplicates, stale records, invalid values, JSON run output, and an HTML report for review.",
             stack: ["Python", "JSON contracts", "Data validation", "HTML report"],
-          },
-          {
-            name: "Nimbus Weather Journal",
-            note: "SwiftUI / iOS product",
-            href: "https://github.com/isjiajia01/10.01_Nimbus",
-            description:
-              "Built and structured SwiftUI weather-journal features across weather data, widget/shared settings, radar/wind features, moon illumination, and fallback behavior.",
-            stack: ["Swift", "SwiftUI", "WeatherKit", "SceneKit", "Widgets"],
           },
         ],
       },
