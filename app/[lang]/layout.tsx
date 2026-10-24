@@ -1,3 +1,4 @@
+import { sharePreview } from "@/lib/share-preview";
 import { Metadata } from "next";
 import { getDictionary, dictionaryKeys, type Language } from "../../dictionaries";
 import { getAlternateLanguages } from "@/lib/metadata";
@@ -27,14 +28,14 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
       siteName: dictionary.meta.websiteName,
       title: dictionary.meta.websiteName,
       description: dictionary.meta.motto,
-      images: [{ url: "/apple-icon.png", width: 512, height: 512, alt: dictionary.meta.websiteName }],
+      ...sharePreview("home", params.lang as Language),
     },
     twitter: {
       title: dictionary.meta.websiteName,
       description: dictionary.meta.motto,
       site: "@isjiajia01",
       card: "summary_large_image",
-      images: ["/apple-icon.png"],
+      ...sharePreview("home", params.lang as Language),
     },
     alternates: {
       canonical: new URL(dictionary.urls.home, dictionary.meta.baseUrl).href,

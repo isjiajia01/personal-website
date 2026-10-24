@@ -1,3 +1,4 @@
+import { sharePreview } from "@/lib/share-preview";
 import { Metadata } from "next";
 
 export function generateStaticParams() {
@@ -26,6 +27,7 @@ export async function generateMetadata(
     description: content.summary,
     keywords: dictionary.meta.fillKeywords(["resume", "cv"]),
     openGraph: {
+      ...sharePreview("resume", params.lang as Language),
       type: "website",
       url: canonical,
       siteName: dictionary.meta.websiteName,
@@ -33,6 +35,7 @@ export async function generateMetadata(
       description: content.summary,
     },
     twitter: {
+      ...sharePreview("resume", params.lang as Language),
       title: content.pageTitle,
       description: content.summary,
       site: "@isjiajia01",

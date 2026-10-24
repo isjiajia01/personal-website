@@ -1,3 +1,4 @@
+import { sharePreview } from "@/lib/share-preview";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
@@ -34,21 +35,14 @@ export async function generateMetadata(
       siteName: dictionary.meta.websiteName,
       title: project.title,
       description: project.metaDescription,
-      images: [
-        {
-          url: "/images/projects/afgang/reachability-desktop.webp",
-          width: 1440,
-          height: 900,
-          alt: project.imageAlts.reachabilityDesktop,
-        },
-      ],
+      ...sharePreview("afgang", params.lang),
     },
     twitter: {
       title: project.title,
       description: project.metaDescription,
       site: "@isjiajia01",
       card: "summary_large_image",
-      images: ["/images/projects/afgang/reachability-desktop.webp"],
+      ...sharePreview("afgang", params.lang),
     },
     alternates: {
       canonical: new URL(dictionary.urls.afgang, dictionary.meta.baseUrl).href,
