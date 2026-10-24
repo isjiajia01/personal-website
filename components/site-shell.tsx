@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { RouteTransition } from "./route-transition";
 
 export interface SiteShellProps {
   children: React.ReactNode;
@@ -88,7 +89,7 @@ export function SiteShell({
     "press inline-block px-2 py-3 -mx-2 -my-3 hover:text-(--rose) active:text-(--rose)";
 
   return (
-    <div className="paper">
+    <RouteTransition className="paper">
       <div className="paper-column pt-8 pb-16 sm:pt-12 print:pt-0">
         {/* Skip to content link */}
         <a
@@ -183,7 +184,7 @@ export function SiteShell({
           </p>
         </footer>
       </div>
-    </div>
+    </RouteTransition>
   );
 }
 

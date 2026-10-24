@@ -9,6 +9,7 @@
   --motion-in: 160ms;
   --motion-out: 100ms;
   --motion-page: 500ms;
+  --motion-mask: 360ms;
   --content-w: 592px;
   --page-bg: #fafaf9;
   --paper-bg: #fff;
@@ -164,6 +165,37 @@ time {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Departure mask (route-transition.tsx). Paper-coloured, 48px soft leading edge, sweeps in
+   from the right for next / left for prev. Rendered only while a transition runs. */
+.route-mask {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 55;
+  width: calc(100% + 48px);
+  pointer-events: none;
+  will-change: transform;
+  transition: transform var(--motion-mask) var(--ease-snap);
+}
+.route-mask[data-dir="next"] {
+  left: -48px;
+  background: linear-gradient(to right, transparent 0, var(--paper-bg) 48px);
+  transform: translateX(100%);
+}
+.route-mask[data-dir="prev"] {
+  left: 0;
+  background: linear-gradient(to left, transparent 0, var(--paper-bg) 48px);
+  transform: translateX(-100%);
+}
+.route-mask[data-phase="covering"] {
+  transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce), print {
+  .route-mask {
+    display: none;
   }
 }
 

@@ -30,6 +30,7 @@ Work index row: serif title (+ ↗ if external) · dotted leader · year; below 
 | Content rise | opacity 0→1, translateY 20px→0, blur 1.5px→0, 500ms `cubic-bezier(.23,1,.32,1)`, fill backwards | nav item transition, `home-content-rise` 0.5s |
 | Stagger | delay = 60 + 40·i ms, i capped at 9 | nav items `60+40*r` |
 | Route change | template remounts → same stagger on page blocks (enter only) | ~400ms nav transitions |
+| Departure mask | fixed `--paper-bg` panel, z55, `calc(100%+48px)` wide, 48px gradient lead edge; sweeps from right (next) / left (prev, by Home<Works<Resume<About) 360ms ease-snap; navigate when covered, remove 60ms after pathname commit (3s failsafe). Internal portfolio links only; skipped for modifier/middle/hash/same-path/external/download/target, browser back, product routes, reduced motion (checked at click and live) | reference mask, phases idle/preparing/covering |
 | Colour hover | 150ms ease-snap, rose | link transitions |
 | Press | `scale(.97)` 150ms on inline-block links | `active:scale-[0.97]` |
 | Org annotation | 180ms `cubic-bezier(.25,.1,.25,1)`, blur 1.5px + 4px rise; exit 120ms | tooltip `initial/animate/exit` |
