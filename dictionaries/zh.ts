@@ -119,6 +119,25 @@ const dictionary = {
           value: " 的本科背景为基础。",
         },
       ],
+      [
+        {
+          type: "text" as const,
+          value:
+            "除此之外，我独立设计、开发和上线了一批小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 与 Safari。它们都在 ",
+        },
+        {
+          type: "org" as const,
+          id: "org-apps",
+          name: "app.isjia.page",
+          href: "https://app.isjia.page",
+          description:
+            "Apple 应用家族：Solis、Punctum、ThreadLite、Span、Wayfinder、Ordbro、Slip 与 Hairspring —— 本地优先，无账号、无广告、无追踪。",
+        },
+        {
+          type: "text" as const,
+          value: "。",
+        },
+      ],
     ],
   },
   works: [
@@ -209,6 +228,31 @@ const dictionary = {
       stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
       link: "/zh/works#dtu-mover-thesis",
       color: "orange",
+      primary: true,
+      homeFeatured: true,
+    },
+    {
+      slug: "apple-apps",
+      name: "Apple apps",
+      year: "2026",
+      summary:
+        "八款独立设计、开发并上线的小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 和 Safari。",
+      roleFit: "产品工程 · SwiftUI · App Store 发布运维",
+      evidence: [
+        "5 款已在 App Store 上架：Solis（日月历，1.2.0）、Punctum（点阵时钟，1.4）、Span（计划，1.0）、ThreadLite（Safari 扩展，1.3）、Wayfinder（标签页与会话，1.0）",
+        "一个人跑完整个闭环：产品决策、SwiftUI 实现、隐私政策、上架文案、截图和审核沟通",
+        "Ordbro、Slip 和 Hairspring 已开发完成，处于审核中或准备阶段；所有应用都本地优先，无账号、无广告、无追踪",
+      ],
+      stack: [
+        "Swift",
+        "SwiftUI",
+        "WidgetKit",
+        "Safari 扩展",
+        "App Store Connect",
+        "隐私优先设计",
+      ],
+      link: "https://app.isjia.page",
+      color: "purple",
       primary: true,
       homeFeatured: true,
     },
@@ -358,13 +402,17 @@ const dictionary = {
 
 我不是想把自己包装成四种不同候选人。主线是 internal tools 和 workflow systems：support queue、evidence package、human review、data-quality checks、operational logs 和 decision support。
 
+### 自己把东西做完上线
+
+2026 年起我也独立设计、开发和上线了一批小型 Apple 应用，都放在 [app.isjia.page](https://app.isjia.page)。其中 5 款已在 App Store 上架（Solis、Punctum、Span、ThreadLite、Wayfinder），另外 3 款在审核中或准备中。一个人做这些，意味着不仅写 SwiftUI，还要写隐私政策、上架文案、截图和回复审核 —— 这也是我会带进 internal tool 的端到端负责方式。
+
 ### 我怎么工作
 
 我通常先看 operating problem：队列是什么？reviewer 需要什么证据才敢做下一步？自动化应该在哪里停？哪些东西需要记录、审批、replay 和衡量？
 
 ### 我最适合什么团队
 
-我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Afgang 和 DTU × Mover thesis 是最好的起点；Cargo Guard 只是 data-quality thinking 的补充证据。
+我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Afgang 和 DTU × Mover thesis 是最好的起点；Apple apps 证明我能独立把产品做到上线；Cargo Guard 只是 data-quality thinking 的补充证据。
 
 这个 portfolio 本身也是一个 Next.js static export 的内容和部署小项目。可以通过 [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com)、[LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289) 或 [GitHub](https://github.com/isjiajia01) 联系我。
   `,

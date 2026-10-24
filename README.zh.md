@@ -9,7 +9,6 @@
 - [React](https://react.dev)
 - [Next.js](https://nextjs.org)
 - [TailwindCSS](https://tailwindcss.com)
-- [Velite](https://velite.js.org)
 
 ## 分享预览
 

@@ -44,6 +44,7 @@ export interface ResumeContent {
   pageTitle: string;
   name: string;
   summary: string;
+  availability: string;
   imageDescription: string;
   highlights: string[];
   sectionLabels: {
@@ -64,7 +65,9 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "简历索引",
     name: "Jiajia Zhang",
     summary:
-      "已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位，面向初级产品 / 全栈（junior product/full-stack）角色，主线是内部工具（internal tools）、有人工审核的工作流自动化（workflow automation with human review）与运营决策支持（operational decision support）。最强证据是 OpsDesk 与 DTU × Mover 硕士论文（thesis）；Cargo Guard 只是数据质量补充证据。",
+      "已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位，面向初级产品 / 全栈（junior product/full-stack）角色，主线是内部工具（internal tools）、有人工审核的工作流自动化（workflow automation with human review）与运营决策支持（operational decision support）。最强证据是 OpsDesk、DTU × Mover 硕士论文（thesis）与 5 款已上架 App Store 的独立 Apple 应用；Cargo Guard 只是数据质量补充证据。",
+    availability:
+      "可立即开始（哥本哈根，可混合 / 远程；需工作签证支持时请提前沟通）。",
     imageDescription:
       "Jiajia Zhang，构建内部工具（internal tools）、工作流自动化（workflow automation）、数据质量工作流（data-quality workflows）、SwiftUI 产品与决策支持。",
     highlights: [],
@@ -150,6 +153,14 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
               "小型 Python 数据检查演示：检查物流记录是否缺字段、重复、过期或包含无效值，并输出 JSON 运行结果与 HTML 报告方便审核（review）。",
             stack: ["Python", "JSON contracts", "Data validation", "HTML report"],
           },
+          {
+            name: "Apple apps（5 款已上架 App Store）",
+            note: "独立设计、开发、上架",
+            href: "https://app.isjia.page",
+            description:
+              "独立完成 8 款 Apple 应用的设计、SwiftUI 实现与上架运维：Solis 1.2.0、Punctum 1.4、Span 1.0、ThreadLite 1.3、Wayfinder 1.0 已在 App Store 上线，Ordbro、Slip、Hairspring 在审核或准备中；全部本地优先，无账号、无广告、无追踪。",
+            stack: ["Swift", "SwiftUI", "WidgetKit", "Safari extensions", "App Store Connect"],
+          },
         ],
       },
       {
@@ -216,7 +227,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       },
       {
         label: "移动/交付",
-        items: ["Swift", "SwiftUI", "WeatherKit", "Docker", "GitHub Actions", "Oracle 部署（Oracle deploy）"],
+        items: ["Swift", "SwiftUI", "WidgetKit", "Safari 扩展", "App Store 上架", "Docker", "GitHub Actions"],
       },
     ],
     education: {
@@ -230,7 +241,9 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
     pageTitle: "Resume Index",
     name: "Jiajia Zhang",
     summary:
-      "DTU MSc Engineering graduate in Mathematical Modelling and Computation, with the degree completed in July 2026. Targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk and the DTU × Mover thesis; Cargo Guard is supporting data-quality evidence.",
+      "DTU MSc Engineering graduate in Mathematical Modelling and Computation, with the degree completed in July 2026. Targeting junior product/full-stack roles around internal tools, workflow automation with human review, and operational decision support. Strongest evidence: OpsDesk, the DTU × Mover thesis, and five Apple apps shipped solo to the App Store; Cargo Guard is supporting data-quality evidence.",
+    availability:
+      "Available immediately (Copenhagen; hybrid or remote — happy to discuss work-authorisation needs up front).",
     imageDescription:
       "Jiajia Zhang building internal tools, workflow automation, data-quality workflows, SwiftUI products, and decision support.",
     highlights: [],
@@ -307,6 +320,14 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
               "Built a small Python data-checking demo for logistics records: missing fields, duplicates, stale records, invalid values, JSON run output, and an HTML report for review.",
             stack: ["Python", "JSON contracts", "Data validation", "HTML report"],
           },
+          {
+            name: "Apple apps (five shipped to the App Store)",
+            note: "Designed, built and released solo",
+            href: "https://app.isjia.page",
+            description:
+              "Designed, implemented and shipped eight Apple apps alone: Solis 1.2.0, Punctum 1.4, Span 1.0, ThreadLite 1.3 and Wayfinder 1.0 are live on the App Store, with Ordbro, Slip and Hairspring in review or preparation. All local-first, with no accounts, ads or tracking.",
+            stack: ["Swift", "SwiftUI", "WidgetKit", "Safari extensions", "App Store Connect"],
+          },
         ],
       },
       {
@@ -360,7 +381,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
       },
       {
         label: "Mobile / Delivery",
-        items: ["Swift", "SwiftUI", "WeatherKit", "Docker", "GitHub Actions", "Oracle deploy"],
+        items: ["Swift", "SwiftUI", "WidgetKit", "Safari extensions", "App Store release", "Docker", "GitHub Actions"],
       },
     ],
     education: {

@@ -33,7 +33,7 @@ export async function generateMetadata(
       ...sharePreview("works", params.lang as Language),
       title: dictionary.labels.works,
       description: dictionary.labels.noocWorks,
-      site: "@isjiajia01",
+      site: "@jjmakesapps",
       card: "summary_large_image",
     },
     alternates: {

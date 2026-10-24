@@ -122,6 +122,25 @@ My strongest work sits around internal tools, workflow automation with human rev
           value: ".",
         },
       ],
+      [
+        {
+          type: "text" as const,
+          value:
+            "Alongside that work I design, build and ship small Apple apps solo — five are live on the App Store for iPhone, Watch, TV, Mac and Safari. They live at ",
+        },
+        {
+          type: "org" as const,
+          id: "org-apps",
+          name: "app.isjia.page",
+          href: "https://app.isjia.page",
+          description:
+            "The Apple app family: Solis, Punctum, ThreadLite, Span, Wayfinder, Ordbro, Slip and Hairspring — local-first, no accounts, no tracking.",
+        },
+        {
+          type: "text" as const,
+          value: ".",
+        },
+      ],
     ],
   },
   works: [
@@ -212,6 +231,31 @@ My strongest work sits around internal tools, workflow automation with human rev
       stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
       link: "/en/works#dtu-mover-thesis",
       color: "orange",
+      primary: true,
+      homeFeatured: true,
+    },
+    {
+      slug: "apple-apps",
+      name: "Apple apps",
+      year: "2026",
+      summary:
+        "Eight small Apple apps designed, built and shipped solo — five of them live on the App Store for iPhone, Watch, TV, Mac and Safari.",
+      roleFit: "Product engineering · SwiftUI · App Store release operations",
+      evidence: [
+        "Five apps live on the App Store: Solis (sun and moon almanac, 1.2.0), Punctum (dot-matrix clock, 1.4), Span (planning, 1.0), ThreadLite (Safari extension, 1.3) and Wayfinder (tabs and sessions, 1.0)",
+        "Owns the whole loop alone: product decisions, SwiftUI implementation, privacy policy, listing copy, screenshots and App Store review",
+        "Ordbro, Slip and Hairspring are built and either in review or in preparation; every app is local-first with no accounts, ads or tracking",
+      ],
+      stack: [
+        "Swift",
+        "SwiftUI",
+        "WidgetKit",
+        "Safari extensions",
+        "App Store Connect",
+        "Privacy-first design",
+      ],
+      link: "https://app.isjia.page",
+      color: "purple",
       primary: true,
       homeFeatured: true,
     },
@@ -361,13 +405,17 @@ This is a job-facing personal index for [Jiajia Zhang](https://me.isjia.page), b
 
 I am not trying to look like four different candidates. The main thread is internal tools and workflow systems: support queues, evidence packages, human review, data-quality checks, operational logs, and decision support.
 
+### Shipping on my own
+
+Since 2026 I have also designed, built and shipped a family of small Apple apps under [app.isjia.page](https://app.isjia.page). Five are live on the App Store (Solis, Punctum, Span, ThreadLite, Wayfinder); three more are in review or preparation. Doing that alone means writing the SwiftUI, but also the privacy policy, the listing, the screenshots and the review replies — the same end-to-end care I would bring to an internal tool.
+
 ### How I work
 
 I usually start from the operating problem. What is the queue? What does a reviewer need to trust the next action? Where should automation stop? What should be logged, approved, replayed, or measured?
 
 ### Where I fit first
 
-I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Afgang, and the DTU × Mover thesis are the best starting points; Cargo Guard is supporting proof for data-quality thinking.
+I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Afgang, and the DTU × Mover thesis are the best starting points; the Apple apps show that I can carry a product all the way to release; Cargo Guard is supporting proof for data-quality thinking.
 
 This portfolio itself is also a small content-and-deployment project built with Next.js static export. You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
   `,

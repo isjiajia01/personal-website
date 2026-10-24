@@ -33,7 +33,7 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
     twitter: {
       title: dictionary.meta.websiteName,
       description: dictionary.meta.motto,
-      site: "@isjiajia01",
+      site: "@jjmakesapps",
       card: "summary_large_image",
       ...sharePreview("home", params.lang as Language),
     },
@@ -58,7 +58,10 @@ export default async function LocalizedRootLayout(props: {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(generateWebSiteJsonLd({
             name: dictionary.meta.websiteName,
-            alternateName: "Jiajia Zhang",
+            // Only send an alternate name when it actually differs from the primary one.
+            ...(dictionary.meta.websiteName !== dictionary.meta.authorName
+              ? { alternateName: dictionary.meta.authorName }
+              : {}),
             url: new URL(dictionary.urls.home, dictionary.meta.baseUrl).href,
             description: dictionary.meta.motto,
           })),

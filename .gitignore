@@ -44,10 +44,6 @@ next-env.d.ts
 !.yarn/sdks
 !.yarn/versions
 
-# Velite
-.velite
-public/static/posts
-
 .open-next
 .dev.vars
 

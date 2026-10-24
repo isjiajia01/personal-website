@@ -38,7 +38,7 @@ export async function generateMetadata(
       ...sharePreview("resume", params.lang as Language),
       title: content.pageTitle,
       description: content.summary,
-      site: "@isjiajia01",
+      site: "@jjmakesapps",
       card: "summary_large_image",
     },
     alternates: {
@@ -80,6 +80,10 @@ export default async function ResumePage(
         </h2>
         <p className="mt-2 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
           {content.summary}
+        </p>
+
+        <p className="mt-2 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
+          {content.availability}
         </p>
 
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">

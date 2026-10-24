@@ -36,7 +36,7 @@ export async function generateMetadata(
       ...sharePreview("about", params.lang as Language),
       title: dictionary.labels.aboutTitle,
       description,
-      site: "@isjiajia01",
+      site: "@jjmakesapps",
       card: "summary_large_image",
     },
     alternates: {

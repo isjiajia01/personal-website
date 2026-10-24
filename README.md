@@ -9,7 +9,6 @@ This is the source code of My Homepage.
 - [React](https://react.dev)
 - [Next.js](https://nextjs.org)
 - [TailwindCSS](https://tailwindcss.com)
-- [Velite](https://velite.js.org)
 
 ## Share previews
 

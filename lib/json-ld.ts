@@ -19,12 +19,13 @@ export function generateWebSiteJsonLd(options: JsonLdWebSite): object {
     description: options.description,
     publisher: {
       "@type": "Person",
-      name: "Jiajia",
+      name: "Jiajia Zhang",
       url: BASE_URL,
       sameAs: [
         "https://github.com/isjiajia01",
-        "https://github.com/isjiajia01",
-        "https://me.isjia.page",
+        "https://www.linkedin.com/in/jiajia-zhang-0a8a40289",
+        "https://x.com/jjmakesapps",
+        "https://app.isjia.page",
       ],
     },
   };
@@ -63,12 +64,12 @@ export function generateBlogPostingJsonLd(
       : {}),
     author: {
       "@type": "Person",
-      name: "Jiajia",
+      name: "Jiajia Zhang",
       url: BASE_URL,
     },
     publisher: {
       "@type": "Person",
-      name: "Jiajia",
+      name: "Jiajia Zhang",
       url: BASE_URL,
     },
     mainEntityOfPage: {

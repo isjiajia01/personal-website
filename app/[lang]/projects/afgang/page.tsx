@@ -40,7 +40,7 @@ export async function generateMetadata(
     twitter: {
       title: project.title,
       description: project.metaDescription,
-      site: "@isjiajia01",
+      site: "@jjmakesapps",
       card: "summary_large_image",
       ...sharePreview("afgang", params.lang),
     },

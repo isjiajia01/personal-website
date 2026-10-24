@@ -8,13 +8,16 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://me.isjia.page/",
     title: "Jiajia Zhang",
-    description: "Practical tools and thoughtful systems. Copenhagen-based product-minded engineer.",
+    description:
+      "Junior product/full-stack candidate for internal tools and workflow systems. Five Apple apps shipped to the App Store.",
     ...sharePreview("home"),
   },
   twitter: {
     card: "summary_large_image",
     title: "Jiajia Zhang",
-    description: "Practical tools and thoughtful systems.",
+    description:
+      "Junior product/full-stack candidate for internal tools and workflow systems.",
+    site: "@jjmakesapps",
     ...sharePreview("home"),
   },
 };
