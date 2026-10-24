@@ -44,6 +44,13 @@ const sections = [
     ],
   },
   {
+    title: "Optional Anki integration",
+    body: [
+      "AnkiConnect is an optional desktop target, off by default. If you choose it and grant host access, Ordbro sends only the rendered card fields (including a source link if you configured one), the deck, the note type and the tags to desktop Anki on your own machine, over HTTP loopback (127.0.0.1 or localhost on an explicit port). It never sends the full page or your translation API key to AnkiConnect.",
+      "Copy the extension origin shown in Ordbro's Settings exactly into AnkiConnect's webCorsOriginList; never use \"*\", which would let any website reach your collection. Anki itself controls any later sync to AnkiWeb. The TSV export queue stays in local extension storage and can be cleared in Settings. AnkiMobile remains the default delivery target.",
+    ],
+  },
+  {
     title: "Purchases",
     body: [
       "Ordbro Pro is bought through the App Store as an in-app purchase. Apple processes the payment; the developer receives no payment details and no information about who bought it. The app only checks, on your Mac, whether the current Apple Account owns the purchase.",
