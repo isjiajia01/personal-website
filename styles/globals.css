@@ -210,6 +210,39 @@ time {
   background: var(--paper-bg);
 }
 
+/* Paper texture (screen only): warm tint, fine fibre grain, soft edge shading. */
+@media screen {
+  .paper {
+    --paper-grain-opacity: 0.45;
+    background-color: var(--paper-bg);
+    background-image:
+      linear-gradient(to bottom, rgb(255 255 255 / 0.55), transparent 120px),
+      radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(120 90 50 / 0.07) 100%);
+  }
+  .paper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--paper-grain-opacity);
+    mix-blend-mode: multiply;
+    /* Surface relief: fine noise lit by a raking distant light (feDiffuseLighting), then a faint horizontal fibre layer. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='r' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' seed='5' stitchTiles='stitch' result='n'/><feDiffuseLighting in='n' surfaceScale='1.1' diffuseConstant='1.05' lighting-color='%23fffdf8'><feDistantLight azimuth='75' elevation='62'/></feDiffuseLighting></filter><rect width='100%25' height='100%25' filter='url(%23r)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.01 0.45' numOctaves='2' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.42  0 0 0 0 0.3  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
+  }
+  .paper-column {
+    position: relative;
+    z-index: 1;
+  }
+}
+@media screen and (prefers-color-scheme: dark) {
+  .paper {
+    --paper-grain-opacity: 0.1;
+    background-image: radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(0 0 0 / 0.25) 100%);
+  }
+}
+
 @media (min-width: 768px) {
   .paper {
     margin-top: 100px;
