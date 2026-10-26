@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RouteTransition } from "./route-transition";
@@ -138,13 +139,17 @@ export function SiteShell({
           {children}
         </main>
 
-        {/* Footer */}
+        {/* Footer. The lighter * * * ornament is now the brand mark: the site shows
+            no other mark in its chrome, and at 48 px the 3D disc still reads. */}
         <footer className="mt-24 text-[13px] leading-5 text-stone-500 dark:text-zinc-400">
-          <p
-            aria-hidden="true"
-            className="mb-8 text-center tracking-[0.5em] text-stone-400 print:hidden dark:text-zinc-600"
-          >
-            * * *
+          <p aria-hidden="true" className="mb-8 text-center print:hidden">
+            <Image
+              src="/static/jj-mark-96.png"
+              alt=""
+              width={48}
+              height={48}
+              className="mx-auto block h-12 w-12"
+            />
           </p>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             {footerContacts.map((contact, i) => {
