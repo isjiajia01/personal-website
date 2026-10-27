@@ -18,7 +18,24 @@ import { pickSpecies, SPECIES } from "./species";
 
 export const SHARK_NODES = 20;
 
-export type SharkKind = "classic" | "hammerhead" | "zebra" | "tiger" | "greathammer" | "mako" | "thresher" | "nurse";
+export type SharkKind = "classic" | "hammerhead" | "zebra" | "tiger" | "greathammer" | "mako" | "thresher" | "nurse" | "koi";
+
+/** Axis-aligned rect in canvas pixels (the paper sheet the creatures swim around). */
+export interface Rect {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+/**
+ * How much open water the layout leaves, measured with the page at scroll 0.
+ * `lane` is the widest channel beside or above the paper; it sets creature size.
+ */
+export interface Pond {
+  lane: number;
+  freeArea: number;
+}
 
 /** Which sharks to put in the water; size is relative to the biggest. */
 export type SharkSpec = { kind: SharkKind; size: number };
@@ -93,6 +110,10 @@ export class World {
   sharks: Shark[] = [];
   events: WorldEvent[] = [];
   pointer = { x: 0, y: 0, active: false };
+  /** The paper sheet, in canvas pixels; creatures and fish keep out of it. */
+  obstacle: Rect | null = null;
+  private pond: Pond | null = null;
+  private grad = { x: 0, y: 0 };
 
   /** Fish neighbourhood radius; the spatial hash bucket size matches it. */
   private perception = 60;
@@ -113,6 +134,77 @@ export class World {
     private sharkSpecs: SharkSpec[] = DEFAULT_SHARKS,
     private fishCount?: number,
   ) {}
+
+  /** Change which creature everyone is (day koi ↔ night sharks) without reseeding. */
+  setKind(kind: SharkKind) {
+    this.sharkSpecs = this.sharkSpecs.map((s) => ({ ...s, kind }));
+    for (const sh of this.sharks) sh.kind = kind;
+  }
+
+  setPond(pond: Pond | null) {
+    const changed =
+      !this.pond !== !pond ||
+      (pond && this.pond && (Math.abs(pond.lane - this.pond.lane) > 4 || Math.abs(pond.freeArea - this.pond.freeArea) > 4000));
+    this.pond = pond;
+    if (changed && this.width > 0) this.seed();
+  }
+
+  /**
+   * Signed distance from (x, y) to the obstacle: >0 outside, <0 inside.
+   * Writes the outward normal to `out`.
+   */
+  obstacleDistance(x: number, y: number, out: { x: number; y: number }) {
+    const o = this.obstacle;
+    if (!o) {
+      out.x = 0;
+      out.y = 0;
+      return Infinity;
+    }
+    const qx = Math.max(o.x0 - x, x - o.x1);
+    const qy = Math.max(o.y0 - y, y - o.y1);
+    if (qx > 0 || qy > 0) {
+      const ox = Math.max(qx, 0);
+      const oy = Math.max(qy, 0);
+      const d = Math.hypot(ox, oy) || 1e-3;
+      out.x = (x < o.x0 ? -ox : x > o.x1 ? ox : 0) / d;
+      out.y = (y < o.y0 ? -oy : y > o.y1 ? oy : 0) / d;
+      return d;
+    }
+    // Inside: leave by the nearest edge.
+    const l = x - o.x0;
+    const r = o.x1 - x;
+    const t = y - o.y0;
+    const b = o.y1 - y;
+    const m = Math.min(l, r, t, b);
+    out.x = m === l ? -1 : m === r ? 1 : 0;
+    out.y = out.x !== 0 ? 0 : m === t ? -1 : 1;
+    return -m;
+  }
+
+  /** Open water at (x, y): in view and clear of the paper by `margin`. */
+  isFree(x: number, y: number, margin = 0) {
+    if (x < 0 || y < 0 || x > this.width || y > this.height) return false;
+    return this.obstacleDistance(x, y, this.grad) > margin;
+  }
+
+  /** Width of the channel the point sits in (left/right gutter, strip above or below the paper). */
+  private laneAt(x: number, y: number) {
+    const o = this.obstacle;
+    if (!o) return Math.min(this.width, this.height);
+    if (x < o.x0) return o.x0;
+    if (x > o.x1) return this.width - o.x1;
+    if (y < o.y0) return o.y0;
+    return this.height - o.y1;
+  }
+
+  private randomFreePoint(margin: number) {
+    for (let k = 0; k < 40; k++) {
+      const x = rand(0, this.width);
+      const y = rand(0, this.height);
+      if (this.isFree(x, y, margin)) return { x, y };
+    }
+    return { x: rand(0, this.width), y: rand(0, Math.max(1, this.obstacle ? this.obstacle.y0 : this.height)) };
+  }
 
   resize(width: number, height: number, cellW: number, cellH: number) {
     const first = this.width === 0;
@@ -137,8 +229,12 @@ export class World {
   seed() {
     const { width: W, height: H } = this;
     const minSide = Math.min(W, H);
-    const baseLength = clamp(minSide * 0.44, 170, 430);
-    const sharkCount = this.sharkSpecs.length;
+    const pond = this.pond;
+    // Sized to the open water: a creature (fins included, ~0.35 L across) fits its channel with room to turn.
+    const baseLength = pond ? clamp(pond.lane * 1.1, 54, 180) : clamp(minSide * 0.44, 170, 430);
+    const sharkCount = pond
+      ? clamp(Math.round(pond.freeArea / (baseLength * baseLength * 2.5)), pond.lane < 40 ? 0 : 1, this.sharkSpecs.length)
+      : this.sharkSpecs.length;
 
     this.sharks = [];
     for (let i = 0; i < sharkCount; i++) {
@@ -147,9 +243,17 @@ export class World {
       const orbitRadius = minSide * rand(0.28, 0.4);
       const a = (i / sharkCount) * TAU + rand(-0.4, 0.4);
       const orbitDir: 1 | -1 = i % 2 === 0 ? 1 : -1;
-      const x = W / 2 + Math.cos(a) * orbitRadius * (W / minSide) * 0.9;
-      const y = H / 2 + Math.sin(a) * orbitRadius;
-      const heading = a + (orbitDir * Math.PI) / 2;
+      let x = W / 2 + Math.cos(a) * orbitRadius * (W / minSide) * 0.9;
+      let y = H / 2 + Math.sin(a) * orbitRadius;
+      let heading = a + (orbitDir * Math.PI) / 2;
+      if (this.obstacle) {
+        const p = this.randomFreePoint(length * 0.12);
+        x = p.x;
+        y = p.y;
+        // Start along the channel, circling the paper.
+        this.obstacleDistance(x, y, this.grad);
+        heading = Math.atan2(this.grad.x * orbitDir, -this.grad.y * orbitDir);
+      }
       const nodes = new Float32Array(SHARK_NODES * 2);
       const seg = length / (SHARK_NODES - 1);
       for (let n = 0; n < SHARK_NODES; n++) {
@@ -177,15 +281,16 @@ export class World {
     // Smaller (farther) sharks draw first so the big one swims over them.
     this.sharks.sort((a, b) => a.length - b.length);
 
-    const total = this.fishCount ?? clamp(Math.round((W * H) / 4400), 85, 340);
+    const total = this.fishCount ?? (pond ? clamp(Math.round(pond.freeArea / 2600), 18, 220) : clamp(Math.round((W * H) / 4400), 85, 340));
     this.fish = [];
     while (this.fish.length < total) {
       const species = pickSpecies();
       const sp = SPECIES[species];
       const size = Math.min(randInt(sp.schoolSize[0], sp.schoolSize[1]), total - this.fish.length);
       const millDir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
-      const cx = rand(W * 0.06, W * 0.94);
-      const cy = rand(H * 0.08, H * 0.92);
+      let cx = rand(W * 0.06, W * 0.94);
+      let cy = rand(H * 0.08, H * 0.92);
+      if (this.obstacle) ({ x: cx, y: cy } = this.randomFreePoint(16));
       // Mostly level headings: fish cruise sideways far more than up or down.
       const dir = (Math.random() < 0.5 ? 0 : Math.PI) + rand(-0.5, 0.5);
       for (let k = 0; k < size; k++) {
@@ -418,6 +523,18 @@ export class World {
       if (relayed > alarm) alarm += (relayed - alarm) * contagion;
       f.alarm = alarm;
 
+      // The paper's edge is a wall; fish that end up under it (after a scroll) swim back out.
+      if (this.obstacle) {
+        const g = this.grad;
+        const d = this.obstacleDistance(f.x, f.y, g);
+        const pm = 22;
+        if (d < pm) {
+          const k = (pm - d) * 9;
+          ax += g.x * k;
+          ay += g.y * k;
+        }
+      }
+
       // Soft walls.
       const m = 36;
       if (f.x < m) ax += (m - f.x) * 7;
@@ -497,6 +614,16 @@ export class World {
         dy += (ty / d) * w;
         hunting = true;
         closing = clamp(1 - d / (L * 0.9), 0, 1);
+      } else if (this.obstacle) {
+        // Patrol: circle the paper like koi round a floating leaf, keeping to the middle of the channel.
+        const g = this.grad;
+        const d = this.obstacleDistance(hx, hy, g);
+        dx += -g.y * sh.orbitDir * 0.6;
+        dy += g.x * sh.orbitDir * 0.6;
+        const want = clamp(this.laneAt(hx, hy) * 0.5, L * 0.22, L * 0.9);
+        const radial = clamp((want - d) / want, -1, 1);
+        dx += g.x * radial * 0.7;
+        dy += g.y * radial * 0.7;
       } else {
         // Patrol: a lazy circuit around the headline.
         const rx = (hx - cxW) / (W / minSide);
@@ -524,10 +651,32 @@ export class World {
         }
       }
 
+      if (this.obstacle) {
+        // Look ahead and steer round the paper before the snout reaches it.
+        const g = this.grad;
+        const ahead = L * 0.4;
+        const ax = hx + Math.cos(sh.heading) * ahead;
+        const ay = hy + Math.sin(sh.heading) * ahead;
+        // Clear the paper by the half-span of the fins so nothing slips under its edge.
+        const margin = L * 0.22;
+        const da = this.obstacleDistance(ax, ay, g);
+        if (da < margin) {
+          const w = clamp((margin - da) / (margin + ahead), 0, 1) * 5;
+          dx += g.x * w;
+          dy += g.y * w;
+        }
+        const dh = this.obstacleDistance(hx, hy, g);
+        if (dh < margin) {
+          const w = clamp((margin - dh) / margin, 0, 2) * 3;
+          dx += g.x * w;
+          dy += g.y * w;
+        }
+      }
+
       // Keep the headline mostly clear: a soft elliptical no-swim zone.
       const ex = (hx - cxW) / (W * 0.3);
       const ey = (hy - cyW) / (H * 0.16);
-      const e2 = ex * ex + ey * ey;
+      const e2 = this.obstacle ? 2 : ex * ex + ey * ey;
       if (e2 < 1) {
         const e = Math.sqrt(e2) || 1e-3;
         const w = (1 - e) * (hunting ? 1 : 2.5);
@@ -540,11 +689,23 @@ export class World {
       const over = Math.max(-hx, hx - W, -hy, hy - H);
       if (over > -L * 0.05) {
         const w = clamp((over + L * 0.05) / (L * 0.35), 0, 1) * 3.5;
-        const toX = cxW - hx;
-        const toY = cyW - hy;
+        // With a paper in the middle, come straight back in from the edge you left;
+        // the centre would be under the sheet.
+        let toX = this.obstacle ? (hx < 0 ? 1 : hx > W ? -1 : 0) : cxW - hx;
+        let toY = this.obstacle ? (hy < 0 ? 1 : hy > H ? -1 : 0) : cyW - hy;
+        if (this.obstacle && toX === 0 && toY === 0) {
+          toX = cxW - hx;
+          toY = -1;
+        }
         const d = Math.hypot(toX, toY) || 1;
         dx += (toX / d) * w;
         dy += (toY / d) * w;
+        // Circling into a wall (the top of the screen once the page scrolls): turn the other way round.
+        if (this.obstacle && over > L * 0.25) {
+          const tx = -this.grad.y * sh.orbitDir;
+          const ty = this.grad.x * sh.orbitDir;
+          if (tx * toX + ty * toY < -0.3) sh.orbitDir = sh.orbitDir === 1 ? -1 : 1;
+        }
       }
 
       const desired = Math.atan2(dy, dx);
@@ -563,6 +724,23 @@ export class World {
       nodes[0] += Math.cos(sh.heading) * sh.speed * dt;
       nodes[1] += Math.sin(sh.heading) * sh.speed * dt;
 
+      if (this.obstacle) {
+        // Hard wall: a lunge can't carry the snout under the paper. Slide along the edge
+        // instead, and ease out a few px per step when a scroll moves the paper over it.
+        const g = this.grad;
+        const wall = L * 0.12;
+        const d = this.obstacleDistance(nodes[0], nodes[1], g);
+        if (d < wall) {
+          const push = Math.min(wall - d, 6);
+          nodes[0] += g.x * push;
+          nodes[1] += g.y * push;
+          const into = Math.cos(sh.heading) * g.x + Math.sin(sh.heading) * g.y;
+          if (into < 0) {
+            sh.heading = Math.atan2(Math.sin(sh.heading) - g.y * into * 1.2, Math.cos(sh.heading) - g.x * into * 1.2);
+          }
+        }
+      }
+
       // Follow-the-leader spine, with a stiffness limit per joint so the
       // body bends into a C at most and never folds back on itself.
       const seg = L / (SHARK_NODES - 1);
@@ -575,6 +753,18 @@ export class World {
         angle = prevAngle + clamp(angleDiff(prevAngle, angle), -maxBend, maxBend);
         nodes[k * 2] = px + Math.cos(angle) * seg;
         nodes[k * 2 + 1] = py + Math.sin(angle) * seg;
+        if (this.obstacle) {
+          // A trailing chain cuts corners; keep the body itself off the paper too.
+          const g = this.grad;
+          const clear = L * 0.04;
+          const d = this.obstacleDistance(nodes[k * 2], nodes[k * 2 + 1], g);
+          if (d < clear) {
+            const push = Math.min(clear - d, 6);
+            nodes[k * 2] += g.x * push;
+            nodes[k * 2 + 1] += g.y * push;
+            angle = Math.atan2(nodes[k * 2 + 1] - py, nodes[k * 2] - px);
+          }
+        }
         prevAngle = angle;
       }
 
@@ -616,6 +806,8 @@ export class World {
       const dy = f.y - hy;
       const d = Math.hypot(dx, dy);
       if (d > range || d < 1e-3) continue;
+      // Don't chase prey under the paper, or the hunt happens out of sight.
+      if (this.obstacle && !this.isFree(f.x, f.y, sh.length * 0.15)) continue;
       const cos = (dx * fx + dy * fy) / d;
       if (cos < 0.2) continue;
       const crowd = this.bucketCount[this.bucketOf(f.x, f.y)];
@@ -640,11 +832,20 @@ export class World {
     this.lastSpawn = time;
 
     // A new school swims in from a random edge.
-    const side = randInt(0, 3);
-    const along = rand(0.15, 0.85);
-    const x = side === 0 ? -20 : side === 1 ? W + 20 : along * W;
-    const y = side === 2 ? -20 : side === 3 ? H + 20 : along * H;
-    const inward = Math.atan2(H / 2 - y, W / 2 - x) + rand(-0.5, 0.5);
+    let x = 0;
+    let y = 0;
+    let inward = 0;
+    for (let k = 0; k < 12; k++) {
+      const side = randInt(0, 3);
+      const along = rand(0.15, 0.85);
+      x = side === 0 ? -20 : side === 1 ? W + 20 : along * W;
+      y = side === 2 ? -20 : side === 3 ? H + 20 : along * H;
+      inward = (side === 0 ? 0 : side === 1 ? Math.PI : side === 2 ? Math.PI / 2 : -Math.PI / 2) + rand(-0.5, 0.5);
+      // Enter where there is open water just inside the edge.
+      const ix = clamp(x, 30, W - 30);
+      const iy = clamp(y, 30, H - 30);
+      if (!this.obstacle || this.isFree(ix, iy, 10)) break;
+    }
     const species = pickSpecies();
     const sp = SPECIES[species];
     const millDir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;

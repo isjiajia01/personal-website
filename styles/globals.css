@@ -11,7 +11,7 @@
   --motion-page: 500ms;
   --motion-mask: 360ms;
   --content-w: 592px;
-  --page-bg: #fafaf9;
+  --page-bg: #f3f3ef; /* matches the day pond in lib/ascii-ocean/renderer.ts */
   --paper-bg: #fff;
   --paper-edge: rgb(120 113 108 / 0.2);
   --paper-shadow: 0 0 48px rgb(0 0 0 / 0.07);
@@ -22,7 +22,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page-bg: #0b0b0d;
+    --page-bg: #09080b; /* night sea */
     --paper-bg: #18181b;
     --paper-edge: rgb(161 161 170 / 0.18);
     --paper-shadow: 0 0 48px rgb(0 0 0 / 0.55);
@@ -193,6 +193,8 @@ time {
   }
 }
 
+/* Pond behind the paper (components/ocean-background.tsx). The renderer paints its own
+   day and night palettes and keeps the creatures in the water the paper leaves open. */
 .ocean-background {
   position: fixed;
   inset: 0;
@@ -200,13 +202,6 @@ time {
   height: 100%;
   pointer-events: none;
   font-family: ui-monospace, Menlo, monospace;
-  filter: invert(1) sepia(0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  .ocean-background {
-    filter: none;
-  }
 }
 
 @media print {
@@ -259,12 +254,22 @@ time {
   }
 }
 
-@media (min-width: 768px) {
+/* The paper floats on the pond: a strip of water above it on every width, and a gutter
+   either side from 768px so the koi can swim round it. */
+@media screen {
   .paper {
-    margin-top: 100px;
-    min-height: calc(100vh - 100px);
+    margin-top: 72px;
+    min-height: calc(100vh - 72px);
     border-top: 1px solid var(--paper-edge);
     box-shadow: var(--paper-shadow);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .paper {
+    max-width: min(1040px, calc(100% - 96px));
+    margin-top: 100px;
+    min-height: calc(100vh - 100px);
   }
 }
 
