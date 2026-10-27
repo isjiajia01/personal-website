@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Crimson_Pro, Inter } from "next/font/google";
 import type { ReactNode } from "react";
+import { OceanBackground } from "../components/ocean-background";
 import "../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
@@ -22,6 +23,7 @@ export function SharedRootLayout({
   return (
     <html lang={lang} className={`${inter.variable} ${crimson.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
       <body className="text-[15px] leading-(--leading-body) text-zinc-900 antialiased dark:text-zinc-100">
+        <OceanBackground />
         {children}
       </body>
     </html>
