@@ -269,14 +269,14 @@ const SHAPES = {
 // Pale body; the wine-red patches come from marked().
 SHAPES.koi = {
   halfWidth: (s) => {
-    if (s < 0.12) return 0.1 * Math.pow(Math.sin(((s / 0.12) * Math.PI) / 2), 0.6);
-    if (s < 0.32) return 0.1 + 0.025 * smoothstep(0.12, 0.32, s);
-    if (s < 0.74) return 0.03 + 0.095 * Math.pow(1 - (s - 0.32) / 0.42, 1.3);
-    const k = (s - 0.74) / 0.26;
-    return 0.03 + 0.1 * Math.pow(k, 0.8) - 0.055 * smoothstep(0.82, 1, k);
+    if (s < 0.1) return 0.11 * Math.pow(Math.sin((s / 0.1) * Math.PI / 2), 0.5);
+    if (s < 0.33) return 0.11 + 0.03 * smoothstep(0.1, 0.33, s);
+    if (s < 0.8) return 0.03 + 0.11 * Math.pow(1 - (s - 0.33) / 0.47, 1.25);
+    const k = (s - 0.8) / 0.2;
+    return 0.03 + 0.115 * Math.pow(k, 0.85);
   },
-  tail: 0.76,
-  wave: 0.075,
+  tail: 0.78,
+  wave: 0.05,
   pectoral: [0.2, 0.3, 0.34, 0.16],
   falcate: false,
   pelvic: [0.5, 0.55, 0.58, 0.065],
@@ -501,7 +501,6 @@ export class AsciiRenderer {
 
     this.drawHeat();
     this.drawFish();
-    this.drawSharks(t);
     if (this.dark) this.drawGlow();
   }
 
@@ -685,6 +684,8 @@ export class AsciiRenderer {
       }
     }
 
+    // The reference koi's fan has a V-shaped fork at its trailing edge.
+    if (shape === SHAPES.koi && s > 0.9 && a < L * 0.1 * smoothstep(0.9, 1, s)) return false;
     if (a <= w) {
       const across = a / (w || 1);
       // Rounded back lit from the top-left; flanks fall off into shadow.
@@ -955,8 +956,8 @@ export class AsciiRenderer {
       } else if (flag === FLAG_MARK) {
         // Wine-red koi patch.
         const k = (0.78 + 0.32 * shade) * (0.85 + 0.15 * dim);
-        fill = `rgb(${Math.round(122 * k)},${Math.round(36 * k)},${Math.round(51 * k)})`;
-        color = shade > 0.55 ? "#d9788a" : "#4a1520";
+        fill = `rgb(${Math.round(226 * k)},${Math.round(62 * k)},${Math.round(34 * k)})`;
+        color = shade > 0.55 ? "#ffb39b" : "#67261c";
       } else if (flag === FLAG_EYE) {
         fill = "#3a2228";
         color = "#f5f5f4";

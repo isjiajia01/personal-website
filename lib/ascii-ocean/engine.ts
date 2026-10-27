@@ -1,4 +1,5 @@
 import { AsciiRenderer } from "./renderer";
+import { createReferenceOcean } from "./reference-ocean";
 import { World, type Pond, type Rect, type SharkSpec } from "./world";
 
 const STEP = 1 / 60;
@@ -17,6 +18,7 @@ const MIN_VISIBLE_WATER = 0.03;
 export class OceanEngine {
   private world: World;
   private renderer: AsciiRenderer;
+  private reference: ReturnType<typeof createReferenceOcean>;
   private raf = 0;
   private last = 0;
   private acc = 0;
@@ -34,6 +36,7 @@ export class OceanEngine {
 
   constructor(private canvas: HTMLCanvasElement, sharks?: SharkSpec[]) {
     this.world = new World(sharks);
+    this.reference = createReferenceOcean(canvas);
     this.renderer = new AsciiRenderer(canvas);
     this.renderer.setFontFamily(getComputedStyle(canvas).fontFamily);
     this.reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -83,11 +86,11 @@ export class OceanEngine {
     window.removeEventListener("blur", this.onPointerLeave);
   }
 
-  /** Day: koi in a pale pond. Night: glowing sharks in the deep. */
+  /** Day: koi in a pale pond. Night: jellyfish in the deep. */
   private applyTheme() {
     const dark = this.darkScheme.matches;
     this.renderer.setTheme(dark);
-    this.world.setKind(dark ? "classic" : "koi");
+    this.world.setKind("koi");
   }
 
   private resize() {
@@ -95,6 +98,7 @@ export class OceanEngine {
     if (rect.width < 1 || rect.height < 1) return;
     const dpr = Math.min(window.devicePixelRatio || 1, this.maxDpr);
     this.renderer.resize(rect.width, rect.height, dpr);
+    this.reference.resize(rect.width, rect.height, dpr, this.renderer.cellWidth, this.renderer.cellHeight);
     this.trackPaper(true);
     this.world.resize(rect.width, rect.height, this.renderer.cellWidth, this.renderer.cellHeight);
     if (this.reducedMotion.matches) this.drawStill();
@@ -160,21 +164,32 @@ export class OceanEngine {
     this.acc += dt;
     let steps = 0;
     while (this.acc >= STEP && steps < MAX_STEPS) {
-      this.world.step(STEP);
+      if (this.darkScheme.matches) this.reference.update(STEP, this.world.obstacle);
+      else this.world.step(STEP);
       this.acc -= STEP;
       steps++;
     }
     if (steps === MAX_STEPS) this.acc = 0;
-    this.renderer.render(this.world, dt);
+    this.render(dt);
   };
+
+  private render(dt: number) {
+    if (this.darkScheme.matches) this.reference.renderJelly(this.world.obstacle);
+    else {
+      this.renderer.render(this.world, dt);
+      this.reference.renderKoi(this.world);
+    }
+  }
 
   /** Reduced motion: let the ecosystem settle, then show a single frame. */
   private drawStill() {
     this.trackPaper();
-    if (this.world.time < 4) {
+    if (this.darkScheme.matches) {
+      this.reference.update(0, this.world.obstacle);
+    } else if (this.world.time < 4) {
       for (let i = 0; i < 240; i++) this.world.step(STEP);
     }
-    this.renderer.render(this.world, STEP);
+    this.render(STEP);
   }
 
   private onMotionPreference = () => {
@@ -215,7 +230,9 @@ export class OceanEngine {
 
   private onPointerDown = (e: PointerEvent) => {
     const { x, y, inside } = this.toLocal(e);
-    if (inside && !this.reducedMotion.matches) this.world.splash(x, y);
+    if (!inside || this.reducedMotion.matches) return;
+    if (this.darkScheme.matches) this.reference.click(x, y);
+    else this.world.splash(x, y);
   };
 
   private onPointerLeave = () => {

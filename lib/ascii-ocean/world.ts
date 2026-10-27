@@ -109,6 +109,7 @@ export class World {
   fish: Fish[] = [];
   sharks: Shark[] = [];
   events: WorldEvent[] = [];
+  food: { x: number; y: number; expires: number }[] = [];
   pointer = { x: 0, y: 0, active: false };
   /** The paper sheet, in canvas pixels; creatures and fish keep out of it. */
   obstacle: Rect | null = null;
@@ -315,6 +316,11 @@ export class World {
 
   splash(x: number, y: number) {
     this.events.push({ kind: "splash", x, y });
+    for (let i = 0; i < 5; i++) {
+      const fx = x + rand(-26, 26), fy = y + rand(-20, 20);
+      if (this.isFree(fx, fy)) this.food.push({ x: fx, y: fy, expires: this.time + rand(14, 22) });
+    }
+    this.food = this.food.slice(-60);
     const r = 240;
     for (const f of this.fish) {
       if (!f.alive) continue;
@@ -575,6 +581,7 @@ export class World {
 
   private stepSharks(dt: number) {
     const { sharks, width: W, height: H, time } = this;
+    this.food = this.food.filter((f) => f.expires > time && this.isFree(f.x, f.y));
     const minSide = Math.min(W, H);
     const cxW = W / 2;
     const cyW = H / 2;
@@ -596,6 +603,29 @@ export class World {
       dx += Math.cos(sh.heading + sh.wander) * 0.45;
       dy += Math.sin(sh.heading + sh.wander) * 0.45;
 
+      // Koi follow food first, then a nearby hovering pointer.
+      let foodTarget: { x: number; y: number; expires: number } | undefined;
+      let foodDistance = 420;
+      if (sh.kind === "koi") {
+        for (const food of this.food) {
+          const distance = Math.hypot(food.x - hx, food.y - hy);
+          if (distance < foodDistance) { foodDistance = distance; foodTarget = food; }
+        }
+        if (foodTarget && foodDistance < L * 0.12) {
+          this.food = this.food.filter((food) => food !== foodTarget);
+          foodTarget = undefined;
+        }
+      }
+      const koiTarget = foodTarget ?? (sh.kind === "koi" && this.pointer.active ? this.pointer : undefined);
+      if (koiTarget) {
+        const px = koiTarget.x - hx, py = koiTarget.y - hy;
+        const distance = Math.hypot(px, py);
+        if (distance > 1 && (foodTarget || (distance > 30 && distance < 260))) {
+          const weight = foodTarget ? 2.4 : 1.1;
+          dx += px / distance * weight; dy += py / distance * weight;
+        }
+      }
+
       // Hunt.
       if (time >= sh.retargetAt) {
         sh.target = this.findPrey(sh);
@@ -604,7 +634,7 @@ export class World {
       const t = sh.target;
       let hunting = false;
       let closing = 0;
-      if (t && t.alive && sh.hunger > 0.3) {
+      if (sh.kind !== "koi" && t && t.alive && sh.hunger > 0.3) {
         // Pursuit: aim at where the fish is about to be.
         const tx = t.x + t.vx * 0.35 - hx;
         const ty = t.y + t.vy * 0.35 - hy;
@@ -717,7 +747,7 @@ export class World {
       sh.turn += (turned / dt - sh.turn) * Math.min(1, dt * 3);
 
       const cruise = 30 + L * 0.04;
-      const targetSpeed = hunting ? cruise * (1.45 + closing * 1.5) : cruise;
+      const targetSpeed = foodTarget ? 70 : hunting ? cruise * (1.45 + closing * 1.5) : cruise;
       sh.speed += (targetSpeed - sh.speed) * Math.min(1, dt * 1.1);
       sh.phase += dt * (2 + sh.speed / 24);
 
