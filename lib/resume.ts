@@ -158,7 +158,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
             note: "独立设计、开发、上架",
             href: "https://app.isjia.page",
             description:
-              "独立完成 8 款 Apple 应用的设计、SwiftUI 实现与上架运维：Solis 1.2.0、Punctum 1.4、Span 1.0、ThreadLite 1.3、Wayfinder 1.0 已在 App Store 上线，Ordbro、Slip、Hairspring 在审核或准备中；全部本地优先，无账号、无广告、无追踪。",
+              "独立完成 7 款 Apple 应用的设计、SwiftUI 实现与上架运维：Solis 1.2.0、Punctum 1.4、Span 1.0、ThreadLite 1.3、Wayfinder 1.0 已在 App Store 上线，Ordbro、Slip 在审核中；全部本地优先，无账号、无广告、无追踪。",
             stack: ["Swift", "SwiftUI", "WidgetKit", "Safari extensions", "App Store Connect"],
           },
         ],
@@ -325,7 +325,7 @@ export const resumeContent: Record<"zh" | "en", ResumeContent> = {
             note: "Designed, built and released solo",
             href: "https://app.isjia.page",
             description:
-              "Designed, implemented and shipped eight Apple apps alone: Solis 1.2.0, Punctum 1.4, Span 1.0, ThreadLite 1.3 and Wayfinder 1.0 are live on the App Store, with Ordbro, Slip and Hairspring in review or preparation. All local-first, with no accounts, ads or tracking.",
+              "Designed, implemented and shipped seven Apple apps alone: Solis 1.2.0, Punctum 1.4, Span 1.0, ThreadLite 1.3 and Wayfinder 1.0 are live on the App Store, with Ordbro and Slip in review. All local-first, with no accounts, ads or tracking.",
             stack: ["Swift", "SwiftUI", "WidgetKit", "Safari extensions", "App Store Connect"],
           },
         ],

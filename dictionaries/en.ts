@@ -134,7 +134,7 @@ My strongest work sits around internal tools, workflow automation with human rev
           name: "app.isjia.page",
           href: "https://app.isjia.page",
           description:
-            "The Apple app family: Solis, Punctum, ThreadLite, Span, Wayfinder, Ordbro, Slip and Hairspring — local-first, no accounts, no tracking.",
+            "The Apple app family: Solis, Punctum, ThreadLite, Span, Wayfinder, Ordbro and Slip — local-first, no accounts, no tracking.",
         },
         {
           type: "text" as const,
@@ -239,12 +239,12 @@ My strongest work sits around internal tools, workflow automation with human rev
       name: "Apple apps",
       year: "2026",
       summary:
-        "Eight small Apple apps designed, built and shipped solo — five of them live on the App Store for iPhone, Watch, TV, Mac and Safari.",
+        "Seven small Apple apps designed, built and shipped solo — five of them live on the App Store for iPhone, Watch, TV, Mac and Safari.",
       roleFit: "Product engineering · SwiftUI · App Store release operations",
       evidence: [
         "Five apps live on the App Store: Solis (sun and moon almanac, 1.2.0), Punctum (dot-matrix clock, 1.4), Span (planning, 1.0), ThreadLite (Safari extension, 1.3) and Wayfinder (tabs and sessions, 1.0)",
         "Owns the whole loop alone: product decisions, SwiftUI implementation, privacy policy, listing copy, screenshots and App Store review",
-        "Ordbro, Slip and Hairspring are built and either in review or in preparation; every app is local-first with no accounts, ads or tracking",
+        "Ordbro and Slip are built and in review; every app is local-first with no accounts, ads or tracking",
       ],
       stack: [
         "Swift",

@@ -131,7 +131,7 @@ const dictionary = {
           name: "app.isjia.page",
           href: "https://app.isjia.page",
           description:
-            "Apple 应用家族：Solis、Punctum、ThreadLite、Span、Wayfinder、Ordbro、Slip 与 Hairspring —— 本地优先，无账号、无广告、无追踪。",
+            "Apple 应用家族：Solis、Punctum、ThreadLite、Span、Wayfinder、Ordbro 与 Slip —— 本地优先，无账号、无广告、无追踪。",
         },
         {
           type: "text" as const,
@@ -236,12 +236,12 @@ const dictionary = {
       name: "Apple apps",
       year: "2026",
       summary:
-        "八款独立设计、开发并上线的小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 和 Safari。",
+        "七款独立设计、开发并上线的小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 和 Safari。",
       roleFit: "产品工程 · SwiftUI · App Store 发布运维",
       evidence: [
         "5 款已在 App Store 上架：Solis（日月历，1.2.0）、Punctum（点阵时钟，1.4）、Span（计划，1.0）、ThreadLite（Safari 扩展，1.3）、Wayfinder（标签页与会话，1.0）",
         "一个人跑完整个闭环：产品决策、SwiftUI 实现、隐私政策、上架文案、截图和审核沟通",
-        "Ordbro、Slip 和 Hairspring 已开发完成，处于审核中或准备阶段；所有应用都本地优先，无账号、无广告、无追踪",
+        "Ordbro、Slip 已开发完成，处于审核中；所有应用都本地优先，无账号、无广告、无追踪",
       ],
       stack: [
         "Swift",
