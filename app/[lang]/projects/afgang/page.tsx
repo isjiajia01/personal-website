@@ -1,5 +1,5 @@
 import { sharePreview } from "@/lib/share-preview";
-import { SkeletonImage } from "@/components/skeleton-image";
+import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
 import { getDictionary, type Language } from "@/dictionaries";
@@ -113,7 +113,7 @@ export default async function AfgangCasePage(
 
       {/* Hero figure */}
       <figure className="mt-8">
-        <SkeletonImage
+        <Image
           src="/images/projects/afgang/reachability-desktop.webp"
           width={1440}
           height={900}
@@ -223,7 +223,7 @@ export default async function AfgangCasePage(
         </p>
         <div className="mt-6 space-y-6">
           <figure>
-            <SkeletonImage
+            <Image
               src="/images/projects/afgang/commute-desktop.webp"
               width={1440}
               height={900}
@@ -236,7 +236,7 @@ export default async function AfgangCasePage(
             </figcaption>
           </figure>
           <figure>
-            <SkeletonImage
+            <Image
               src="/images/projects/afgang/reachability-mobile.webp"
               width={390}
               height={844}
