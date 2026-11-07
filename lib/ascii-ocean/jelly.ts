@@ -1,9 +1,11 @@
 import { clamp, current, rand, TAU } from "./math";
 import type { Rect } from "./world";
 
+type Ring = { x: number; y: number; r: number; life: number };
+
 type Jelly = {
   side: -1 | 1; x: number; y: number; radius: number; phase: number;
-  rate: number; hue: number; depth: number; tilt: number; vx: number; vy: number;
+  rate: number; hue: number; depth: number; tilt: number; vx: number; vy: number; flash: number; hitBy: Ring | null;
   chains: { points: Float32Array; previous: Float32Array; segment: number; anchor: number; arm: boolean }[];
 };
 
@@ -14,19 +16,27 @@ export class JellySea {
   private height = 0;
   private time = 0;
   private current = { x: 0, y: 0 };
+  private rings: Ring[] = [];
+
+  /** A click sends a ripple through the water; jellies it touches flash and jet away. */
+  click(x: number, y: number) {
+    this.rings.push({ x, y, r: 4, life: 1 });
+    if (this.rings.length > 20) this.rings.shift();
+  }
 
   resize(width: number, height: number) {
     if (this.width === width && this.height === height) return;
     this.width = width;
     this.height = height;
     this.jellies = [];
+    this.rings = [];
   }
 
   private makeJelly(side: -1 | 1, lane: number, index: number): Jelly {
     const radius = clamp(lane * 0.38, 12, 80) * (index ? 0.72 : 1);
     const x = side < 0 ? lane * (0.35 + index * 0.25) : this.width - lane * (0.35 + index * 0.25);
     const y = this.height * (index ? 0.7 : 0.32);
-    const jelly: Jelly = { side, x, y, radius, phase: rand(0, TAU), rate: rand(0.8, 1.15), hue: [188, 282, 322, 168][(side < 0 ? 0 : 2) + index], depth: index ? 0.65 : 1, tilt: 0, vx: 0, vy: 0, chains: [] };
+    const jelly: Jelly = { side, x, y, radius, phase: rand(0, TAU), rate: rand(0.8, 1.15), hue: [188, 282, 322, 168][(side < 0 ? 0 : 2) + index], depth: index ? 0.65 : 1, tilt: 0, vx: 0, vy: 0, flash: 0, hitBy: null, chains: [] };
     for (let i = 0; i < 12; i++) {
       const arm = i >= 8;
       const anchor = arm ? [-0.26, -0.09, 0.09, 0.26][i - 8] : -0.92 + 1.84 * i / 7;
@@ -41,6 +51,8 @@ export class JellySea {
 
   step(dt: number, paper: Rect | null) {
     this.time += dt;
+    for (const ring of this.rings) { ring.r += dt * 260; ring.life -= dt * 0.7; }
+    this.rings = this.rings.filter((ring) => ring.life > 0);
     if (!paper) return;
     const lanes = [Math.max(0, paper.x0), Math.max(0, this.width - paper.x1)];
     for (const side of [-1, 1] as const) {
@@ -49,6 +61,16 @@ export class JellySea {
       if (lane < 24) { this.jellies = this.jellies.filter((j) => j.side !== side); continue; }
       while (existing.length < 2) { const j = this.makeJelly(side, lane, existing.length); existing.push(j); this.jellies.push(j); }
       for (const j of existing) {
+        j.flash = Math.max(0, j.flash - dt * 1.5);
+        for (const ring of this.rings) {
+          if (j.hitBy === ring) continue;
+          const d = Math.hypot(j.x - ring.x, j.y - ring.y);
+          if (Math.abs(d - ring.r) >= j.radius) continue;
+          j.hitBy = ring; j.flash = 1;
+          j.vx += (j.x - ring.x) / (d || 1) * 60 * ring.life;
+          j.vy += (j.y - ring.y) / (d || 1) * 60 * ring.life;
+          j.phase = Math.floor(j.phase / TAU) * TAU + TAU;
+        }
         j.phase += dt * TAU * 0.45 * j.rate;
         const f = (j.phase / TAU) % 1;
         const pulse = f < 0.22 ? f / 0.22 : 1 - (f - 0.22) / 0.78;
@@ -92,6 +114,22 @@ export class JellySea {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = "#010209"; ctx.fillRect(0, 0, this.width, this.height);
     if (!paper) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, Math.max(0, paper.x0), this.height);
+    ctx.rect(Math.min(this.width, paper.x1), 0, Math.max(0, this.width - paper.x1), this.height);
+    ctx.clip();
+    ctx.font = `600 ${Math.round(ch * 0.74)}px ${getComputedStyle(ctx.canvas).fontFamily}`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    for (const ring of this.rings) {
+      const steps = Math.ceil(ring.r * TAU / (cw * 1.5));
+      ctx.fillStyle = `rgba(110,200,255,${0.5 * ring.life})`;
+      for (let k = 0; k < steps; k++) {
+        const a = k / steps * TAU;
+        ctx.fillText("·", ring.x + Math.cos(a) * ring.r, ring.y + Math.sin(a) * ring.r);
+      }
+    }
+    ctx.restore();
     ctx.font = `600 ${Math.round(ch * 0.74)}px ${getComputedStyle(ctx.canvas).fontFamily}`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const j of this.jellies) {
@@ -124,7 +162,7 @@ export class JellySea {
         const rim = clamp((e - 0.55) / 0.45, 0, 1);
         const glyph = inner < 1 ? ".:" : rim > 0.65 ? "/\\()" : ".:-=+*#%@";
         const key = Math.abs(Math.round(x / cw * 13 + y / ch * 7 + j.hue));
-        ctx.fillStyle = `hsla(${j.hue + band},75%,${inner < 1 ? 35 : 48 + rim * 18}%,${j.depth * (inner < 1 ? 0.5 : 0.9)})`;
+        ctx.fillStyle = `hsla(${j.hue + band},75%,${(inner < 1 ? 35 : 48 + rim * 18) + j.flash * 25}%,${Math.min(1, j.depth * (inner < 1 ? 0.5 : 0.9) + j.flash * 0.4)})`;
         ctx.fillText(glyph[key % glyph.length], j.x + x * c - y * s, j.y + x * s + y * c);
       }
       ctx.restore();

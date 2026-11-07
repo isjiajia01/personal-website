@@ -1,4 +1,5 @@
 import { AsciiRenderer } from "./renderer";
+import { JellySea } from "./jelly";
 import { createReferenceOcean } from "./reference-ocean";
 import { World, type Pond, type Rect, type SharkSpec } from "./world";
 
@@ -19,6 +20,7 @@ export class OceanEngine {
   private world: World;
   private renderer: AsciiRenderer;
   private reference: ReturnType<typeof createReferenceOcean>;
+  private jelly = new JellySea();
   private raf = 0;
   private last = 0;
   private acc = 0;
@@ -99,6 +101,7 @@ export class OceanEngine {
     const dpr = Math.min(window.devicePixelRatio || 1, this.maxDpr);
     this.renderer.resize(rect.width, rect.height, dpr);
     this.reference.resize(rect.width, rect.height, dpr, this.renderer.cellWidth, this.renderer.cellHeight);
+    this.jelly.resize(rect.width, rect.height);
     this.trackPaper(true);
     this.world.resize(rect.width, rect.height, this.renderer.cellWidth, this.renderer.cellHeight);
     if (this.reducedMotion.matches) this.drawStill();
@@ -164,7 +167,7 @@ export class OceanEngine {
     this.acc += dt;
     let steps = 0;
     while (this.acc >= STEP && steps < MAX_STEPS) {
-      if (this.darkScheme.matches) this.reference.update(STEP, this.world.obstacle);
+      if (this.darkScheme.matches) this.jelly.step(STEP, this.world.obstacle);
       else this.world.step(STEP);
       this.acc -= STEP;
       steps++;
@@ -174,18 +177,25 @@ export class OceanEngine {
   };
 
   private render(dt: number) {
-    if (this.darkScheme.matches) this.reference.renderJelly(this.world.obstacle);
+    if (this.darkScheme.matches) this.renderJelly();
     else {
       this.renderer.render(this.world, dt);
       this.reference.renderKoi(this.world);
     }
   }
 
+  private renderJelly() {
+    const ctx = this.canvas.getContext("2d");
+    if (!ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, this.maxDpr);
+    this.jelly.render(ctx, dpr, this.renderer.cellWidth, this.renderer.cellHeight, this.world.obstacle);
+  }
+
   /** Reduced motion: let the ecosystem settle, then show a single frame. */
   private drawStill() {
     this.trackPaper();
     if (this.darkScheme.matches) {
-      this.reference.update(0, this.world.obstacle);
+      this.jelly.step(0, this.world.obstacle);
     } else if (this.world.time < 4) {
       for (let i = 0; i < 240; i++) this.world.step(STEP);
     }
@@ -231,7 +241,7 @@ export class OceanEngine {
   private onPointerDown = (e: PointerEvent) => {
     const { x, y, inside } = this.toLocal(e);
     if (!inside || this.reducedMotion.matches) return;
-    if (this.darkScheme.matches) this.reference.click(x, y);
+    if (this.darkScheme.matches) this.jelly.click(x, y);
     else this.world.splash(x, y);
   };
 
