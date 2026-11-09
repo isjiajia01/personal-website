@@ -477,3 +477,84 @@ time {
   }
 }
 
+
+/* Custom cursor (components/custom-cursor.tsx): thin ring + dot, rose on interactive targets */
+.cursor-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  display: none;
+  will-change: transform;
+}
+
+.has-custom-cursor .cursor-layer {
+  display: block;
+}
+
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}
+
+.cursor-ring,
+.cursor-dot {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0;
+  translate: -50% -50%;
+  transition:
+    opacity var(--motion-in) var(--ease-snap),
+    scale var(--motion-mask) var(--ease-snap),
+    border-color var(--motion-link) var(--ease-snap),
+    background-color var(--motion-link) var(--ease-snap);
+}
+
+.cursor-ring {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgb(24 24 27 / 0.7);
+}
+
+.cursor-dot {
+  width: 5px;
+  height: 5px;
+  background-color: #18181b;
+}
+
+.cursor-ready .cursor-ring,
+.cursor-ready .cursor-dot {
+  opacity: 1;
+}
+
+.cursor-hover .cursor-ring {
+  scale: 1.5;
+  border-color: var(--rose);
+}
+
+.cursor-hover .cursor-dot {
+  background-color: var(--rose);
+}
+
+.cursor-down .cursor-ring {
+  scale: 0.8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cursor-ring {
+    border-color: rgb(244 244 245 / 0.7);
+  }
+
+  .cursor-dot {
+    background-color: #f4f4f5;
+  }
+
+  .cursor-hover .cursor-ring {
+    border-color: var(--rose);
+  }
+
+  .cursor-hover .cursor-dot {
+    background-color: var(--rose);
+  }
+}

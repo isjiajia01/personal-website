@@ -236,7 +236,18 @@ export class OceanEngine {
     p.x = x;
     p.y = y;
     p.active = inside && e.pointerType !== "touch";
+    // Night: leave a faint ripple every ~28px of travel (koi wake is handled in the renderer).
+    if (p.active && this.darkScheme.matches && !this.reducedMotion.matches) {
+      const t = this.trail;
+      if (!t.valid || Math.hypot(x - t.x, y - t.y) > 28) {
+        this.jelly.ripple(x, y);
+        t.x = x;
+        t.y = y;
+        t.valid = true;
+      }
+    }
   };
+  private trail = { x: 0, y: 0, valid: false };
 
   private onPointerDown = (e: PointerEvent) => {
     const { x, y, inside } = this.toLocal(e);
@@ -247,5 +258,6 @@ export class OceanEngine {
 
   private onPointerLeave = () => {
     this.world.pointer.active = false;
+    this.trail.valid = false;
   };
 }

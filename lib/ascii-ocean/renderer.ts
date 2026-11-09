@@ -599,9 +599,36 @@ export class AsciiRenderer {
         if (i >= 0) energy[i] = Math.min(1.6, energy[i] + 0.05 + sh.speed * 0.0012);
       }
     }
-    if (world.pointer.active) {
-      this.stamp(energy, world.pointer.x, world.pointer.y, 1, 0.08);
+    this.depositPointerWake(world);
+  }
+
+  private pointerLast = { x: 0, y: 0, valid: false };
+
+  /** The pointer drags a wake through the water: stronger and wider the faster it moves. */
+  private depositPointerWake(world: World) {
+    const { pointer } = world;
+    const last = this.pointerLast;
+    if (!pointer.active) {
+      last.valid = false;
+      return;
     }
+    if (!last.valid) {
+      last.x = pointer.x;
+      last.y = pointer.y;
+      last.valid = true;
+    }
+    const dist = Math.hypot(pointer.x - last.x, pointer.y - last.y);
+    // Stamp along the segment so fast strokes leave a continuous line, not dots.
+    const n = Math.min(24, Math.max(1, Math.ceil(dist / this.cw)));
+    const speed = Math.min(1, dist / 60);
+    const amount = 0.05 + 0.2 * speed;
+    const radius = speed > 0.35 ? 2 : 1;
+    for (let k = 1; k <= n; k++) {
+      const t = k / n;
+      this.stamp(this.energy, last.x + (pointer.x - last.x) * t, last.y + (pointer.y - last.y) * t, radius, amount / Math.sqrt(n));
+    }
+    last.x = pointer.x;
+    last.y = pointer.y;
   }
 
   /** Blur + decay so wakes spread out like ripples and fade. */

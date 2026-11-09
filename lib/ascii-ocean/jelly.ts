@@ -1,7 +1,7 @@
 import { clamp, current, rand, TAU } from "./math";
 import type { Rect } from "./world";
 
-type Ring = { x: number; y: number; r: number; life: number };
+type Ring = { x: number; y: number; r: number; life: number; soft?: boolean };
 
 type Jelly = {
   side: -1 | 1; x: number; y: number; radius: number; phase: number;
@@ -22,6 +22,12 @@ export class JellySea {
   click(x: number, y: number) {
     this.rings.push({ x, y, r: 4, life: 1 });
     if (this.rings.length > 20) this.rings.shift();
+  }
+
+  /** A faint ripple left by the pointer; it shows on the water but never pushes a jelly. */
+  ripple(x: number, y: number) {
+    this.rings.push({ x, y, r: 2, life: 0.55, soft: true });
+    if (this.rings.length > 40) this.rings.shift();
   }
 
   resize(width: number, height: number) {
@@ -51,7 +57,7 @@ export class JellySea {
 
   step(dt: number, paper: Rect | null) {
     this.time += dt;
-    for (const ring of this.rings) { ring.r += dt * 260; ring.life -= dt * 0.7; }
+    for (const ring of this.rings) { ring.r += dt * (ring.soft ? 90 : 260); ring.life -= dt * (ring.soft ? 0.9 : 0.7); }
     this.rings = this.rings.filter((ring) => ring.life > 0);
     if (!paper) return;
     const lanes = [Math.max(0, paper.x0), Math.max(0, this.width - paper.x1)];
@@ -63,7 +69,7 @@ export class JellySea {
       for (const j of existing) {
         j.flash = Math.max(0, j.flash - dt * 1.5);
         for (const ring of this.rings) {
-          if (j.hitBy === ring) continue;
+          if (ring.soft || j.hitBy === ring) continue;
           const d = Math.hypot(j.x - ring.x, j.y - ring.y);
           if (Math.abs(d - ring.r) >= j.radius) continue;
           j.hitBy = ring; j.flash = 1;
@@ -122,8 +128,8 @@ export class JellySea {
     ctx.font = `600 ${Math.round(ch * 0.74)}px ${getComputedStyle(ctx.canvas).fontFamily}`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const ring of this.rings) {
-      const steps = Math.ceil(ring.r * TAU / (cw * 1.5));
-      ctx.fillStyle = `rgba(110,200,255,${0.5 * ring.life})`;
+      const steps = Math.ceil(ring.r * TAU / (cw * (ring.soft ? 2 : 1.5)));
+      ctx.fillStyle = `rgba(110,200,255,${(ring.soft ? 0.35 : 0.5) * ring.life})`;
       for (let k = 0; k < steps; k++) {
         const a = k / steps * TAU;
         ctx.fillText("·", ring.x + Math.cos(a) * ring.r, ring.y + Math.sin(a) * ring.r);
