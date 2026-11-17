@@ -1,5 +1,5 @@
 @theme {
-  --font-sans: var(--font-inter), "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-sans: var(--font-allo), "WenYuan Rounded SC", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-serif: var(--font-crimson), "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "STSong", Georgia, serif;
   --ease-snap: cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -44,6 +44,7 @@ html:lang(zh-Hans) {
 }
 
 html {
+  font-variation-settings: "ROND" 50;
   text-autospace: normal;
 }
 

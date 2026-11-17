@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
-import { Crimson_Pro, Inter } from "next/font/google";
+import { Crimson_Pro } from "next/font/google";
+import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { CustomCursor } from "../components/custom-cursor";
 import { OceanBackground } from "../components/ocean-background";
 import "../styles/globals.css";
 
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+const allo = localFont({
+  src: [
+    { path: "../node_modules/allo-font/fonts/webfonts/AlloVariable.woff2", weight: "100 900", style: "normal" },
+    { path: "../node_modules/allo-font/fonts/webfonts/Allo-Oblique.woff2", weight: "400", style: "italic" },
+    { path: "../node_modules/allo-font/fonts/webfonts/Allo-MediumOblique.woff2", weight: "500", style: "italic" },
+    { path: "../node_modules/allo-font/fonts/webfonts/Allo-SemiBoldOblique.woff2", weight: "600", style: "italic" },
+  ],
+  display: "swap",
+  variable: "--font-allo",
+});
 const crimson = Crimson_Pro({ subsets: ["latin"], display: "swap", variable: "--font-crimson" });
 
 export const metadata: Metadata = {
@@ -22,7 +32,11 @@ export function SharedRootLayout({
   lang: "en" | "zh-Hans";
 }) {
   return (
-    <html lang={lang} className={`${inter.variable} ${crimson.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang={lang} className={`${allo.variable} ${crimson.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-css-tags -- self-hosted CJK font chunks */}
+        <link rel="stylesheet" href="/fonts/wenyuan/result.css" />
+      </head>
       <body className="text-[15px] leading-(--leading-body) text-zinc-900 antialiased dark:text-zinc-100">
         <OceanBackground />
         <CustomCursor />
