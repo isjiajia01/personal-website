@@ -32,28 +32,23 @@ My strongest work sits around internal tools, workflow automation with human rev
   },
   urls: {
     home: "/en",
-    works: "/en/works",
     afgang: "/en/projects/afgang",
     about: "/en/about",
   },
   labels: {
     home: "Home",
-    works: "Work",
     about: "About",
-    featured: "Best Starting Points",
-    archive: "Supporting Material",
     notFoundStatus: "Paper Tray Empty",
     notFoundTitle: "Out of Paper",
     notFoundSubtitle: "Please insert paper correctly to print content.",
     notFoundButton: "← Print Home",
     notFoundError: "ERR 404 · PAPER_NOT_FOUND",
-    viewAllWorkEvidence: "View full project evidence",
-    noocWorks: "Start with the projects most relevant to internal tools, workflow automation, and operational decision support.",
     aboutTitle: "About",
     aboutSubtitle: "How I think about workflow systems, evidence, and practical automation",
     openProject: "Open",
     contactCta: "Get in touch",
     skillsTitle: "Skills and tools",
+    backToHome: "Back to home",
     skipToContent: "Skip to content",
     opensInNewTab: "(opens in a new tab)",
   },
@@ -145,6 +140,7 @@ My strongest work sits around internal tools, workflow automation with human rev
   works: [
     {
       slug: "opsdesk",
+      detail: true,
       name: "OpsDesk",
       year: "2026",
       summary:
@@ -164,6 +160,7 @@ My strongest work sits around internal tools, workflow automation with human rev
     },
     {
       slug: "denmark-flex-planner",
+      detail: true,
       name: "Denmark Flex Planner",
       year: "2026",
       summary:

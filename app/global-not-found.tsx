@@ -19,8 +19,8 @@ export default async function GlobalNotFound() {
         lang="en"
         hideLanguageSwitch
         authorName={dictionary.meta.authorName}
-        labels={{ skipToContent: dictionary.labels.skipToContent, home: dictionary.labels.home, works: dictionary.labels.works, about: dictionary.labels.about, opensInNewTab: dictionary.labels.opensInNewTab }}
-        urls={{ home: dictionary.urls.home, works: dictionary.urls.works, about: dictionary.urls.about }}
+        labels={{ skipToContent: dictionary.labels.skipToContent, home: dictionary.labels.home, about: dictionary.labels.about, opensInNewTab: dictionary.labels.opensInNewTab }}
+        urls={{ home: dictionary.urls.home, about: dictionary.urls.about }}
         contacts={dictionary.contacts.map((contact) => ({ label: contact.label, link: contact.link }))}
       >
         <NotFound />

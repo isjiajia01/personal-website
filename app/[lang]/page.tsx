@@ -59,11 +59,12 @@ export default async function Home(props: {
       {/* Work index: title · dotted leader · year, then the real summary. Rows own their stagger. */}
       <section className="rise-own mt-14" aria-labelledby="home-work">
         <h2 id="home-work" className="sr-only">
-          {dictionary.labels.works}
+          {dictionary.meta.authorName}
         </h2>
         <ul className="-mx-3 space-y-1">
           {featuredWorks.map((work, index) => {
-            const isExternal = work.link.startsWith("http");
+            const href = "detail" in work && work.detail ? `/${params.lang}/projects/${work.slug}/` : work.link;
+            const isExternal = href.startsWith("http");
             const rowClass =
               "work-row group block rounded-md px-3 py-3 hover:bg-stone-50 dark:hover:bg-zinc-800/60";
             const rowContent = (
@@ -100,11 +101,11 @@ export default async function Home(props: {
 
             return (
               <li key={work.slug || work.name} className="rise" style={style}>
-                {!work.link ? (
+                {!href ? (
                   <div className={rowClass}>{rowContent}</div>
                 ) : isExternal ? (
                   <a
-                    href={work.link}
+                    href={href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={rowClass}
@@ -112,7 +113,7 @@ export default async function Home(props: {
                     {rowContent}
                   </a>
                 ) : (
-                  <Link href={work.link} className={rowClass}>
+                  <Link href={href} className={rowClass}>
                     {rowContent}
                   </Link>
                 )}

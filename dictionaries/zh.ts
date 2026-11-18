@@ -32,28 +32,23 @@ const dictionary = {
   },
   urls: {
     home: "/zh",
-    works: "/zh/works",
     afgang: "/zh/projects/afgang",
     about: "/zh/about",
   },
   labels: {
     home: "主页",
-    works: "项目",
     about: "关于",
-    featured: "优先看这里",
-    archive: "补充材料",
     notFoundStatus: "纸空了",
     notFoundTitle: "托盘已空",
     notFoundSubtitle: "请正确放入纸张以打印内容。",
     notFoundButton: "← 打印主页",
     notFoundError: "ERR 404 · PAPER_NOT_FOUND",
-    viewAllWorkEvidence: "查看完整项目证据",
-    noocWorks: "优先从最能说明 internal tools、workflow automation 和 decision support 的项目看起。",
     aboutTitle: "关于",
     aboutSubtitle: "我如何理解 workflow systems、证据和实用自动化",
     openProject: "打开",
     contactCta: "联系我",
     skillsTitle: "技能与工具",
+    backToHome: "返回首页",
     skipToContent: "跳至内容",
     opensInNewTab: "（在新标签页中打开）",
   },
@@ -142,6 +137,7 @@ const dictionary = {
   works: [
     {
       slug: "opsdesk",
+      detail: true,
       name: "OpsDesk",
       year: "2026",
       summary:
@@ -161,6 +157,7 @@ const dictionary = {
     },
     {
       slug: "denmark-flex-planner",
+      detail: true,
       name: "Denmark Flex Planner",
       year: "2026",
       summary:

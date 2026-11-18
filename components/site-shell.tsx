@@ -12,13 +12,11 @@ export interface SiteShellProps {
   labels: {
     skipToContent: string;
     home: string;
-    works: string;
     about: string;
     opensInNewTab: string;
   };
   urls: {
     home: string;
-    works: string;
     about: string;
   };
   contacts: Array<{

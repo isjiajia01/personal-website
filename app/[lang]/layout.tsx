@@ -73,12 +73,11 @@ export default async function LocalizedRootLayout(props: {
         labels={{
           skipToContent: dictionary.labels.skipToContent,
           home: dictionary.labels.home,
-          works: dictionary.labels.works,
          
           about: dictionary.labels.about,
           opensInNewTab: dictionary.labels.opensInNewTab,
         }}
-        urls={{ home: dictionary.urls.home, works: dictionary.urls.works, about: dictionary.urls.about }}
+        urls={{ home: dictionary.urls.home, about: dictionary.urls.about }}
         contacts={dictionary.contacts.map((c) => ({ label: c.label, link: c.link }))}
       >
         {props.children}

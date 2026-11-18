@@ -6,7 +6,6 @@ import { mkdir, writeFile } from "node:fs/promises";
 
 const cards = {
   home: { en: ["Portfolio", "Practical tools.", "Thoughtful systems."], zh: ["个人网站", "内部工具", "与流程自动化"] },
-  works: { en: ["Selected work", "From constraints", "to working products."], zh: ["项目作品", "从真实约束", "到可用的产品"] },
   about: { en: ["About", "Curiosity, evidence", "and careful execution."], zh: ["关于", "好奇心与证据", "认真地把事情做好"] },
   afgang: { en: ["Project / Afgang", "Copenhagen,", "within reach."], zh: ["项目 / Afgang", "哥本哈根", "触手可及"] },
 };

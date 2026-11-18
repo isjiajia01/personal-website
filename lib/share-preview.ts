@@ -1,6 +1,6 @@
 import type { Language } from "@/dictionaries";
 
-type SharePage = "home" | "works" | "about" | "afgang";
+type SharePage = "home" | "about" | "afgang";
 
 // Explicit metadata on each route: Next replaces nested OG metadata rather than merging it.
 export function sharePreview(page: SharePage, lang: Language = "en") {
