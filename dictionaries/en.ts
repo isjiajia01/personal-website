@@ -46,7 +46,6 @@ My strongest work sits around internal tools, workflow automation with human rev
     aboutTitle: "About",
     aboutSubtitle: "How I think about workflow systems, evidence, and practical automation",
     openProject: "Open",
-    contactCta: "Get in touch",
     skillsTitle: "Skills and tools",
     backToHome: "Back to home",
     skipToContent: "Skip to content",

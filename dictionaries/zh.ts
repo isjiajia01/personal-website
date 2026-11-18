@@ -46,7 +46,6 @@ const dictionary = {
     aboutTitle: "关于",
     aboutSubtitle: "我如何理解 workflow systems、证据和实用自动化",
     openProject: "打开",
-    contactCta: "联系我",
     skillsTitle: "技能与工具",
     backToHome: "返回首页",
     skipToContent: "跳至内容",
