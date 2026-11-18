@@ -78,7 +78,7 @@ export function SiteShell({
     { label: labels.works, href: urls.works, active: isWorkActive },
     // Notes are English only, so the zh nav does not link to them.
     ...(lang === "en"
-      ? [{ label: "Notes", href: "/notes/claude-code-workshop/", active: pathname.startsWith("/notes") }]
+      ? [{ label: "Notes", href: "/notes/", active: pathname.startsWith("/notes") }]
       : []),
     { label: labels.about, href: urls.about, active: isAboutActive },
   ];
