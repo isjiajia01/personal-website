@@ -7,7 +7,6 @@ const dictionary = {
     mottos: [
       "I build internal tools and workflow systems with clear evidence, human review, and practical decision support.",
       "Best fit: junior product/full-stack roles around internal tools, support automation, and operational decision systems.",
-      "A job-facing portfolio for hiring conversations.",
     ],
     bio: `
 A Copenhagen-based DTU MSc Engineering graduate in Mathematical Modelling and Computation, building practical systems for complex operational work.
@@ -53,6 +52,8 @@ My strongest work sits around internal tools, workflow automation with human rev
     aboutTitle: "About",
     aboutSubtitle: "How I think about workflow systems, evidence, and practical automation",
     openProject: "Open",
+    contactCta: "Get in touch",
+    skillsTitle: "Skills and tools",
     skipToContent: "Skip to content",
     opensInNewTab: "(opens in a new tab)",
   },
@@ -124,7 +125,7 @@ My strongest work sits around internal tools, workflow automation with human rev
         {
           type: "text" as const,
           value:
-            "Alongside that work I design, build and ship small Apple apps solo — five are live on the App Store for iPhone, Watch, TV, Mac and Safari. They live at ",
+            "Alongside that work I design, build and ship small Apple apps solo — five are live on the App Store for iPhone, Watch, TV, Mac and Safari, with three more on the way. They live at ",
         },
         {
           type: "org" as const,
@@ -132,7 +133,7 @@ My strongest work sits around internal tools, workflow automation with human rev
           name: "app.isjia.page",
           href: "https://app.isjia.page",
           description:
-            "The Apple app family: Solis, Punctum, ThreadLite, Span, Wayfinder, Ordbro and Slip — local-first, no accounts, no tracking.",
+            "The Apple app family: Solis, Punctum, ThreadLite, Span, Wayfinder, Ordbro, Slip and DOT — local-first, no accounts, no tracking.",
         },
         {
           type: "text" as const,
@@ -156,6 +157,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       ],
       stack: ["Next.js", "TypeScript", "Postgres", "Docker", "Workflow design", "Oracle deploy"],
       link: "https://jobops.zhangjiajia.me/opsdesk",
+      image: { src: "/images/projects/opsdesk/opsdesk-1200.webp", width: 1200, height: 750, alt: "OpsDesk ticket view: raw intake turned into a structured package, with an AI run trace and a policy gate" },
       color: "blue",
       primary: true,
       homeFeatured: true,
@@ -174,6 +176,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       ],
       stack: ["Python", "FastAPI", "Next.js", "Public data", "Constrained optimization", "Oracle deploy"],
       link: "https://flex.zhangjiajia.me",
+      image: { src: "/images/projects/flex/flex-1200.webp", width: 1200, height: 750, alt: "Denmark Flex Planner: scenario controls, municipality priority map and a municipality detail panel" },
       color: "green",
       primary: true,
       homeFeatured: true,
@@ -192,27 +195,10 @@ My strongest work sits around internal tools, workflow automation with human rev
       ],
       stack: ["Python", "FastAPI", "r5py/R5", "GTFS", "GeoPandas", "MapLibre", "Lifecycle design"],
       link: "/en/projects/afgang",
+      image: { src: "/images/projects/afgang/reachability-desktop-600.webp", width: 600, height: 375, alt: "Afgang reachability map showing four scheduled travel-time contours" },
       color: "emerald",
       primary: true,
       homeFeatured: true,
-    },
-    {
-      slug: "cargo-guard",
-      name: "Cargo Guard",
-      year: "2025",
-      summary:
-        "A small Python demo that checks whether logistics data is complete, fresh, valid, and ready to trust before teams use it.",
-      roleFit: "Data quality · operational checks · supporting evidence",
-      evidence: [
-        "Runs local checks for missing fields, duplicate IDs, invalid values, stale records, and unusual shipment data",
-        "Exports a JSON run and simple HTML report so issues can be reviewed instead of hidden in a spreadsheet",
-        "Useful as supporting proof for data-quality thinking, but not the main portfolio story",
-      ],
-      stack: ["Python", "JSON contracts", "Data validation", "HTML report", "Logistics demo data"],
-      link: "/en/works#cargo-guard",
-      color: "yellow",
-      primary: false,
-      homeFeatured: false,
     },
     {
       slug: "dtu-mover-thesis",
@@ -237,12 +223,12 @@ My strongest work sits around internal tools, workflow automation with human rev
       name: "Apple apps",
       year: "2026",
       summary:
-        "Seven small Apple apps designed, built and shipped solo — five of them live on the App Store for iPhone, Watch, TV, Mac and Safari.",
+        "Eight small Apple apps designed and built solo — five live on the App Store for iPhone, Watch, TV, Mac and Safari, two in review and one coming soon.",
       roleFit: "Product engineering · SwiftUI · App Store release operations",
       evidence: [
-        "Five apps live on the App Store: Solis (sun and moon almanac, 1.2.0), Punctum (dot-matrix clock, 1.4), Span (planning, 1.0), ThreadLite (Safari extension, 1.3) and Wayfinder (tabs and sessions, 1.0)",
+        "Five apps live on the App Store: Solis (sun and moon almanac), Punctum (dot-matrix clock), Span (planning), ThreadLite (Safari extension) and Wayfinder (tabs and sessions)",
         "Owns the whole loop alone: product decisions, SwiftUI implementation, privacy policy, listing copy, screenshots and App Store review",
-        "Ordbro and Slip are built and in review; every app is local-first with no accounts, ads or tracking",
+        "Ordbro and Slip are in review and DOT is coming soon; every app is local-first with no accounts, ads or tracking",
       ],
       stack: [
         "Swift",
@@ -256,23 +242,6 @@ My strongest work sits around internal tools, workflow automation with human rev
       color: "purple",
       primary: true,
       homeFeatured: true,
-    },
-    {
-      slug: "this-website",
-      name: "This Website",
-      year: "2026",
-      summary:
-        "A minimalist single-column portfolio reshaped into a compact, job-facing personal index.",
-      roleFit: "Frontend polish · content systems · deployment hygiene",
-      evidence: [
-        "Organizes project evidence, case studies, and resume around hiring conversations",
-        "Shows taste, speed, and willingness to iterate from feedback",
-      ],
-      stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
-      link: "https://me.isjia.page",
-      color: "rose",
-      primary: false,
-      homeFeatured: false,
     },
   ],
   afgangCase: {
@@ -369,6 +338,13 @@ My strongest work sits around internal tools, workflow automation with human rev
       mobile: "The map remains visible while the control surface becomes a mobile bottom sheet.",
     },
   },
+  skills: [
+    { group: "Languages", items: "Python, TypeScript, Julia, Swift" },
+    { group: "Web and data", items: "Next.js, React, FastAPI, Postgres, Tailwind, GeoPandas, MapLibre, GTFS, r5py/R5" },
+    { group: "Optimization and analysis", items: "Vehicle routing, ALNS, constrained optimization, experiment design" },
+    { group: "Apple platforms", items: "SwiftUI, WidgetKit, Safari extensions, App Store Connect" },
+    { group: "Delivery", items: "Docker, GitHub Actions, Oracle deploy, static export" },
+  ],
   contacts: [
     {
       label: "GitHub",
@@ -397,25 +373,21 @@ My strongest work sits around internal tools, workflow automation with human rev
     },
   ],
   aboutContent: `
-This is a job-facing personal index for [Jiajia Zhang](https://me.isjia.page), based in Copenhagen. I completed the DTU MSc Engineering degree in Mathematical Modelling and Computation in July 2026.
-
-### Why these projects
-
-I am not trying to look like four different candidates. The main thread is internal tools and workflow systems: support queues, evidence packages, human review, data-quality checks, operational logs, and decision support.
+This is the personal site of [Jiajia Zhang](https://me.isjia.page), based in Copenhagen. I completed the DTU MSc Engineering degree in Mathematical Modelling and Computation in July 2026.
 
 ### Shipping on my own
 
-Since 2026 I have also designed, built and shipped a family of small Apple apps under [app.isjia.page](https://app.isjia.page). Five are live on the App Store (Solis, Punctum, Span, ThreadLite, Wayfinder); three more are in review or preparation. Doing that alone means writing the SwiftUI, but also the privacy policy, the listing, the screenshots and the review replies — the same end-to-end care I would bring to an internal tool.
+Since 2026 I have also designed, built and shipped a family of small Apple apps under [app.isjia.page](https://app.isjia.page). Five are live on the App Store (Solis, Punctum, Span, ThreadLite, Wayfinder); Ordbro and Slip are in review and DOT is coming soon. Doing that alone means writing the SwiftUI, but also the privacy policy, the listing, the screenshots and the review replies — the same end-to-end care I would bring to an internal tool.
 
 ### How I work
 
 I usually start from the operating problem. What is the queue? What does a reviewer need to trust the next action? Where should automation stop? What should be logged, approved, replayed, or measured?
 
-### Where I fit first
+### Where I fit
 
-I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Afgang, and the DTU × Mover thesis are the best starting points; the Apple apps show that I can carry a product all the way to release; Cargo Guard is supporting proof for data-quality thinking.
+The main thread is internal tools and workflow systems: support queues, evidence packages, human review, data-quality checks, operational logs, and decision support. I would be most useful on teams building internal tools, support/operations workflows, planning tools, or decision-support products. OpsDesk, Denmark Flex Planner, Afgang, and the DTU × Mover thesis are the best starting points; the Apple apps show that I can carry a product all the way to release.
 
-This portfolio itself is also a small content-and-deployment project built with Next.js static export. You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
+You can reach me at [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com), [LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289), or [GitHub](https://github.com/isjiajia01).
   `,
 };
 

@@ -7,7 +7,6 @@ const dictionary = {
     mottos: [
       "我做 internal tools 和 workflow systems：证据清楚、人工可审、决策可复盘。",
       "最适合的方向：internal tools、support automation、operational decision support。",
-      "面向招聘交流的个人作品集。",
     ],
     bio: `
 我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
@@ -53,6 +52,8 @@ const dictionary = {
     aboutTitle: "关于",
     aboutSubtitle: "我如何理解 workflow systems、证据和实用自动化",
     openProject: "打开",
+    contactCta: "联系我",
+    skillsTitle: "技能与工具",
     skipToContent: "跳至内容",
     opensInNewTab: "（在新标签页中打开）",
   },
@@ -121,7 +122,7 @@ const dictionary = {
         {
           type: "text" as const,
           value:
-            "除此之外，我独立设计、开发和上线了一批小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 与 Safari。它们都在 ",
+            "除此之外，我独立设计、开发和上线了一批小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 与 Safari，另有 3 款在路上。它们都在 ",
         },
         {
           type: "org" as const,
@@ -129,7 +130,7 @@ const dictionary = {
           name: "app.isjia.page",
           href: "https://app.isjia.page",
           description:
-            "Apple 应用家族：Solis、Punctum、ThreadLite、Span、Wayfinder、Ordbro 与 Slip —— 本地优先，无账号、无广告、无追踪。",
+            "Apple 应用家族：Solis、Punctum、ThreadLite、Span、Wayfinder、Ordbro、Slip 与 DOT —— 本地优先，无账号、无广告、无追踪。",
         },
         {
           type: "text" as const,
@@ -153,6 +154,7 @@ const dictionary = {
       ],
       stack: ["Next.js", "TypeScript", "Postgres", "Docker", "Workflow design", "Oracle deploy"],
       link: "https://jobops.zhangjiajia.me/opsdesk",
+      image: { src: "/images/projects/opsdesk/opsdesk-1200.webp", width: 1200, height: 750, alt: "OpsDesk 工单页：原始 intake 被整理成结构化 package，旁边是 AI run trace 与 policy gate" },
       color: "blue",
       primary: true,
       homeFeatured: true,
@@ -171,6 +173,7 @@ const dictionary = {
       ],
       stack: ["Python", "FastAPI", "Next.js", "公开数据", "约束优化", "Oracle deploy"],
       link: "https://flex.zhangjiajia.me",
+      image: { src: "/images/projects/flex/flex-1200.webp", width: 1200, height: 750, alt: "Denmark Flex Planner：情景控制、市级优先级地图和市级详情面板" },
       color: "green",
       primary: true,
       homeFeatured: true,
@@ -189,27 +192,10 @@ const dictionary = {
       ],
       stack: ["Python", "FastAPI", "r5py/R5", "GTFS", "GeoPandas", "MapLibre", "生命周期设计"],
       link: "/zh/projects/afgang",
+      image: { src: "/images/projects/afgang/reachability-desktop-600.webp", width: 600, height: 375, alt: "Afgang 可达性地图：四层按时刻表计算的出行时间等高线" },
       color: "emerald",
       primary: true,
       homeFeatured: true,
-    },
-    {
-      slug: "cargo-guard",
-      name: "Cargo Guard",
-      year: "2025",
-      summary:
-        "一个小型 Python demo，用来检查物流数据是否完整、新鲜、有效，是否值得团队继续使用。",
-      roleFit: "Data quality · operational checks · supporting evidence",
-      evidence: [
-        "本地检查缺失字段、重复 ID、无效值、过期记录和异常物流数据",
-        "输出 JSON run 和简单 HTML report，让问题能被 review，而不是藏在表格里",
-        "适合作为 data-quality thinking 的补充证据，但不是作品集主线",
-      ],
-      stack: ["Python", "JSON contracts", "Data validation", "HTML report", "Logistics demo data"],
-      link: "/zh/works#cargo-guard",
-      color: "yellow",
-      primary: false,
-      homeFeatured: false,
     },
     {
       slug: "dtu-mover-thesis",
@@ -234,12 +220,12 @@ const dictionary = {
       name: "Apple apps",
       year: "2026",
       summary:
-        "七款独立设计、开发并上线的小型 Apple 应用 —— 其中 5 款已在 App Store 上架，覆盖 iPhone、Watch、TV、Mac 和 Safari。",
+        "八款独立设计、开发的小型 Apple 应用 —— 5 款已在 App Store 上架（覆盖 iPhone、Watch、TV、Mac 和 Safari），2 款审核中，1 款即将推出。",
       roleFit: "产品工程 · SwiftUI · App Store 发布运维",
       evidence: [
-        "5 款已在 App Store 上架：Solis（日月历，1.2.0）、Punctum（点阵时钟，1.4）、Span（计划，1.0）、ThreadLite（Safari 扩展，1.3）、Wayfinder（标签页与会话，1.0）",
+        "5 款已在 App Store 上架：Solis（日月历）、Punctum（点阵时钟）、Span（计划）、ThreadLite（Safari 扩展）、Wayfinder（标签页与会话）",
         "一个人跑完整个闭环：产品决策、SwiftUI 实现、隐私政策、上架文案、截图和审核沟通",
-        "Ordbro、Slip 已开发完成，处于审核中；所有应用都本地优先，无账号、无广告、无追踪",
+        "Ordbro、Slip 审核中，DOT 即将推出；所有应用都本地优先，无账号、无广告、无追踪",
       ],
       stack: [
         "Swift",
@@ -253,23 +239,6 @@ const dictionary = {
       color: "purple",
       primary: true,
       homeFeatured: true,
-    },
-    {
-      slug: "this-website",
-      name: "This Website",
-      year: "2026",
-      summary:
-        "极简单栏个人作品集，将个人主页整理成适合招聘与面试交流的索引。",
-      roleFit: "Frontend polish · content systems · deployment hygiene",
-      evidence: [
-        "围绕 hiring conversation 组织项目证据、案例与简历索引",
-        "体现审美、迭代速度，以及根据反馈快速调整的能力",
-      ],
-      stack: ["Next.js", "TypeScript", "Tailwind", "Static export", "GitHub Actions"],
-      link: "https://me.isjia.page",
-      color: "rose",
-      primary: false,
-      homeFeatured: false,
     },
   ],
   afgangCase: {
@@ -366,6 +335,13 @@ const dictionary = {
       mobile: "控制面板成为手机底部面板，同时保留可见地图。",
     },
   },
+  skills: [
+    { group: "语言", items: "Python, TypeScript, Julia, Swift" },
+    { group: "Web 与数据", items: "Next.js, React, FastAPI, Postgres, Tailwind, GeoPandas, MapLibre, GTFS, r5py/R5" },
+    { group: "优化与分析", items: "Vehicle routing, ALNS, constrained optimization, experiment design" },
+    { group: "Apple 平台", items: "SwiftUI, WidgetKit, Safari 扩展, App Store Connect" },
+    { group: "交付", items: "Docker, GitHub Actions, Oracle deploy, static export" },
+  ],
   contacts: [
     {
       label: "GitHub",
@@ -394,15 +370,11 @@ const dictionary = {
     },
   ],
   aboutContent: `
-这里是 [Jiajia Zhang](https://me.isjia.page) 的求职向个人索引。我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
-
-### 为什么是这些项目
-
-我不是想把自己包装成四种不同候选人。主线是 internal tools 和 workflow systems：support queue、evidence package、human review、data-quality checks、operational logs 和 decision support。
+这里是 [Jiajia Zhang](https://me.isjia.page) 的个人网站。我在哥本哈根，已于 2026 年 7 月完成 DTU 数学建模与计算硕士学位。
 
 ### 自己把东西做完上线
 
-2026 年起我也独立设计、开发和上线了一批小型 Apple 应用，都放在 [app.isjia.page](https://app.isjia.page)。其中 5 款已在 App Store 上架（Solis、Punctum、Span、ThreadLite、Wayfinder），另外 3 款在审核中或准备中。一个人做这些，意味着不仅写 SwiftUI，还要写隐私政策、上架文案、截图和回复审核 —— 这也是我会带进 internal tool 的端到端负责方式。
+2026 年起我也独立设计、开发和上线了一批小型 Apple 应用，都放在 [app.isjia.page](https://app.isjia.page)。其中 5 款已在 App Store 上架（Solis、Punctum、Span、ThreadLite、Wayfinder），Ordbro、Slip 审核中，DOT 即将推出。一个人做这些，意味着不仅写 SwiftUI，还要写隐私政策、上架文案、截图和回复审核 —— 这也是我会带进 internal tool 的端到端负责方式。
 
 ### 我怎么工作
 
@@ -410,9 +382,9 @@ const dictionary = {
 
 ### 我最适合什么团队
 
-我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Afgang 和 DTU × Mover thesis 是最好的起点；Apple apps 证明我能独立把产品做到上线；Cargo Guard 只是 data-quality thinking 的补充证据。
+主线是 internal tools 和 workflow systems：support queue、evidence package、human review、data-quality checks、operational logs 和 decision support。我会最适合正在做 internal tools、support/operations workflows、planning tools 或 decision-support products 的团队。OpsDesk、Denmark Flex Planner、Afgang 和 DTU × Mover thesis 是最好的起点；Apple apps 证明我能独立把产品做到上线。
 
-这个 portfolio 本身也是一个 Next.js static export 的内容和部署小项目。可以通过 [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com)、[LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289) 或 [GitHub](https://github.com/isjiajia01) 联系我。
+可以通过 [isjiajiazhang@gmail.com](mailto:isjiajiazhang@gmail.com)、[LinkedIn](https://www.linkedin.com/in/jiajia-zhang-0a8a40289) 或 [GitHub](https://github.com/isjiajia01) 联系我。
   `,
 };
 

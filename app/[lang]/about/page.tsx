@@ -96,6 +96,21 @@ export default async function AboutPage(
         <PostContent html={aboutHtml} />
       </div>
 
+      {/* Skills overview */}
+      <section className="mt-12" aria-labelledby="about-skills">
+        <h2 id="about-skills" className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+          {dictionary.labels.skillsTitle}
+        </h2>
+        <dl className="mt-3 space-y-2 text-[14px] leading-6">
+          {dictionary.skills.map((row) => (
+            <div key={row.group} className="sm:flex sm:gap-4">
+              <dt className="shrink-0 text-zinc-900 dark:text-zinc-100 sm:w-44">{row.group}</dt>
+              <dd className="text-zinc-600 dark:text-zinc-400">{row.items}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       {/* Footer */}
       <div className="mt-12 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
         {params.lang === "zh" ? "就酱～" : "That's about it~"}

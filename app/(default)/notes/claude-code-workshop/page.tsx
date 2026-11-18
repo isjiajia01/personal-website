@@ -7,12 +7,14 @@ const url = "https://me.isjia.page/notes/claude-code-workshop/";
 const description =
   "Notes from a one-day Claude Code workshop: a story board that moves by itself, QA videos as evidence, and a human who accepts the work.";
 
+const ogImage = { url: "https://me.isjia.page/notes/claude-code-workshop/board.jpg", width: 1280, height: 720, alt: "The XC board with four epics and ten stories, all in Done" };
+
 export const metadata: Metadata = {
   title: "Claude Code workshop notes",
   description,
   alternates: { canonical: url },
-  openGraph: { type: "article", url, title: "Claude Code workshop notes", description },
-  twitter: { card: "summary", title: "Claude Code workshop notes", description },
+  openGraph: { type: "article", url, title: "Claude Code workshop notes", description, images: [ogImage] },
+  twitter: { card: "summary_large_image", title: "Claude Code workshop notes", description, images: [ogImage] },
 };
 
 const videos = [

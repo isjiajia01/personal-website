@@ -4,15 +4,31 @@ import Link from "next/link";
 const url = "https://me.isjia.page/notes/";
 const description = "Short notes on things I tried and what I took from them.";
 
+const ogImage = { url: "https://me.isjia.page/og/home-en-v1.png", width: 1200, height: 630, alt: "Notes" };
+
 export const metadata: Metadata = {
   title: "Notes",
   description,
   alternates: { canonical: url },
-  openGraph: { type: "website", url, title: "Notes", description },
-  twitter: { card: "summary", title: "Notes", description },
+  openGraph: { type: "website", url, title: "Notes", description, images: [ogImage] },
+  twitter: { card: "summary_large_image", title: "Notes", description, images: [ogImage] },
 };
 
 const notes = [
+  {
+    href: "/notes/opsdesk-where-automation-stops/",
+    date: "Nov 2026",
+    title: "OpsDesk: where automation should stop",
+    summary:
+      "A support case can end with no draft at all. Why OpsDesk treats that as a safe outcome, and what the run trace and gates show.",
+  },
+  {
+    href: "/notes/afgang-data-lifecycle/",
+    date: "Nov 2026",
+    title: "Afgang: updating timetable data without breaking the app",
+    summary:
+      "Isolated candidate, audits, atomic promotion and automatic rollback for a transport utility built on GTFS and OpenStreetMap.",
+  },
   {
     href: "/notes/claude-code-workshop/",
     date: "Nov 2026",

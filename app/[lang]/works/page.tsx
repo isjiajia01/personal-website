@@ -6,6 +6,7 @@ export function generateStaticParams() {
 import { getDictionary, type Language } from "@/dictionaries";
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getAlternateLanguages } from "@/lib/metadata";
 
 export async function generateMetadata(
@@ -58,6 +59,7 @@ function WorkArticle({
     evidence: string[];
     stack: string[];
     link: string;
+    image?: { src: string; width: number; height: number; alt: string };
   };
   labels: {
     openProject: string;
@@ -83,6 +85,17 @@ function WorkArticle({
       <p className="mt-2 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
         {work.summary}
       </p>
+
+      {work.image && (
+        <Image
+          src={work.image.src}
+          width={work.image.width}
+          height={work.image.height}
+          sizes="(max-width: 640px) 100vw, 576px"
+          alt={work.image.alt}
+          className="mt-4 h-auto w-full rounded-md border border-zinc-200 dark:border-zinc-800"
+        />
+      )}
 
       <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
         {work.roleFit}
