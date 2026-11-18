@@ -23,6 +23,13 @@ const notes = [
       "A support case can end with no draft at all. Why OpsDesk treats that as a safe outcome, and what the run trace and gates show.",
   },
   {
+    href: "/notes/afgang-data-lifecycle/",
+    date: "Nov 2026",
+    title: "Afgang: updating timetable data without breaking the app",
+    summary:
+      "Isolated candidate, audits, atomic promotion and automatic rollback for a transport utility built on GTFS and OpenStreetMap.",
+  },
+  {
     href: "/notes/claude-code-workshop/",
     date: "Nov 2026",
     title: "Claude Code workshop notes",

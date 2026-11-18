@@ -1,6 +1,6 @@
 import type { Language } from "@/dictionaries";
 
-type SharePage = "home" | "works" | "about";
+type SharePage = "home" | "works" | "about" | "afgang";
 
 // Explicit metadata on each route: Next replaces nested OG metadata rather than merging it.
 export function sharePreview(page: SharePage, lang: Language = "en") {
@@ -9,7 +9,7 @@ export function sharePreview(page: SharePage, lang: Language = "en") {
     width: 1200,
     height: 630,
     type: "image/png",
-    alt: `Jiajia Zhang · ${
+    alt: `${page === "afgang" ? "Afgang — " : ""}Jiajia Zhang · ${
       lang === "zh" ? "内部工具与流程自动化" : "Practical tools. Thoughtful systems."
     }`,
   };

@@ -8,6 +8,7 @@ const cards = {
   home: { en: ["Portfolio", "Practical tools.", "Thoughtful systems."], zh: ["个人网站", "内部工具", "与流程自动化"] },
   works: { en: ["Selected work", "From constraints", "to working products."], zh: ["项目作品", "从真实约束", "到可用的产品"] },
   about: { en: ["About", "Curiosity, evidence", "and careful execution."], zh: ["关于", "好奇心与证据", "认真地把事情做好"] },
+  afgang: { en: ["Project / Afgang", "Copenhagen,", "within reach."], zh: ["项目 / Afgang", "哥本哈根", "触手可及"] },
 };
 const zhText = [...new Set(Object.values(cards).flatMap(c=>c.zh).join("") + "哥本哈根产品工程师内部工具与流程自动化")].join("");
 async function download(url) {
@@ -28,7 +29,7 @@ for(const [page,locales] of Object.entries(cards)) for(const [lang,[label,line1,
    div({justifyContent:"space-between",alignItems:"center",fontSize:20,color:"#78716c"},label,"me.isjia.page"),
    div({marginTop:27,fontFamily:"Crimson",fontSize:46,letterSpacing:-1},"Jiajia Zhang"),
    div({marginTop:20,flexDirection:"column",fontFamily:lang==="zh"?"Noto":"Crimson",fontSize:lang==="zh"?62:65,lineHeight:1.08,letterSpacing:-1.5},line1,h("span",{style:{color:"#be123c"}},line2)),
-   div({marginTop:"auto",borderTop:"1px dashed #d6d3d1",paddingTop:20,justifyContent:"space-between",fontSize:18,color:"#78716c"},lang==="zh"?"哥本哈根 · 产品工程师":"Copenhagen · Product-minded engineer","Tools · Workflows · Decision support")
+   div({marginTop:"auto",borderTop:"1px dashed #d6d3d1",paddingTop:20,justifyContent:"space-between",fontSize:18,color:"#78716c"},lang==="zh"?"哥本哈根 · 产品工程师":"Copenhagen · Product-minded engineer",page==="afgang"?"Transit · Data · Maps":"Tools · Workflows · Decision support")
   )
  );
  const image=new ImageResponse(tree,{width:1200,height:630,fonts:[{name:"Sans",data:sans,weight:400,style:"normal"},{name:"Crimson",data:serif,weight:400,style:"normal"},{name:"Noto",data:cjk,weight:400,style:"normal"}]});
