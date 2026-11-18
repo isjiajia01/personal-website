@@ -138,6 +138,7 @@ export default function ClaudeCodeWorkshopNotes() {
                 <video
                   controls
                   preload="metadata"
+                  poster={`${base}/${v.file}.jpg`}
                   playsInline
                   className="w-full rounded border border-zinc-200 dark:border-zinc-800"
                 >

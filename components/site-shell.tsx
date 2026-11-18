@@ -27,6 +27,7 @@ export interface SiteShellProps {
     label: string;
     link: string;
   }>;
+  hideLanguageSwitch?: boolean;
 }
 
 export function SiteShell({
@@ -36,6 +37,7 @@ export function SiteShell({
   labels,
   urls,
   contacts,
+  hideLanguageSwitch = false,
 }: SiteShellProps) {
   const pathname = usePathname() || `/${lang}`;
 
@@ -45,6 +47,8 @@ export function SiteShell({
     return <>{children}</>;
   }
 
+  // Routes with no Chinese version: hide the language switch instead of linking to a 404.
+  const enOnly = hideLanguageSwitch || (lang === "en" && pathname.startsWith("/notes"));
   const otherLang = lang === "zh" ? "en" : "zh";
   const otherLangLabel = lang === "zh" ? "English" : "中文";
 
@@ -121,13 +125,15 @@ export function SiteShell({
               </Link>
             ))}
           </div>
-          <Link
-            href={switchPath}
-            hrefLang={otherLang === "zh" ? "zh-Hans" : "en"}
-            className={`${linkBase} text-[13px] text-stone-500 dark:text-zinc-400`}
-          >
-            {otherLangLabel}
-          </Link>
+          {!enOnly && (
+            <Link
+              href={switchPath}
+              hrefLang={otherLang === "zh" ? "zh-Hans" : "en"}
+              className={`${linkBase} text-[13px] text-stone-500 dark:text-zinc-400`}
+            >
+              {otherLangLabel}
+            </Link>
+          )}
         </nav>
 
         {/* Main content */}
