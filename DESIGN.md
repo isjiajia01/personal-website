@@ -1,10 +1,10 @@
 # Portfolio presentation seam — reference-led paper layout
 
-Scope: shell, home, shared motion, org-link annotation. Works/resume/about/project routes keep their content and inherit the shell and serif page titles. Product/legal routes keep their standalone layouts and one main landmark.
+Scope: shell, home, shared motion, org-link annotation. Works/about/project routes keep their content and inherit the shell and serif page titles. Product/legal routes keep their standalone layouts and one main landmark.
 Reference studied: suepark.xyz layout and motion only (no content, assets, identity, Rive).
 
 ## Intent
-A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fits in one screen, sees five real projects with a one-line description each, and reaches Work / Resume / About without a menu.
+A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fits in one screen, sees five real projects with a one-line description each, and reaches Work / About without a menu.
 
 ## Layout
 - Page: `#fafaf9` (dark `#0b0b0d`) with 20px grid (minor) and 100px grid (major), centred, lines align to paper edges.
@@ -18,7 +18,7 @@ A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fit
 Work index row: serif title (+ ↗ if external) · dotted leader · year; below it the existing `summary` at 14px stone-500, unclamped. Whole row is one link. Rows are the `homeFeatured` works in dictionary order. No data change.
 
 ## Behaviour
-- Navigation: always-visible inline row (Home Work Resume About · language). No overlay menu: five short labels fit at 320px, so an overlay would add steps. Targets ≥ 40px tall via padding. `aria-current="page"` on active.
+- Navigation: always-visible inline row (Home Work Notes About · language). No overlay menu: short labels fit at 320px, so an overlay would add steps. Targets ≥ 40px tall via padding. `aria-current="page"` on active.
 - Org links: hover intent 120ms / focus opens annotation; Escape closes; closed annotation is `visibility:hidden`.
 - Content is server-rendered and visible with JS disabled; all motion is CSS and ends at the final visible state.
 - Product/privacy/support pages bypass the portfolio shell to preserve their own layout and avoid nested main landmarks or unavailable locale links.
@@ -30,14 +30,14 @@ Work index row: serif title (+ ↗ if external) · dotted leader · year; below 
 | Content rise | opacity 0→1, translateY 20px→0, blur 1.5px→0, 500ms `cubic-bezier(.23,1,.32,1)`, fill backwards | nav item transition, `home-content-rise` 0.5s |
 | Stagger | delay = 60 + 40·i ms, i capped at 9 | nav items `60+40*r` |
 | Route change | template remounts → same stagger on page blocks (enter only) | ~400ms nav transitions |
-| Departure mask | fixed `--paper-bg` panel, z55, `calc(100%+48px)` wide, 48px gradient lead edge; sweeps from right (next) / left (prev, by Home<Works<Resume<About) 360ms ease-snap; navigate when covered, remove 60ms after pathname commit (3s failsafe). Internal portfolio links only; skipped for modifier/middle/hash/same-path/external/download/target, browser back, product routes, reduced motion (checked at click and live) | reference mask, phases idle/preparing/covering |
+| Departure mask | fixed `--paper-bg` panel, z55, `calc(100%+48px)` wide, 48px gradient lead edge; sweeps from right (next) / left (prev, by Home<Works<About) 360ms ease-snap; navigate when covered, remove 60ms after pathname commit (3s failsafe). Internal portfolio links only; skipped for modifier/middle/hash/same-path/external/download/target, browser back, product routes, reduced motion (checked at click and live) | reference mask, phases idle/preparing/covering |
 | Colour hover | 150ms ease-snap, rose | link transitions |
 | Press | `scale(.97)` 150ms on inline-block links | `active:scale-[0.97]` |
 | Org annotation | 180ms `cubic-bezier(.25,.1,.25,1)`, blur 1.5px + 4px rise; exit 120ms | tooltip `initial/animate/exit` |
 Reduced motion (`prefers-reduced-motion: reduce`) and print: `animation`/`transition` none, no scale, no smooth scroll.
 
 ## Acceptance
-`npm run lint`, `npm run build`. Manually: /en /zh home, works, resume, about, afgang; 375px no horizontal scroll; dark; reduced motion shows instantly; JS disabled shows everything; Tab reaches skip link → nav → rows; Escape closes annotation; print resume has no grid/paper chrome.
+`npm run lint`, `npm run build`. Manually: /en /zh home, works, about, afgang; 375px no horizontal scroll; dark; reduced motion shows instantly; JS disabled shows everything; Tab reaches skip link → nav → rows; Escape closes annotation; print has no grid/paper chrome.
 
 ## Brand mark in the footer (2026-10-26)
 The chrome carried no visible identity beyond the tab icon. The footer's centred `* * *` dingbat is now the JJ mark: `/static/jj-mark-96.png` (a 96 px export shown with `h-12 w-12`, i.e. 45 px at this site's 15 px root, so it stays crisp past 2x) inside the existing `<p aria-hidden="true">`, `print:hidden` as before. Identical in light and dark — the oxblood disc and its ivory strokes hold their contrast on `#fafaf9` and `#0b0b0d`, so the mark is never tinted or inverted. No motion, no link, not a logo lockup beside the name: it reads as a printer's ornament that happens to be the face. Generated by `11.14_websites/brand/export.py`; the site copies `brand/out/disc-96.png` and never redraws it.

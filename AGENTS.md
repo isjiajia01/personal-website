@@ -4,12 +4,12 @@
 - `app/`: Next.js App Router (with `app/[lang]/...` for i18n). Pages for posts, tools, works, sitemap, robots.
 - `components/`: Reusable React components (e.g., `site-shell.tsx`, `org-link.tsx`, `post-content.tsx`).
 - `dictionaries/`: i18n strings (`en.ts`, `zh.ts`, `index.ts`). All page copy lives here; keep keys in sync across both languages.
-- `lib/`: Utilities and page content (`resume.ts` holds the resume), plus metadata and JSON-LD helpers.
+- `lib/`: Utilities and page content, plus metadata and JSON-LD helpers.
 - `styles/`: Tailwind CSS globals (`styles/globals.css`).
 - `public/`: Static assets (`public/images`, `public/og`, `public/static`).
 - Root config: `next.config.mjs`, `tailwind.config.js`, `.eslintrc.json`, `.editorconfig`.
 
-There is no CMS and no markdown content pipeline: every page is a route under `app/` that reads its copy from `dictionaries/` or `lib/resume.ts`.
+There is no CMS and no markdown content pipeline: every page is a route under `app/` that reads its copy from `dictionaries/`.
 
 ## Build, Test, and Development Commands
 - `npm install`: Install dependencies.
@@ -34,7 +34,7 @@ CI runs lint and build on push via `.github/workflows/ci.yml`.
 - Commits: Clear, imperative messages (e.g., "Update featured works", "Fix slug"). Group related changes.
 - PRs must include: concise description, rationale, screenshots for UI changes, and links to issues (if any).
 - i18n: Update both `en` and `zh` where applicable (content and `dictionaries/`).
-- Content: new copy goes in `dictionaries/en.ts` and `dictionaries/zh.ts` together; resume edits go in `lib/resume.ts` for both languages.
+- Content: new copy goes in `dictionaries/en.ts` and `dictionaries/zh.ts` together.
 - Checks: Ensure `npm run lint` and `npm run build` succeed before requesting review.
 
 ## Security & Configuration Tips

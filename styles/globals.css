@@ -302,7 +302,7 @@ time {
   }
 }
 
-/* Serif titles, screen only so the printed resume keeps its layout */
+/* Serif titles, screen only so printed pages keep their layout */
 @media screen {
   .page-title {
     font-family: var(--font-serif);
