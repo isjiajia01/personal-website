@@ -100,7 +100,9 @@ export default async function Home(props: {
 
             return (
               <li key={work.slug || work.name} className="rise" style={style}>
-                {isExternal ? (
+                {!work.link ? (
+                  <div className={rowClass}>{rowContent}</div>
+                ) : isExternal ? (
                   <a
                     href={work.link}
                     target="_blank"
@@ -118,20 +120,6 @@ export default async function Home(props: {
             );
           })}
         </ul>
-        <div
-          className="rise mt-5"
-          style={{ "--i": 4 + featuredWorks.length } as React.CSSProperties}
-        >
-          <Link
-            href={dictionary.urls.works}
-            className="group press inline-block px-2 py-2 -mx-2 text-[14px] leading-5 text-stone-500 underline decoration-stone-300 underline-offset-[3px] hover:text-(--rose) hover:decoration-(--rose) active:text-(--rose) dark:text-zinc-400 dark:decoration-zinc-600"
-          >
-            {dictionary.labels.viewAllWorkEvidence}
-            <span aria-hidden="true" className="link-arrow ml-1">
-              →
-            </span>
-          </Link>
-        </div>
       </section>
     </div>
   );

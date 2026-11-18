@@ -18,6 +18,7 @@ export async function generateMetadata(
   const dictionary = await getDictionary(params.lang);
 
   return {
+    robots: { index: false, follow: true },
     metadataBase: new URL(dictionary.meta.baseUrl),
     title: `${dictionary.labels.works} - ${dictionary.meta.websiteName}`,
     description: dictionary.labels.noocWorks,
@@ -112,7 +113,7 @@ function WorkArticle({
       </p>
 
       <div className="mt-4">
-        {isExternal ? (
+        {!work.link ? null : isExternal ? (
           <a
             href={work.link}
             target="_blank"

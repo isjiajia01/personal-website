@@ -85,7 +85,7 @@ export default async function AfgangCasePage(
     <article>
       {/* Back link */}
       <Link
-        href={dictionary.urls.works}
+        href={dictionary.urls.home}
         className="text-[13px] leading-5 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
       >
         ← {project.backToWorks}

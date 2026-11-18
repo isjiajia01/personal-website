@@ -231,7 +231,7 @@ My strongest work sits around internal tools, workflow automation with human rev
         "Strong proof for analytical thinking, complex systems, and operations-facing product work",
       ],
       stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
-      link: "/en/works#dtu-mover-thesis",
+      link: "",
       color: "orange",
       primary: true,
       homeFeatured: true,
@@ -269,7 +269,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       "Afgang answers two daily transport questions: when should I leave, and how far can Copenhagen's scheduled network take me in 15, 30, 45, or 60 minutes?",
     metaDescription:
       "Afgang case study: a FastAPI and R5 transport utility built with official Rejseplanen GTFS, OpenStreetMap data, conservative reachability surfaces, and transactional data operations.",
-    backToWorks: "Back to work",
+    backToWorks: "Back to home",
     status: ["Scheduled", "Owner-local", "Case study"],
     sectionLabels: {
       outcome: "Product outcome",

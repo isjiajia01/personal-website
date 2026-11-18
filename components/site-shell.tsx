@@ -64,18 +64,11 @@ export function SiteShell({
     pathname === `${urls.home}/` ||
     (lang === "en" && (pathname === "/" || pathname === ""));
 
-  const isWorkActive =
-    pathname === urls.works ||
-    pathname.startsWith(`${urls.works}/`) ||
-    pathname.startsWith(`/${lang}/projects/afgang`) ||
-    pathname.startsWith("/projects/afgang");
-
   const isAboutActive =
     pathname === urls.about || pathname.startsWith(`${urls.about}/`);
 
   const navItems = [
     { label: labels.home, href: urls.home, active: isHomeActive },
-    { label: labels.works, href: urls.works, active: isWorkActive },
     // Notes are English only, so the zh nav does not link to them.
     ...(lang === "en"
       ? [{ label: "Notes", href: "/notes/", active: pathname.startsWith("/notes") }]

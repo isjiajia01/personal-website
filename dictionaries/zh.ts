@@ -228,7 +228,7 @@ const dictionary = {
         "强项是分析能力、复杂系统理解，以及面向运营场景的产品/工具思维",
       ],
       stack: ["Julia", "Vehicle routing", "ALNS", "Optimization", "Experiment design", "Operational analysis"],
-      link: "/zh/works#dtu-mover-thesis",
+      link: "",
       color: "orange",
       primary: true,
       homeFeatured: true,
@@ -266,7 +266,7 @@ const dictionary = {
       "Afgang 回答两个日常交通问题：我应该什么时候出门，以及按照哥本哈根的计划时刻表，15、30、45 或 60 分钟能到哪里？",
     metaDescription:
       "Afgang 案例：使用官方 Rejseplanen GTFS、OpenStreetMap 数据、保守可达范围和事务化数据运维构建的 FastAPI + R5 交通工具。",
-    backToWorks: "返回项目",
+    backToWorks: "返回首页",
     status: ["Scheduled", "Owner-local", "案例"],
     sectionLabels: {
       outcome: "产品结果",

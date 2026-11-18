@@ -43,7 +43,6 @@ export default async function NotFound() {
       <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-5">
         {[
           { href: "/", label: labels.notFoundButton },
-          { href: "/en/works/", label: "Work" },
           { href: "/notes/claude-code-workshop/", label: "Notes" },
         ].map((l) => (
           <Link
