@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 const base = "/notes/claude-code-workshop";
 const url = "https://me.isjia.page/notes/claude-code-workshop/";
@@ -45,6 +46,13 @@ const h2 = "text-[15px] font-medium text-zinc-900 dark:text-zinc-100";
 export default function ClaudeCodeWorkshopNotes() {
   return (
     <article>
+      <Link
+        href="/notes/"
+        className="group press -mx-2 mb-6 inline-block px-2 py-2 text-[13px] leading-5 text-zinc-500 hover:text-(--rose) dark:text-zinc-400"
+      >
+        <span aria-hidden="true" className="mr-1">←</span>
+        All notes
+      </Link>
       <p className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
         Notes · 18 November 2026
       </p>

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const notes = [
   {
     href: "/notes/claude-code-workshop/",
-    date: "18 November 2026",
+    date: "Nov 2026",
     title: "Claude Code workshop notes",
     summary:
       "A one-day workshop building an X clone from written stories: a board that moves by itself, QA videos as evidence, and a person who accepts the work.",
@@ -31,21 +31,36 @@ export default function NotesIndex() {
       <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
         {description}
       </p>
-      <ul className="mt-10 space-y-8">
-        {notes.map((n) => (
-          <li key={n.href}>
-            <p className="text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">{n.date}</p>
-            <h2 className="mt-1 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
-              <Link
-                href={n.href}
-                className="underline decoration-zinc-400 underline-offset-[3px] hover:text-(--rose) dark:decoration-zinc-500"
-              >
-                {n.title}
-              </Link>
-            </h2>
-            <p className="mt-2 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
-              {n.summary}
-            </p>
+      <ul className="rise-own mt-10 -mx-3 space-y-1">
+        {notes.map((n, index) => (
+          <li
+            key={n.href}
+            className="rise"
+            style={{ "--i": 2 + index } as React.CSSProperties}
+          >
+            <Link
+              href={n.href}
+              className="work-row group block rounded-md px-3 py-3 hover:bg-stone-50 dark:hover:bg-zinc-800/60"
+            >
+              <span className="flex items-baseline gap-3">
+                <span className="work-title project-title text-stone-800 dark:text-zinc-100">
+                  {n.title}
+                  <span
+                    aria-hidden="true"
+                    className="link-arrow ml-1 text-[0.7em] text-stone-400 dark:text-zinc-500"
+                  >
+                    →
+                  </span>
+                </span>
+                <span className="leader" aria-hidden="true" />
+                <span className="shrink-0 whitespace-nowrap text-[14px] tabular-nums text-stone-500 dark:text-zinc-400">
+                  {n.date}
+                </span>
+              </span>
+              <span className="mt-1 block text-[14px] leading-6 text-stone-500 dark:text-zinc-400">
+                {n.summary}
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
