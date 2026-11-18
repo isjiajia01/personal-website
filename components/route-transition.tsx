@@ -15,13 +15,12 @@ type Phase = "preparing" | "covering";
 const norm = (p: string) => (p.length > 1 ? p.replace(/\/+$/, "") : p);
 const LOCALE_RE = /^\/(en|zh)(?=\/|$)/;
 
-// Section order Home < Works < Resume < About decides the sweep direction.
+// Section order Home < Works < About decides the sweep direction.
 function rank(path: string): number {
   const rest = norm(path).replace(LOCALE_RE, "");
   const seg = rest.split("/")[1] ?? "";
   if (seg === "") return 0;
   if (seg === "works" || seg === "projects") return 1;
-  if (seg === "resume") return 2;
   if (seg === "about") return 3;
   return -1;
 }

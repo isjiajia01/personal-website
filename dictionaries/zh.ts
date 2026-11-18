@@ -35,13 +35,11 @@ const dictionary = {
     home: "/zh",
     works: "/zh/works",
     afgang: "/zh/projects/afgang",
-    resume: "/zh/resume",
     about: "/zh/about",
   },
   labels: {
     home: "主页",
     works: "项目",
-    resume: "简历",
     about: "关于",
     featured: "优先看这里",
     archive: "补充材料",

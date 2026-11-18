@@ -35,13 +35,11 @@ My strongest work sits around internal tools, workflow automation with human rev
     home: "/en",
     works: "/en/works",
     afgang: "/en/projects/afgang",
-    resume: "/en/resume",
     about: "/en/about",
   },
   labels: {
     home: "Home",
     works: "Work",
-    resume: "Resume",
     about: "About",
     featured: "Best Starting Points",
     archive: "Supporting Material",

@@ -13,14 +13,12 @@ export interface SiteShellProps {
     skipToContent: string;
     home: string;
     works: string;
-    resume: string;
     about: string;
     opensInNewTab: string;
   };
   urls: {
     home: string;
     works: string;
-    resume: string;
     about: string;
   };
   contacts: Array<{
@@ -72,16 +70,16 @@ export function SiteShell({
     pathname.startsWith(`/${lang}/projects/afgang`) ||
     pathname.startsWith("/projects/afgang");
 
-  const isResumeActive =
-    pathname === urls.resume || pathname.startsWith(`${urls.resume}/`);
-
   const isAboutActive =
     pathname === urls.about || pathname.startsWith(`${urls.about}/`);
 
   const navItems = [
     { label: labels.home, href: urls.home, active: isHomeActive },
     { label: labels.works, href: urls.works, active: isWorkActive },
-    { label: labels.resume, href: urls.resume, active: isResumeActive },
+    // Notes are English only, so the zh nav does not link to them.
+    ...(lang === "en"
+      ? [{ label: "Notes", href: "/notes/claude-code-workshop/", active: pathname.startsWith("/notes") }]
+      : []),
     { label: labels.about, href: urls.about, active: isAboutActive },
   ];
 
@@ -106,10 +104,10 @@ export function SiteShell({
 
         {/* Navigation: always visible, five short labels fit at 320px so no overlay menu */}
         <nav
-          className="rise flex items-center justify-between text-[14px] print:hidden"
+          className="rise flex flex-wrap items-center justify-between gap-y-3 text-[14px] print:hidden"
           aria-label="Main"
         >
-          <div className="flex items-center gap-x-5 sm:gap-x-6">
+          <div className="flex items-center gap-x-4 sm:gap-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -129,7 +127,7 @@ export function SiteShell({
             <Link
               href={switchPath}
               hrefLang={otherLang === "zh" ? "zh-Hans" : "en"}
-              className={`${linkBase} text-[13px] text-stone-500 dark:text-zinc-400`}
+              className={`${linkBase} ml-auto shrink-0 whitespace-nowrap text-[12px] tracking-wide max-sm:basis-full max-sm:text-right text-stone-500 dark:text-zinc-400`}
             >
               {otherLangLabel}
             </Link>
