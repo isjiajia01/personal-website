@@ -131,6 +131,57 @@ export default function ClaudeCodeWorkshopNotes() {
         </section>
 
         <section>
+          <h2 className={h2}>What this says about AI in a company</h2>
+          <p className={p}>
+            This is my reading, from one day and one small app, not a study. Many companies talk
+            about AI transformation as buying a tool. The workshop made it look more like
+            redesigning how work is checked.
+          </p>
+          <ul className="mt-3 list-disc space-y-3 pl-5 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
+            <li>
+              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
+                Writing code gets cheap; deciding and checking do not.
+              </strong>{" "}
+              Claude built a story in minutes. The slow parts were a requirement that
+              contradicted itself and a person accepting the result. Most real organisations
+              have the same unclear requirements, only less visible.
+            </li>
+            <li>
+              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
+                Process has to be written down before an agent can follow it.
+              </strong>{" "}
+              The skills, the board rules and the rule that only a person moves a card to Done
+              are plain files. A team that runs on habit and hallway agreements has to make
+              them explicit first. That work is useful even without AI.
+            </li>
+            <li>
+              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
+                Evidence beats confidence.
+              </strong>{" "}
+              An agent says it is done. A video of the criterion passing is something a manager
+              can check in thirty seconds. I would ask for this kind of proof in any AI-assisted
+              workflow.
+            </li>
+            <li>
+              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
+                The human role moves, it does not disappear.
+              </strong>{" "}
+              People spend less time typing and more time owning decisions: accepting a gap,
+              judging a flaky test, noticing that old comments now open new videos. That needs
+              judgement and accountability, so it is not a role to cut first.
+            </li>
+            <li>
+              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
+                Shared systems pay for the speed.
+              </strong>{" "}
+              Fast automated runs left dozens of throwaway accounts on a shared API. Companies
+              adopting agents will need the same hygiene: test data, rate limits, clean-up and
+              clear ownership.
+            </li>
+          </ul>
+        </section>
+
+        <section>
           <h2 className={h2}>Four QA videos</h2>
           <div className="mt-4 space-y-8">
             {videos.map((v) => (
