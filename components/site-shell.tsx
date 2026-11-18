@@ -66,9 +66,7 @@ export function SiteShell({
 
   const isWorkActive =
     pathname === urls.works ||
-    pathname.startsWith(`${urls.works}/`) ||
-    pathname.startsWith(`/${lang}/projects/afgang`) ||
-    pathname.startsWith("/projects/afgang");
+    pathname.startsWith(`${urls.works}/`);
 
   const isAboutActive =
     pathname === urls.about || pathname.startsWith(`${urls.about}/`);
