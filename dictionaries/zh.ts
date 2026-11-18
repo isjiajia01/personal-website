@@ -198,6 +198,24 @@ const dictionary = {
       homeFeatured: true,
     },
     {
+      slug: "ascii-studio",
+      name: "ASCII Studio",
+      year: "2026",
+      summary:
+        "一个免费的浏览器工具：把任意图片或视频实时转成 ASCII、盲文、半色调、抖动或砖块纹理，全程本地渲染，不上传任何内容。",
+      roleFit: "产品工程 · 浏览器图形 · 工具设计",
+      evidence: [
+        "14 种风格、19 套预设，直接在你自己的图片上实时调节，并支持配色、描边和发光",
+        "视频边播放边转换，可导出最高 4K、最长一分钟的 MP4；图片可导出 JPEG 或透明 WebP",
+        "完全在浏览器里运行：无需账号、无水印、不上传",
+      ],
+      stack: ["WebGL2", "Browser-only rendering", "Video export", "Interaction design"],
+      link: "https://ascii.isjia.page",
+      color: "cyan",
+      primary: true,
+      homeFeatured: true,
+    },
+    {
       slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
       year: "2026",

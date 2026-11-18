@@ -201,6 +201,24 @@ My strongest work sits around internal tools, workflow automation with human rev
       homeFeatured: true,
     },
     {
+      slug: "ascii-studio",
+      name: "ASCII Studio",
+      year: "2026",
+      summary:
+        "A free browser tool that turns any image or video into ASCII, braille, halftone, dither or brick textures, rendered live and exported without uploading anything.",
+      roleFit: "Product engineering · browser graphics · tool design",
+      evidence: [
+        "Fourteen styles and nineteen presets, tuned live on your own picture, with palette, outline and glow controls",
+        "Video converts as it plays and exports to MP4 at up to 4K and a minute long; images export as JPEG or transparent WebP",
+        "Runs entirely in the browser: no account, no watermark, nothing uploaded",
+      ],
+      stack: ["WebGL2", "Browser-only rendering", "Video export", "Interaction design"],
+      link: "https://ascii.isjia.page",
+      color: "cyan",
+      primary: true,
+      homeFeatured: true,
+    },
+    {
       slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
       year: "2026",
