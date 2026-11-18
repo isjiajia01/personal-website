@@ -15,12 +15,13 @@ type Phase = "preparing" | "covering";
 const norm = (p: string) => (p.length > 1 ? p.replace(/\/+$/, "") : p);
 const LOCALE_RE = /^\/(en|zh)(?=\/|$)/;
 
-// Section order Home < Works < About decides the sweep direction.
+// Section order Home < Works < Notes < About decides the sweep direction.
 function rank(path: string): number {
   const rest = norm(path).replace(LOCALE_RE, "");
   const seg = rest.split("/")[1] ?? "";
   if (seg === "") return 0;
   if (seg === "works" || seg === "projects") return 1;
+  if (seg === "notes") return 2;
   if (seg === "about") return 3;
   return -1;
 }
@@ -133,7 +134,7 @@ export function RouteTransition({
     }
     if (url.origin !== window.location.origin) return;
     // Only portfolio pages: product/legal routes keep native navigation.
-    if (!LOCALE_RE.test(norm(url.pathname))) return;
+    if (!LOCALE_RE.test(norm(url.pathname)) && !/^\/notes(\/|$)/.test(norm(url.pathname))) return;
     // Same page or hash-only jump: native.
     if (norm(url.pathname) === norm(window.location.pathname)) return;
 
