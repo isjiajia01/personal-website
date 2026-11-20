@@ -96,7 +96,7 @@ My strongest work sits around internal tools, workflow automation with human rev
           name: "Deloitte",
           href: "https://www.deloitte.com/",
           description:
-            "Earlier engineering and enterprise systems foundation.",
+            "Full-Stack / Software Engineering Intern, Sep 2022 \u2013 Feb 2023.",
         },
         {
           type: "text" as const,

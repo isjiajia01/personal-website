@@ -94,7 +94,7 @@ const dictionary = {
           id: "org-deloitte",
           name: "Deloitte",
           href: "https://www.deloitte.com/",
-          description: "早期企业系统与工程实践经历。",
+          description: "全栈 / 软件工程实习生，2022 年 9 月 – 2023 年 2 月。",
         },
         {
           type: "text" as const,
