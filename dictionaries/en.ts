@@ -91,12 +91,8 @@ My strongest work sits around internal tools, workflow automation with human rev
             "My strongest work sits around internal tools, workflow automation with human review, data-quality workflows, and decision-support systems — building on earlier engineering experience with ",
         },
         {
-          type: "org" as const,
-          id: "org-deloitte",
-          name: "Deloitte",
-          href: "https://www.deloitte.com/",
-          description:
-            "Full-Stack / Software Engineering Intern, Sep 2022 \u2013 Feb 2023.",
+          type: "text" as const,
+          value: "Dehui",
         },
         {
           type: "text" as const,

@@ -87,18 +87,7 @@ const dictionary = {
         {
           type: "text" as const,
           value:
-            "核心方向围绕 internal tools、带人工审核的 workflow automation、数据质量工作流与运营决策支持 —— 并以早期在 ",
-        },
-        {
-          type: "org" as const,
-          id: "org-deloitte",
-          name: "Deloitte",
-          href: "https://www.deloitte.com/",
-          description: "全栈 / 软件工程实习生，2022 年 9 月 – 2023 年 2 月。",
-        },
-        {
-          type: "text" as const,
-          value: " 的工程实践及 ",
+            "核心方向围绕 internal tools、带人工审核的 workflow automation、数据质量工作流与运营决策支持 —— 并以早期在德辉的工程实践及 ",
         },
         {
           type: "org" as const,
