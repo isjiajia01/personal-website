@@ -44,7 +44,7 @@ export function SiteShell({
   }
 
   // Routes with no Chinese version: hide the language switch instead of linking to a 404.
-  const enOnly = hideLanguageSwitch || (lang === "en" && pathname.startsWith("/notes"));
+  const enOnly = hideLanguageSwitch || (lang === "en" && pathname.startsWith("/notes") || pathname.startsWith("/lab"));
   const otherLang = lang === "zh" ? "en" : "zh";
   const otherLangLabel = lang === "zh" ? "English" : "中文";
 
@@ -69,7 +69,10 @@ export function SiteShell({
     { label: labels.home, href: urls.home, active: isHomeActive },
     // Notes are English only, so the zh nav does not link to them.
     ...(lang === "en"
-      ? [{ label: "Notes", href: "/notes/", active: pathname.startsWith("/notes") }]
+      ? [
+          { label: "Notes", href: "/notes/", active: pathname.startsWith("/notes") },
+          { label: "Lab", href: "/lab/", active: pathname.startsWith("/lab") },
+        ]
       : []),
     { label: labels.about, href: urls.about, active: isAboutActive },
   ];
