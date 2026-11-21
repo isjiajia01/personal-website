@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { labEffects } from "../../../../lib/lab-effects";
 import { labDemos } from "../../../../components/lab/demos";
-import { DemoTabs } from "../../../../components/lab/demo-tabs";
 
 export const dynamicParams = false;
 
@@ -30,27 +27,36 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const e = labEffects.find((x) => x.slug === slug);
+  const i = labEffects.findIndex((x) => x.slug === slug);
   const Demo = labDemos[slug];
-  if (!e || !Demo) notFound();
-  // The code shown is the file that runs, read at build time, so they cannot drift.
-  const code = readFileSync(join(process.cwd(), e.file), "utf8");
+  if (i < 0 || !Demo) notFound();
+  const e = labEffects[i];
+  const prev = labEffects[(i - 1 + labEffects.length) % labEffects.length];
+  const next = labEffects[(i + 1) % labEffects.length];
+  const linkClass = "hover:text-rose-700 dark:hover:text-rose-400";
   return (
     <article>
       <p className="text-[13px] text-stone-500 dark:text-zinc-400">
-        <Link href="/lab/" className="hover:text-rose-700 dark:hover:text-rose-400">← Lab</Link>
+        <Link href="/lab/" className={linkClass}>← Lab</Link>
       </p>
-      <h1 className="page-title mt-4 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">{e.title}</h1>
-      <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">{e.summary}</p>
-      <div className="mt-8">
-        <DemoTabs demo={<Demo />} code={code} filename={e.file} />
+      <div className="mt-4 overflow-hidden rounded-lg border border-stone-200 dark:border-zinc-700">
+        <Demo />
       </div>
-      <h2 className="mt-10 text-[15px] font-medium text-zinc-900 dark:text-zinc-100">How it works</h2>
-      <ol className="mt-3 list-decimal space-y-2 pl-5 text-[14px] leading-6 text-stone-600 dark:text-zinc-400">
-        {e.how.map((step) => (
-          <li key={step}>{step}</li>
-        ))}
-      </ol>
+      <div className="mt-5 flex items-baseline gap-3">
+        <h1 className="page-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">{e.title}</h1>
+        <span className="font-mono text-[12px] text-stone-400 dark:text-zinc-500">{e.tags}</span>
+        <span className="ml-auto text-[13px] tabular-nums text-stone-500 dark:text-zinc-400">{e.date}</span>
+      </div>
+      <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">{e.summary}</p>
+      <p className="mt-4 text-[13px]">
+        <a href={e.repo} target="_blank" rel="noopener noreferrer" className={`text-stone-600 dark:text-zinc-300 ${linkClass}`}>
+          Source on GitHub<span aria-hidden="true"> ↗</span>
+        </a>
+      </p>
+      <nav className="mt-10 flex justify-between border-t border-stone-200 pt-4 text-[13px] text-stone-500 dark:border-zinc-700 dark:text-zinc-400" aria-label="More effects">
+        <Link href={`/lab/${prev.slug}/`} className={linkClass}>← {prev.title}</Link>
+        <Link href={`/lab/${next.slug}/`} className={linkClass}>{next.title} →</Link>
+      </nav>
     </article>
   );
 }
