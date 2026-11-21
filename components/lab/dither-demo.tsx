@@ -65,6 +65,7 @@ export function DitherDemo({ paused = false }: { paused?: boolean }) {
     const pointer = { x: -1, y: -1 };
     let raf = 0;
     let drawn = false;
+    let frame = 0;
 
     const onMove = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
@@ -77,7 +78,9 @@ export function DitherDemo({ paused = false }: { paused?: boolean }) {
 
     const draw = (t: number) => {
       if (!reduce) raf = requestAnimationFrame(draw);
+      frame++;
       if (pausedRef.current && drawn) return;
+      if (drawn && frame % 2) return; // ~30fps is plenty for slow drift
       drawn = true;
       const drift = reduce ? 0 : t * 0.00004;
       for (let y = 0; y < H; y++) {

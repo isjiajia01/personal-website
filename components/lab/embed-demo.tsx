@@ -4,7 +4,7 @@
 // pointer (the tile is a link, and an iframe would swallow pointer events and
 // freeze the custom cursor). On a detail page the frame is interactive, so the
 // custom cursor steps aside while the pointer is over it.
-export function EmbedDemo({ src, title, tile = false }: { src: string; title: string; tile?: boolean }) {
+export function EmbedDemo({ src, title, tile = false, paused = false }: { src: string; title: string; tile?: boolean; paused?: boolean }) {
   const root = () => document.documentElement;
   return (
     <div
@@ -12,6 +12,7 @@ export function EmbedDemo({ src, title, tile = false }: { src: string; title: st
       onPointerEnter={tile ? undefined : () => root().classList.remove("cursor-ready")}
       onPointerLeave={tile ? undefined : () => root().classList.add("cursor-ready")}
     >
+      {!(tile && paused) && (
       <iframe
         src={src}
         title={title}
@@ -20,6 +21,7 @@ export function EmbedDemo({ src, title, tile = false }: { src: string; title: st
         aria-hidden={tile || undefined}
         className={`h-full w-full border-0 ${tile ? "pointer-events-none" : ""}`}
       />
+      )}
     </div>
   );
 }
