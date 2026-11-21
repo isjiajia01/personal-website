@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><title>Bookmark pill</title>
+<style>body{display:grid;place-items:center;height:100vh;margin:0;background:#fff;font-family:system-ui}</style>
+<link rel="stylesheet" href="bookmark-pill.css">
+<button class="act bm" id="b"><span class="bm-ico"><i class="bm-mark"></i><span class="bm-box"><i class="bm-top"></i><i class="bm-s s1"></i><i class="bm-s s2"></i><i class="bm-s s3"></i><i class="bm-drop"></i></span></span><span class="bm-num"><b>35</b></span></button>
+<script src="bookmark-pill.js"></script>
+<script>let on=false,n=35;b.onclick=()=>{on=!on;n+=on?1:-1;bmToggle(b,on,n,true)}</script>

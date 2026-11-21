@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASCII Ocean</title>
+<!--
+  ASCII Ocean — 基于 stackedlol/ascii-sharks 的原理扩展
+  ─────────────────────────────────────────────────────
+  原仓库的核心管线（保留）：
+    1. 模拟层：跟随链（follow-the-leader）脊柱 + boids 鱼群 + 无散度洋流
+    2. 形状层：在「身体坐标」(s 沿脊柱, v 横向) 里定义隐式外形，逐格超采样求覆盖率
+    3. 着色层：光照 shade → 字符密度梯度 + 色块；覆盖不足的格子用轻字符做抗锯齿
+    4. 场层：扩散的尾迹场（这里升级为波动方程 + 彩色辉光场）
+    5. 身体锚定的哈希键：纹理跟着皮肤走，不会在屏幕上「游泳」
+
+  本文件新增的设计点：
+    A. 边缘方向字形：用 3×3 子采样的覆盖梯度判断轮廓走向，选 ( ) / \ _ ¯，轮廓更锐利
+    B. 波动方程水面：真实的涟漪干涉，并用水面梯度折射焦散（caustics）
+    C. 新的形体坐标系：锦鲤（脊柱 + 品种花纹噪声）、蝠鲼（翼展高度场 → 法线光照）、
+       水母（极坐标钟形 + verlet 触手）
+    D. 线条字形：触手、尾鞭、胡须按线段角度选字符（- \ | / ( )）
+    E. 彩色辉光场（bloom）：三通道扩散，生物荧光、进食火花、冲击波
+    F. 颜色量化成 12-bit + 计数排序分桶绘制，fillStyle 切换次数降到最低
+
+  操作：1/2/3 切换场景，S 切换「块面 / 线墨」风格，点击 = 投食 / 涟漪 / 闪光
+-->
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden}
+  canvas{display:block;width:100vw;height:100vh;
+    font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  #ui{position:fixed;left:16px;top:12px;z-index:2;user-select:none;
+    font:12px/1.9 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:#56607a}
+  #ui button{all:unset;cursor:pointer;margin-right:14px;color:#56607a;transition:color .2s}
+  #ui button:hover{color:#9aa4bb}
+  #ui button.on{color:#e9edf5}
+  #ui .sep{margin:0 14px 0 0;opacity:.4}
+  #ui .hint{display:block;opacity:.6}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <button data-scene="koi">1 锦鲤池</button>
+  <button data-scene="manta">2 蝠鲼</button>
+  <button data-scene="jelly">3 深海水母</button>
+  <span class="sep">|</span>
+  <button id="style">S 块面</button>
+  <span class="hint" id="hint"></span>
+</div>
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════
+//  math
+// ════════════════════════════════════════════════════════════════
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+const rand = (a, b) => a + Math.random() * (b - a);
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+function angDiff(a, b) { let d = (b - a) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; }
+function hash(x, y, z) {
+  let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(z | 0, 1442695041);
+  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+function noise(x, y, seed) {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  return lerp(lerp(hash(xi, yi, seed), hash(xi + 1, yi, seed), u),
+              lerp(hash(xi, yi + 1, seed), hash(xi + 1, yi + 1, seed), u), v);
+}
+// 无散度洋流（原仓库同款：流函数 ψ 的旋度）
+function current(x, y, t, o) {
+  const K1 = 1 / 260, K2 = 1 / 310, K3 = 1 / 190, S = 3400;
+  const a = x * K1 + t * 0.07, b = y * K2 - t * 0.05, c = (x + y) * K3 + t * 0.11;
+  o.x = (-K2 * Math.sin(a) * Math.sin(b) + 0.5 * K3 * Math.cos(c)) * S;
+  o.y = (-K1 * Math.cos(a) * Math.cos(b) - 0.5 * K3 * Math.cos(c)) * S;
+  return o;
+}
+function hsl(h, s, l) {
+  h = ((h % 360) + 360) % 360 / 360;
+  const f = (n) => { const k = (n + h * 12) % 12; return l - s * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
+  return [f(0) * 255, f(8) * 255, f(4) * 255];
+}
+const CUR = { x: 0, y: 0 };
+
+// ════════════════════════════════════════════════════════════════
+//  colour: 12-bit quantised, so cells can be bucket-sorted by style
+// ════════════════════════════════════════════════════════════════
+const HEX = '0123456789abcdef';
+const STY = Array.from({ length: 4096 }, (_, i) => '#' + HEX[i >> 8] + HEX[(i >> 4) & 15] + HEX[i & 15]);
+const q4 = (v) => (v <= 0 ? 0 : v >= 255 ? 15 : (v * 0.0588 + 0.5) | 0);
+const Q = (r, g, b) => (q4(r) << 8) | (q4(g) << 4) | q4(b);
+const NONE = 0xffff;
+const GC = [];
+const glyph = (code) => GC[code] || (GC[code] = String.fromCharCode(code));
+const C = (s) => s.charCodeAt(0);
+
+// ════════════════════════════════════════════════════════════════
+//  grid + fields
+// ════════════════════════════════════════════════════════════════
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d', { alpha: false });
+const G = { W: 0, H: 0, dpr: 1, cw: 10, ch: 15, cols: 0, rows: 0, n: 0, t: 0 };
+const pointer = { x: 0, y: 0, active: false };
+
+function alloc() {
+  const n = G.n;
+  G.chr = new Uint16Array(n); G.fg = new Uint16Array(n); G.bg = new Uint16Array(n);
+  G.z = new Float32Array(n); G.shadow = new Uint8Array(n);
+  G.h = new Float32Array(n); G.hp = new Float32Array(n);          // wave equation
+  G.gr = new Float32Array(n); G.gg = new Float32Array(n); G.gb = new Float32Array(n); // glow rgb
+  G.tr = new Float32Array(n); G.tg = new Float32Array(n); G.tb = new Float32Array(n);
+  G.order = new Int32Array(n);
+}
+const cellAt = (x, y) => {
+  const c = Math.floor(x / G.cw), r = Math.floor(y / G.ch);
+  return c < 0 || r < 0 || c >= G.cols || r >= G.rows ? -1 : r * G.cols + c;
+};
+function put(i, z, code, fg, bg = NONE) {
+  if (i < 0 || G.z[i] >= z) return false;
+  G.z[i] = z; G.chr[i] = code; G.fg[i] = fg; G.bg[i] = bg;
+  return true;
+}
+
+// 波动方程：经典 Hugo Elias 涟漪
+function waveStep() {
+  const { h, hp, cols, rows } = G;
+  for (let r = 1; r < rows - 1; r++) {
+    for (let c = 1; c < cols - 1; c++) {
+      const i = r * cols + c;
+      hp[i] = ((h[i - 1] + h[i + 1] + h[i - cols] + h[i + cols]) * 0.5 - hp[i]) * 0.972;
+    }
+  }
+  G.h = hp; G.hp = h;
+}
+function drop(x, y, rad, amt) {
+  const c0 = Math.floor(x / G.cw), r0 = Math.floor(y / G.ch);
+  for (let r = r0 - rad; r <= r0 + rad; r++) for (let c = c0 - rad; c <= c0 + rad; c++) {
+    if (c < 1 || r < 1 || c >= G.cols - 1 || r >= G.rows - 1) continue;
+    const d = Math.hypot(c - c0, (r - r0) * 1.5);
+    if (d <= rad) G.h[r * G.cols + c] += amt * Math.cos((d / rad) * Math.PI * 0.5);
+  }
+}
+// 三通道辉光：模糊 + 衰减
+function glowStep(dt) {
+  const { cols, rows } = G, k = Math.exp(-dt * 1.7) * 0.125;
+  const blur = (src, dst) => {
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const i = r * cols + c, v = src[i];
+      dst[i] = (v * 4 + (c > 0 ? src[i - 1] : v) + (c < cols - 1 ? src[i + 1] : v) +
+        (r > 0 ? src[i - cols] : v) + (r < rows - 1 ? src[i + cols] : v)) * k;
+    }
+  };
+  blur(G.gr, G.tr); blur(G.gg, G.tg); blur(G.gb, G.tb);
+  [G.gr, G.tr] = [G.tr, G.gr]; [G.gg, G.tg] = [G.tg, G.gg]; [G.gb, G.tb] = [G.tb, G.gb];
+}
+function glow(x, y, rad, r, g, b) {
+  const c0 = Math.floor(x / G.cw), r0 = Math.floor(y / G.ch);
+  for (let rr = r0 - rad; rr <= r0 + rad; rr++) for (let c = c0 - rad; c <= c0 + rad; c++) {
+    if (c < 0 || rr < 0 || c >= G.cols || rr >= G.rows) continue;
+    const d = Math.hypot(c - c0, (rr - r0) * 1.5);
+    if (d > rad + 0.5) continue;
+    const f = 1 - d / (rad + 1), i = rr * G.cols + c;
+    G.gr[i] = Math.min(2, G.gr[i] + r * f); G.gg[i] = Math.min(2, G.gg[i] + g * f); G.gb[i] = Math.min(2, G.gb[i] + b * f);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  rasteriser: supersampled shapes → glyph cells
+// ════════════════════════════════════════════════════════════════
+// 创造物的 sample(px,py) 命中时写入 O：颜色、shade、身体坐标、可选字符集
+const O = { r: 0, g: 0, b: 0, sh: 0, s: 0, v: 0, set: null };
+const RAMP_BLOCK = ':;t%SX8#@';   // 亮处稀疏，暗处密（原仓库思路）
+const RAMP_INK = '.:-=+*#%@';     // 线墨模式：亮处密
+// 设计点 A：按覆盖梯度（指向形体内部的方向）选择轮廓字符
+//   扇区：右 下右 下 下左 左 上左 上 上右
+const EDGE = ['(', '/', '_', '\\', ')', '/', '¯', '\\'].map(C);
+const LINE = ['-', '\\', '|', '/'].map(C);
+
+let STYLE = 'block';
+
+function raster(cr, z) {
+  const { cw, ch, cols, rows } = G, b = cr.bounds, t = G.t;
+  const c0 = Math.max(0, Math.floor(b.x0 / cw)), c1 = Math.min(cols - 1, Math.floor(b.x1 / cw));
+  const r0 = Math.max(0, Math.floor(b.y0 / ch)), r1 = Math.min(rows - 1, Math.floor(b.y1 / ch));
+  const dim = cr.dim ?? 1, glint = cr.glint ?? 0.04;
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+    const i = r * cols + c;
+    if (G.z[i] >= z) continue;
+    const x = c * cw, y = r * ch;
+    let hits = 0, gx = 0, gy = 0, center = false, got = false;
+    let R = 0, Gc = 0, B = 0, sh = 0, s = 0, v = 0, set = null;
+    for (let k = 0; k < 9; k++) {
+      const ix = k % 3, iy = (k / 3) | 0;
+      if (!cr.sample(x + (ix + 0.5) * cw / 3, y + (iy + 0.5) * ch / 3)) continue;
+      hits++; gx += ix - 1; gy += iy - 1;
+      if (k === 4 || !got) { R = O.r; Gc = O.g; B = O.b; sh = O.sh; s = O.s; v = O.v; set = O.set; got = true; if (k === 4) center = true; }
+    }
+    if (!hits) continue;
+    const cov = hits / 9;
+    const solid = center && cov >= 0.67;
+    if (!solid && G.z[i] > -1e8 && cov < 0.45) continue;   // 不让细边缘吃掉下层身体
+    const key = (hash(Math.round(s / (cw * 0.9)), Math.round(v / (ch * 0.75)), cr.id) * 4294967295) >>> 0;
+    R *= dim; Gc *= dim; B *= dim;
+    G.z[i] = z;
+    if (solid) {
+      if (cr.shadow) { const si = i + cr.shadow[1] * cols + cr.shadow[0]; if (si < G.n) G.shadow[si] = 1; }
+      const jit = ((key >>> 4) % 3) - 1;
+      const roll = hash(key, Math.floor(t * 2.4 + (key % 997) / 97), 7);
+      if (STYLE === 'block') {
+        const L = 0.2 + 0.85 * sh;
+        G.bg[i] = Q(R * L, Gc * L, B * L);
+        G.chr[i] = set ? C(set[(key >>> 8) % set.length]) : C(RAMP_BLOCK[clamp(Math.floor((1 - sh) * 8.99) + jit, 0, 8)]);
+        G.fg[i] = roll < glint ? Q(255, 252, 240) : Q(R * L * 0.3, Gc * L * 0.3, B * L * 0.3);
+      } else {
+        const L = 0.28 + 0.85 * sh;
+        G.bg[i] = NONE;
+        G.chr[i] = set ? C(set[(key >>> 8) % set.length]) : C(RAMP_INK[clamp(Math.floor(sh * 8.99) + jit, 0, 8)]);
+        G.fg[i] = roll < glint * 0.6 ? Q(255, 252, 240) : Q(R * L, Gc * L, B * L);
+      }
+    } else {
+      let code;
+      if (gx === 0 && gy === 0) code = cov > 0.4 ? C(':') : C('.');
+      else {
+        const a = Math.atan2(gy * ch, gx * cw);
+        code = EDGE[((Math.round(a / (Math.PI / 4)) % 8) + 8) % 8];
+        if (cov < 0.3) code = gy > 0 ? C('.') : gy < 0 ? C("'") : code;
+      }
+      const L = (0.35 + 0.65 * cov) * (0.55 + 0.45 * sh);
+      G.chr[i] = code; G.bg[i] = NONE; G.fg[i] = Q(R * L, Gc * L, B * L);
+    }
+  }
+}
+
+// 设计点 D：按线段角度选字符画线（触手、尾鞭、胡须）
+function plotLine(x0, y0, x1, y1, z, fg, curve = 0) {
+  const dx = x1 - x0, dy = y1 - y0;
+  const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx) / G.cw, Math.abs(dy) / G.ch)) + 1);
+  const a = Math.atan2(dy, dx);
+  let code = LINE[((Math.round(a / (Math.PI / 4)) % 4) + 4) % 4];
+  if (code === LINE[2] && curve) code = curve > 0 ? C(')') : C('(');
+  for (let k = 0; k <= steps; k++) {
+    const t = k / steps;
+    put(cellAt(x0 + dx * t, y0 + dy * t), z, code, fg);
+  }
+}
+function plotChain(pts, M, z, colorAt, wobble = 0, phase = 0) {
+  let px = pts[0], py = pts[1];
+  for (let j = 1; j < M; j++) {
+    let x = pts[j * 2], y = pts[j * 2 + 1];
+    if (wobble) { x += Math.sin(j * 0.9 - phase) * wobble * (j / M); }
+    const nx = j < M - 1 ? pts[j * 2 + 2] : x, ny = j < M - 1 ? pts[j * 2 + 3] : y;
+    const curve = (x - px) * (ny - y) - (y - py) * (nx - x);
+    plotLine(px, py, x, y, z, colorAt(j / M), Math.abs(curve) > 6 ? Math.sign(curve) : 0);
+    px = x; py = y;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  draw: bucket by colour so each fillStyle is set once
+// ════════════════════════════════════════════════════════════════
+const CNT = new Int32Array(4097);
+function drawBuckets(arr, glyphs) {
+  const { n, cols, cw, ch, order, chr } = G;
+  CNT.fill(0);
+  for (let i = 0; i < n; i++) { const q = arr[i]; if (q !== NONE && (!glyphs || chr[i])) CNT[q + 1]++; }
+  for (let b = 1; b <= 4096; b++) CNT[b] += CNT[b - 1];
+  const start = CNT.slice(0, 4096), cur = start.slice();
+  for (let i = 0; i < n; i++) { const q = arr[i]; if (q !== NONE && (!glyphs || chr[i])) order[cur[q]++] = i; }
+  for (let q = 0; q < 4096; q++) {
+    const s0 = start[q], s1 = cur[q];
+    if (s0 === s1) continue;
+    ctx.fillStyle = STY[q];
+    for (let k = s0; k < s1; k++) {
+      const i = order[k], x = (i % cols) * cw, y = ((i / cols) | 0) * ch;
+      if (glyphs) ctx.fillText(glyph(chr[i]), x + cw / 2, y + ch / 2 + 1);
+      else ctx.fillRect(x + 1, y + 1, cw - 1, ch - 1);
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  creatures
+// ════════════════════════════════════════════════════════════════
+let NEXT_ID = 1;
+
+// ── Koi：脊柱链 + 品种花纹（在身体坐标里取噪声，花纹跟着身体走）────────
+const KOI_VARIETIES = ['kohaku', 'sanke', 'showa', 'ogon', 'tancho', 'asagi', 'kigoi'];
+const FIN_SET = '~-=';
+class Koi {
+  constructor(x, y, L, variety) {
+    this.id = NEXT_ID++; this.L = L; this.variety = variety; this.seed = (Math.random() * 1000) | 0;
+    this.N = 24; this.seg = L / (this.N - 1);
+    this.nodes = new Float32Array(this.N * 2); this.sp = new Float32Array(this.N * 2); this.arc = new Float32Array(this.N);
+    this.heading = rand(0, TAU); this.speed = rand(28, 40); this.phase = rand(0, TAU);
+    this.wander = 0; this.turn = 0; this.shadow = [2, 1]; this.glint = variety === 'ogon' ? 0.1 : 0.035;
+    for (let k = 0; k < this.N; k++) {
+      this.nodes[k * 2] = x - Math.cos(this.heading) * this.seg * k;
+      this.nodes[k * 2 + 1] = y - Math.sin(this.heading) * this.seg * k;
+    }
+    this.bounds = { x0: 0, y0: 0, x1: 0, y1: 0 };
+  }
+  get hx() { return this.nodes[0]; }
+  get hy() { return this.nodes[1]; }
+  update(dt, scene) {
+    const { W, H } = G, n = this.nodes, hx = n[0], hy = n[1];
+    let vx = Math.cos(this.heading), vy = Math.sin(this.heading), target = 34;
+    this.wander = clamp(this.wander + (Math.random() - 0.5) * dt * 3, -1, 1);
+    const wa = this.heading + this.wander * 0.9;
+    vx += Math.cos(wa) * 0.6; vy += Math.sin(wa) * 0.6;
+    // 食物：最近的一颗
+    let best = null, bd = 420;
+    for (const f of scene.food) { const d = Math.hypot(f.x - hx, f.y - hy); if (d < bd) { bd = d; best = f; } }
+    if (best) {
+      vx += (best.x - hx) / bd * 2.4; vy += (best.y - hy) / bd * 2.4; target = 70;
+      if (bd < this.L * 0.09) {
+        best.eaten = true; drop(best.x, best.y, 2, 2.2); glow(best.x, best.y, 2, 0.5, 0.35, 0.15);
+      }
+    } else if (pointer.active) {
+      const d = Math.hypot(pointer.x - hx, pointer.y - hy);
+      if (d < 260 && d > 30) { vx += (pointer.x - hx) / d * 0.5; vy += (pointer.y - hy) / d * 0.5; }
+    }
+    // 墙
+    const m = this.L * 0.5;
+    if (hx < m) vx += (m - hx) / m * 2; if (hx > W - m) vx -= (hx - W + m) / m * 2;
+    if (hy < m) vy += (m - hy) / m * 2; if (hy > H - m) vy -= (hy - H + m) / m * 2;
+    // 分离
+    for (const o of scene.koi) {
+      if (o === this) continue;
+      const dx = hx - o.hx, dy = hy - o.hy, d = Math.hypot(dx, dy);
+      if (d < this.L * 0.55 && d > 0) { vx += dx / d * 1.2; vy += dy / d * 1.2; }
+    }
+    const want = Math.atan2(vy, vx);
+    const maxTurn = 1.5 + (target > 40 ? 1.2 : 0);
+    const dh = clamp(angDiff(this.heading, want), -maxTurn * dt, maxTurn * dt);
+    this.heading += dh; this.turn = lerp(this.turn, dh / dt, 0.1);
+    this.speed = lerp(this.speed, target, dt * 1.2);
+    n[0] += Math.cos(this.heading) * this.speed * dt;
+    n[1] += Math.sin(this.heading) * this.speed * dt;
+    for (let k = 1; k < this.N; k++) {
+      const px = n[(k - 1) * 2], py = n[(k - 1) * 2 + 1];
+      const a = Math.atan2(n[k * 2 + 1] - py, n[k * 2] - px);
+      n[k * 2] = px + Math.cos(a) * this.seg; n[k * 2 + 1] = py + Math.sin(a) * this.seg;
+    }
+    this.phase += dt * (2 + this.speed * 0.07);
+    // 尾巴扫水 → 波动场
+    const ti = cellAt(n[(this.N - 5) * 2], n[(this.N - 5) * 2 + 1]);
+    if (ti >= 0) G.h[ti] += dt * this.speed * 0.012 * Math.sin(this.phase);
+  }
+  prepare() {
+    // 原仓库同款：沿脊柱传播的波，越靠尾越大
+    const { N, nodes: n, sp, arc, L } = this, swim = clamp(this.speed / 40, 0.5, 1.6);
+    for (let k = 0; k < N; k++) {
+      const s = k / (N - 1), a = Math.max(0, k - 1), b = Math.min(N - 1, k + 1);
+      let tx = n[a * 2] - n[b * 2], ty = n[a * 2 + 1] - n[b * 2 + 1]; const tl = Math.hypot(tx, ty) || 1;
+      tx /= tl; ty /= tl;
+      const off = L * 0.05 * (0.12 + 0.88 * Math.pow(s, 1.7)) * swim * Math.sin(this.phase - s * 5.4);
+      sp[k * 2] = n[k * 2] - ty * off; sp[k * 2 + 1] = n[k * 2 + 1] + tx * off;
+    }
+    arc[0] = 0;
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (let k = 0; k < N; k++) {
+      if (k) arc[k] = arc[k - 1] + Math.hypot(sp[k * 2] - sp[k * 2 - 2], sp[k * 2 + 1] - sp[k * 2 - 1]);
+      x0 = Math.min(x0, sp[k * 2]); x1 = Math.max(x1, sp[k * 2]); y0 = Math.min(y0, sp[k * 2 + 1]); y1 = Math.max(y1, sp[k * 2 + 1]);
+    }
+    this.arcT = arc[N - 1] || 1;
+    const m = L * 0.24;
+    Object.assign(this.bounds, { x0: x0 - m, y0: y0 - m, x1: x1 + m, y1: y1 + m });
+  }
+  hw(s) {
+    if (s < 0.1) return 0.11 * Math.pow(Math.sin((s / 0.1) * Math.PI / 2), 0.5);
+    if (s < 0.33) return 0.11 + 0.03 * smooth(0.1, 0.33, s);
+    if (s < 0.8) return 0.03 + 0.11 * Math.pow(1 - (s - 0.33) / 0.47, 1.25);
+    return 0.03;
+  }
+  paint(u, v, across) {
+    const L = this.L, sc = L * 0.17, x = u / sc, y = v / sc, sd = this.seed;
+    let r = 244, g = 240, b = 230;
+    const n = noise(x + sd, y * 1.2 + sd, 1) * 0.7 + noise(x * 2.1 + sd, y * 2.1, 2) * 0.3;
+    switch (this.variety) {
+      case 'kohaku': if (n > 0.5) { r = 226; g = 62; b = 34; } break;
+      case 'sanke':
+        if (n > 0.54) { r = 226; g = 62; b = 34; }
+        if (u > L * 0.12 && noise(x * 2.6, y * 2.6 + sd, 5) > 0.74) { r = 24; g = 24; b = 28; } break;
+      case 'showa':
+        r = 34; g = 32; b = 38;
+        if (n > 0.52) { r = 228; g = 70; b = 36; } else if (noise(x * 1.7 + 9, y * 1.7, 6) > 0.58) { r = 240; g = 236; b = 226; } break;
+      case 'ogon': { const k = 0.82 + 0.3 * noise(x * 3, y * 3, 7); r = 248 * k; g = 186 * k; b = 70 * k; } break;
+      case 'tancho': if (Math.hypot(u - L * 0.09, v * 1.1) < L * 0.055) { r = 222; g = 40; b = 30; } break;
+      case 'asagi':
+        if (across > 0.72 && u < L * 0.76) { r = 224; g = 110; b = 52; }
+        else { r = 98; g = 128; b = 160; if (hash(Math.round(u / (L * 0.04)), Math.round(v / (L * 0.035)), sd) > 0.6) { r *= 0.78; g *= 0.8; b *= 0.85; } }
+        if (u < L * 0.08) { r = 204; g = 212; b = 218; } break;
+      case 'kigoi': r = 246; g = 212; b = 78; break;
+    }
+    O.r = r; O.g = g; O.b = b;
+  }
+  sample(px, py) {
+    const { sp, N, arc, L } = this;
+    let best = 1e18, bs = 0, sign = 1, nx = 0, ny = 0;
+    for (let k = 0; k < N - 1; k++) {
+      const ax = sp[k * 2], ay = sp[k * 2 + 1], sx = sp[k * 2 + 2] - ax, sy = sp[k * 2 + 3] - ay;
+      const l2 = sx * sx + sy * sy || 1;
+      const u = clamp(((px - ax) * sx + (py - ay) * sy) / l2, 0, 1);
+      const qx = ax + sx * u - px, qy = ay + sy * u - py, d2 = qx * qx + qy * qy;
+      if (d2 < best) {
+        best = d2; const l = Math.sqrt(l2);
+        bs = (arc[k] + u * l) / this.arcT;
+        sign = sx * (py - ay) - sy * (px - ax) >= 0 ? 1 : -1;
+        nx = (-sy / l) * sign; ny = (sx / l) * sign;
+      }
+    }
+    const a = Math.sqrt(best), s = bs, u = s * L, w = this.hw(s) * L;
+    O.s = u; O.v = a * sign; O.set = null;
+    if (s < 0.8 && a <= w) {
+      const ac = a / (w || 1), facing = (nx * -0.6 + ny * -0.8) * ac;
+      let sh = 0.64 - ac * ac * 0.38 + facing * 0.28;
+      this.paint(u, a * sign, ac);
+      if (s > 0.05 && s < 0.095 && ac > 0.5 && ac < 0.92) { O.r = O.g = O.b = 30; sh = 0.15; O.set = 'o'; }
+      else if (s > 0.3 && s < 0.6 && ac < 0.16) sh = Math.min(1, sh + 0.22);   // 背鳍脊
+      O.sh = clamp(sh, 0, 1); return true;
+    }
+    const finColor = (at) => { this.paint(at * L, 0, 0); O.r = lerp(O.r, 250, 0.35); O.g = lerp(O.g, 246, 0.35); O.b = lerp(O.b, 240, 0.35); O.set = FIN_SET; };
+    // 尾鳍：飘逸的扇形 + V 形分叉
+    if (s >= 0.78) {
+      const k = (s - 0.78) / 0.22;
+      const half = L * (0.03 + 0.115 * Math.pow(k, 0.85)) * (1 + 0.08 * Math.sin(s * 40 - this.phase * 3));
+      if (a <= half && !(k > 0.55 && a < L * 0.1 * smooth(0.55, 1, k))) { finColor(0.8); O.sh = 0.5 + 0.3 * (1 - a / half); return true; }
+    }
+    // 胸鳍：椭圆，随相位扇动
+    const fs = 0.22, uc = fs * L, wf = this.hw(fs) * L;
+    const flap = 0.7 + 0.3 * Math.sin(this.phase * 0.9 + (sign > 0 ? 0 : Math.PI));
+    const ru = L * 0.055, rv = L * 0.06 * flap;
+    const du = (u - uc - (a - wf) * 0.55) / ru, dv = (a - wf - rv * 0.8) / rv;
+    if (du * du + dv * dv <= 1) { finColor(0.2); O.sh = 0.45 + 0.3 * (1 - dv * dv); return true; }
+    // 腹鳍
+    const pu = (u - 0.52 * L - (a - this.hw(0.52) * L) * 0.6) / (L * 0.035), pv = (a - this.hw(0.52) * L - L * 0.02) / (L * 0.025);
+    if (pu * pu + pv * pv <= 1) { finColor(0.5); O.sh = 0.5; return true; }
+    return false;
+  }
+  whiskers(z) {
+    const sp = this.sp, hx = sp[0], hy = sp[1], dx = sp[0] - sp[4], dy = sp[1] - sp[5], l = Math.hypot(dx, dy) || 1;
+    const fx = dx / l, fy = dy / l, len = this.L * 0.07, col = Q(200, 190, 170);
+    for (const side of [-1, 1]) {
+      const wob = Math.sin(this.phase * 1.3 + side) * 0.25;
+      const ex = hx + (fx * 0.5 - fy * side * (0.85 + wob)) * len, ey = hy + (fy * 0.5 + fx * side * (0.85 + wob)) * len;
+      plotLine(hx + fx * 3, hy + fy * 3, ex, ey, 2.5, col);
+    }
+  }
+}
+
+// ── 睡莲叶：径向叶脉直接用「径向方向字符」画 ────────────────────
+const RADIAL = ['-', '\\', '|', '/'];
+class LilyPad {
+  constructor(x, y, R, lotus) {
+    this.id = NEXT_ID++; this.x = x; this.y = y; this.R = R; this.rot = rand(0, TAU); this.lotus = lotus;
+    this.spin = rand(-0.03, 0.03); this.shadow = [2, 1]; this.glint = 0.015;
+    this.bounds = {};
+  }
+  update(dt) {
+    this.rot += this.spin * dt;
+    const R = this.R * 1.1; Object.assign(this.bounds, { x0: this.x - R, y0: this.y - R, x1: this.x + R, y1: this.y + R });
+  }
+  sample(px, py) {
+    const dx = px - this.x, dy = py - this.y, d = Math.hypot(dx, dy), ang = Math.atan2(dy, dx);
+    const R = this.R * (1 + 0.035 * Math.sin(ang * 7 + this.id));
+    if (d > R) return false;
+    const rel = angDiff(this.rot, ang);
+    if (Math.abs(rel) < 0.22 * smooth(0, 0.3, d / R) && d > this.R * 0.05) return false;   // 缺口
+    O.s = (ang * this.R) / 2; O.v = d; O.set = null;
+    if (this.lotus && d < this.R * 0.42) {
+      const petal = 0.5 + 0.5 * Math.cos(ang * 8 + this.rot * 3);
+      if (d < this.R * 0.12) { O.r = 250; O.g = 210; O.b = 90; O.sh = 0.9; O.set = '*'; }
+      else { O.r = 244; O.g = 150 + 50 * petal; O.b = 190 + 30 * petal; O.sh = 0.55 + 0.4 * petal * (1 - d / (this.R * 0.42)); }
+      return true;
+    }
+    const vein = Math.abs(((rel * 9) / TAU + 0.5) % 1 - 0.5) < 0.08;
+    O.r = 64; O.g = 150; O.b = 74;
+    let sh = 0.62 - (d / R) * 0.3 + (-(dx / d || 0) * 0.6 - (dy / d || 0) * 0.8) * 0.12;
+    if (vein && d > this.R * 0.12) { sh += 0.18; O.set = RADIAL[((Math.round(ang / (Math.PI / 4)) % 4) + 4) % 4]; }
+    if (d > R * 0.9) sh -= 0.18;
+    O.sh = clamp(sh, 0, 1);
+    return true;
+  }
+}
+
+// ── 鱼群（boids）：字符按游动方向选，横游时 - / ~ 交替像在摆尾 ─────────
+class School {
+  constructor(n, opts) {
+    Object.assign(this, { n, min: 30, max: 90, color: [200, 215, 230], ...opts });
+    this.x = new Float32Array(n); this.y = new Float32Array(n); this.vx = new Float32Array(n); this.vy = new Float32Array(n);
+    this.turn = new Float32Array(n); this.ph = new Float32Array(n);
+    const cx = rand(G.W * 0.2, G.W * 0.8), cy = rand(G.H * 0.2, G.H * 0.8);
+    for (let i = 0; i < n; i++) {
+      this.x[i] = cx + rand(-80, 80); this.y[i] = cy + rand(-60, 60);
+      const a = rand(0, TAU); this.vx[i] = Math.cos(a) * 40; this.vy[i] = Math.sin(a) * 40; this.ph[i] = rand(0, TAU);
+    }
+  }
+  update(dt, threats) {
+    const { n, x, y, vx, vy } = this;
+    for (let i = 0; i < n; i++) {
+      let ax = 0, ay = 0, cx = 0, cy = 0, avx = 0, avy = 0, cnt = 0;
+      for (let j = 0; j < n; j++) {
+        if (i === j) continue;
+        const dx = x[j] - x[i], dy = y[j] - y[i], d2 = dx * dx + dy * dy;
+        if (d2 > 2500) continue;
+        cnt++; cx += dx; cy += dy; avx += vx[j]; avy += vy[j];
+        if (d2 < 196) { const d = Math.sqrt(d2) || 1; ax -= (dx / d) * 160; ay -= (dy / d) * 160; }
+      }
+      if (cnt) { ax += cx / cnt * 1.2 + (avx / cnt - vx[i]) * 1.6; ay += cy / cnt * 1.2 + (avy / cnt - vy[i]) * 1.6; }
+      let alarm = 0;
+      for (const t of threats) {
+        const dx = x[i] - t.x, dy = y[i] - t.y, d = Math.hypot(dx, dy);
+        if (d < t.r && d > 0) { const f = (1 - d / t.r) * 900; ax += dx / d * f; ay += dy / d * f; alarm = Math.max(alarm, 1 - d / t.r); }
+      }
+      const m = 60;
+      if (x[i] < m) ax += (m - x[i]) * 4; if (x[i] > G.W - m) ax -= (x[i] - G.W + m) * 4;
+      if (y[i] < m) ay += (m - y[i]) * 4; if (y[i] > G.H - m) ay -= (y[i] - G.H + m) * 4;
+      current(x[i], y[i], G.t, CUR); ax += CUR.x * 0.6; ay += CUR.y * 0.6;
+      ax += (Math.random() - 0.5) * 60; ay += (Math.random() - 0.5) * 60;
+      const ha = Math.atan2(vy[i], vx[i]);
+      vx[i] += ax * dt; vy[i] += ay * dt;
+      const sp = Math.hypot(vx[i], vy[i]) || 1, lim = clamp(sp, this.min, this.max * (1 + alarm));
+      vx[i] *= lim / sp; vy[i] *= lim / sp;
+      this.turn[i] = lerp(this.turn[i], Math.abs(angDiff(ha, Math.atan2(vy[i], vx[i]))) / dt, 0.2) + alarm;
+      x[i] += vx[i] * dt; y[i] += vy[i] * dt;
+      this.ph[i] += dt * (6 + sp * 0.05);
+    }
+  }
+  render(z) {
+    const [r, g, b] = this.color;
+    for (let i = 0; i < this.n; i++) {
+      const a = Math.atan2(this.vy[i], this.vx[i]);
+      let code = LINE[((Math.round(a / (Math.PI / 4)) % 4) + 4) % 4];
+      if (code === LINE[0] && Math.sin(this.ph[i]) > 0.3) code = C('~');
+      const k = 0.45 + 0.55 * clamp(this.turn[i] / 3, 0, 1);
+      put(cellAt(this.x[i], this.y[i]), z, code, Q(r * k, g * k, b * k));
+    }
+  }
+}
+
+// ── Manta：翼展高度场 z(k,t) → 斜率 → 光照；波从翼根传到翼尖 ─────────
+class Manta {
+  constructor(x, y, Lb) {
+    this.id = NEXT_ID++; this.x = x; this.y = y; this.Lb = Lb;
+    this.h = rand(0, TAU); this.speed = rand(30, 42); this.phase = rand(0, TAU); this.amp = 0.32;
+    this.turn = 0; this.wander = 0; this.span = 1; this.shadow = [3, 2]; this.glint = 0.012;
+    this.bounds = {};
+  }
+  get mx() { return this.x + Math.cos(this.h) * this.Lb * 0.48; }
+  get my() { return this.y + Math.sin(this.h) * this.Lb * 0.48; }
+  update(dt) {
+    const { W, H } = G, m = this.Lb * 1.2;
+    this.wander = clamp(this.wander + (Math.random() - 0.5) * dt * 1.2, -0.7, 0.7);
+    let want = this.wander * 0.45;
+    if (this.x < m || this.x > W - m || this.y < m || this.y > H - m) {
+      want = clamp(angDiff(this.h, Math.atan2(H / 2 - this.y, W / 2 - this.x)), -0.6, 0.6);
+    }
+    this.turn = lerp(this.turn, want, dt * 0.8);
+    this.h += this.turn * dt;
+    this.x += Math.cos(this.h) * this.speed * dt; this.y += Math.sin(this.h) * this.speed * dt;
+    this.phase += dt * 1.6;
+    this.span = 1 - 0.13 * Math.sin(this.phase - 0.9) ** 2;   // 翼抬起时投影变窄
+    const R = this.Lb * 1.15; Object.assign(this.bounds, { x0: this.x - R, y0: this.y - R, x1: this.x + R, y1: this.y + R });
+  }
+  sample(px, py) {
+    const dx = px - this.x, dy = py - this.y, ch = Math.cos(this.h), sn = Math.sin(this.h), Lb = this.Lb;
+    const u = (dx * ch + dy * sn) / Lb, w = (-dx * sn + dy * ch) / Lb, side = w >= 0 ? 1 : -1, q = Math.abs(w);
+    O.s = u * Lb; O.v = w * Lb; O.set = null;
+    // 头鳍（cephalic fins）
+    const cu = (u - 0.47) / 0.075, cq = (q - 0.083) / 0.032;
+    if (cu * cu + cq * cq < 1) { O.r = 44; O.g = 58; O.b = 92; O.sh = 0.35 + 0.3 * (1 - cu * cu); O.set = side > 0 ? ')' : '('; return true; }
+    const Sp = this.span;
+    if (q > Sp) return false;
+    const k = q / Sp;
+    const front = 0.42 - 0.47 * Math.pow(k, 1.15), back = -0.36 + 0.31 * Math.pow(k, 0.55);
+    if (u > front || u < back) return false;
+    const ph = this.phase - k * 1.8;
+    const z = this.amp * Math.pow(k, 1.6) * Math.sin(ph);
+    const dz = this.amp * (1.6 * Math.pow(k + 1e-4, 0.6) * Math.sin(ph) - 1.8 * Math.pow(k, 1.6) * Math.cos(ph));
+    const wx = -sn * side, wy = ch * side;            // 局部「向外」方向在屏幕上的朝向
+    const light = (wx * 0.6 + wy * 0.8) * dz;        // 光从左上来
+    let sh = 0.5 + light * 0.45 + (z / this.amp) * 0.18 + (k < 0.18 ? 0.12 * (1 - k / 0.18) : 0);
+    const edge = Math.min(front - u, u - back);
+    if (edge < 0.035) sh -= 0.15;
+    O.r = 44; O.g = 58; O.b = 92;
+    // 白色肩斑（礁蝠鲼的 V 形斑）
+    if (k > 0.13 && k < 0.55 && u < front - 0.035 && u > front - 0.17 + k * 0.08) { O.r = 214; O.g = 222; O.b = 232; sh = Math.max(sh, 0.62); }
+    if (u > 0.33 && u < 0.38 && q > 0.088 && q < 0.125) { O.r = O.g = O.b = 16; sh = 0.2; O.set = 'o'; }
+    else if (u > 0.39 && q < 0.045) { O.r = 18; O.g = 20; O.b = 26; sh = 0.25; }   // 嘴
+    O.sh = clamp(sh, 0.18, 1);
+    return true;
+  }
+  tail(z) {
+    const ch = Math.cos(this.h), sn = Math.sin(this.h), Lb = this.Lb;
+    let px = this.x - ch * Lb * 0.34, py = this.y - sn * Lb * 0.34;
+    for (let j = 1; j <= 8; j++) {
+      const d = 0.34 + j * 0.09, sway = Math.sin(this.phase * 1.3 - j * 0.6) * Lb * 0.035 * (j / 8);
+      const x = this.x - ch * Lb * d - sn * sway, y = this.y - sn * Lb * d + ch * sway;
+      plotLine(px, py, x, y, z, Q(70 - j * 4, 78 - j * 4, 96 - j * 4));
+      px = x; py = y;
+    }
+  }
+}
+
+// ── Jelly：侧视钟形（收缩时变窄变高）+ verlet 触手 + 生物荧光色带 ──────
+class Jelly {
+  constructor(x, y, R, hue, depth) {
+    this.id = NEXT_ID++; this.x = x; this.y = y; this.R = R; this.hue = hue; this.depth = depth;
+    this.vx = 0; this.vy = 0; this.phase = rand(0, TAU); this.rate = rand(0.8, 1.15);
+    this.tilt = rand(-0.3, 0.3); this.c = 0; this.flash = 0; this.dim = 0.55 + 0.6 * depth; this.glint = 0;
+    this.chains = [];
+    const nt = 8;
+    for (let i = 0; i < nt; i++) this.chains.push(this.makeChain(-0.92 + (1.84 * i) / (nt - 1), 0.1, R * rand(2.2, 3.4), 16, false));
+    for (const ax of [-0.26, -0.09, 0.09, 0.26]) this.chains.push(this.makeChain(ax, 0.02, R * rand(1.3, 1.8), 10, true));
+    this.bounds = {};
+  }
+  makeChain(ax, ay, len, M, arm) {
+    const pts = new Float32Array(M * 2), prev = new Float32Array(M * 2), seg = len / (M - 1);
+    for (let j = 0; j < M; j++) { pts[j * 2] = prev[j * 2] = this.x + ax * this.R; pts[j * 2 + 1] = prev[j * 2 + 1] = this.y + j * seg; }
+    return { ax, ay, M, seg, pts, prev, arm };
+  }
+  local(lx, ly) { const c = Math.cos(this.tilt), s = Math.sin(this.tilt); return [this.x + lx * c - ly * s, this.y + lx * s + ly * c]; }
+  update(dt) {
+    const { W, H } = G, R = this.R;
+    this.phase += dt * TAU * 0.45 * this.rate;
+    const f = (this.phase / TAU) % 1;
+    this.c = f < 0.22 ? smooth(0, 0.22, f) : 1 - smooth(0.22, 1, f);
+    const dirx = Math.sin(this.tilt), diry = -Math.cos(this.tilt);
+    if (f < 0.22) { this.vx += dirx * R * 3.4 * dt; this.vy += diry * R * 3.4 * dt; }
+    const drag = Math.exp(-dt * 0.9);
+    this.vx *= drag; this.vy = this.vy * drag + 7 * dt;
+    current(this.x, this.y, G.t, CUR);
+    const target = clamp((W / 2 - this.x) / W * 0.8 + Math.sin(G.t * 0.1 + this.id) * 0.25, -0.5, 0.5);
+    this.tilt += (target - this.tilt) * dt * 0.25;
+    let mx = (this.vx + CUR.x * 0.2) * dt, my = (this.vy + CUR.y * 0.2) * dt;
+    // 环绕：整组触手一起平移
+    if (this.y < -R * 4) my += H + R * 6; else if (this.y > H + R * 4) my -= H + R * 6;
+    if (this.x < -R * 2) mx += W + R * 4; else if (this.x > W + R * 2) mx -= W + R * 4;
+    this.x += mx; this.y += my;
+    const wrapped = Math.abs(mx) > R || Math.abs(my) > R;
+    this.flash *= Math.exp(-dt * 2);
+    const rx = R * (1 - 0.17 * this.c);
+    for (const ch of this.chains) {
+      const { pts, prev, M, seg } = ch;
+      if (wrapped) for (let j = 0; j < M; j++) { pts[j * 2] += mx; pts[j * 2 + 1] += my; prev[j * 2] += mx; prev[j * 2 + 1] += my; }
+      const [axw, ayw] = this.local(ch.ax * rx, ch.ay * R);
+      pts[0] = prev[0] = axw; pts[1] = prev[1] = ayw;
+      for (let j = 1; j < M; j++) {
+        const x = pts[j * 2], y = pts[j * 2 + 1];
+        const vx = (x - prev[j * 2]) * 0.96, vy = (y - prev[j * 2 + 1]) * 0.96;
+        prev[j * 2] = x; prev[j * 2 + 1] = y;
+        pts[j * 2] = x + vx + CUR.x * 0.1 * dt; pts[j * 2 + 1] = y + vy + 30 * dt * dt;
+      }
+      for (let it = 0; it < 2; it++) for (let j = 1; j < M; j++) {
+        const dx = pts[j * 2] - pts[j * 2 - 2], dy = pts[j * 2 + 1] - pts[j * 2 - 1], d = Math.hypot(dx, dy) || 1;
+        pts[j * 2] = pts[j * 2 - 2] + (dx / d) * seg; pts[j * 2 + 1] = pts[j * 2 - 1] + (dy / d) * seg;
+      }
+    }
+    const [r, g, b] = hsl(this.hue, 0.8, 0.5);
+    const k = (0.012 + 0.03 * this.c + 0.06 * this.flash) * this.dim;
+    glow(this.x, this.y - R * 0.3, Math.max(2, Math.round(R / G.ch)), r / 255 * k, g / 255 * k, b / 255 * k);
+    const m = R * 1.3; Object.assign(this.bounds, { x0: this.x - m, y0: this.y - m, x1: this.x + m, y1: this.y + m });
+  }
+  sample(px, py) {
+    const R = this.R, c = Math.cos(-this.tilt), s = Math.sin(-this.tilt);
+    const dx = px - this.x, dy = py - this.y, x = dx * c - dy * s, y = dx * s + dy * c;
+    const rx = R * (1 - 0.17 * this.c), ry = R * (0.72 + 0.16 * this.c);
+    const ang = Math.atan2(x, -y);
+    O.s = ang * R; O.v = y; O.set = null;
+    const band = Math.sin(ang * 3 - G.t * 2.2 + this.id) * 28;
+    const color = (l) => { const [r, g, b] = hsl(this.hue + band + this.flash * 40, 0.75, clamp(l + this.flash * 0.25, 0, 0.9)); O.r = r; O.g = g; O.b = b; };
+    if (y <= 0) {
+      const e = (x / rx) ** 2 + (y / ry) ** 2;
+      if (e > 1) return false;
+      const ei = (x / (rx * 0.84)) ** 2 + ((y + ry * 0.04) / (ry * 0.55)) ** 2;
+      // 生殖腺（月水母的四叶）
+      const gd = Math.min(Math.hypot(x - rx * 0.26, (y + ry * 0.42) * 1.3), Math.hypot(x + rx * 0.26, (y + ry * 0.42) * 1.3));
+      if (gd > R * 0.08 && gd < R * 0.16) { color(0.62); O.sh = 0.75; O.set = 'oO'; return true; }
+      if (ei < 1) { color(0.3); O.sh = 0.1 + 0.15 * ei; O.set = '.:'; return true; }   // 半透明的伞下腔
+      const rim = smooth(0.55, 1, e);
+      const canal = Math.abs(((ang * 8) / TAU + 0.5) % 1 - 0.5) < 0.07;
+      color(0.45 + 0.15 * rim);
+      O.sh = 0.25 + 0.55 * rim + (canal ? 0.2 : 0);
+      if (canal) O.set = RADIAL[((Math.round((ang + Math.PI / 2) / (Math.PI / 4)) % 4) + 4) % 4];
+      return true;
+    }
+    // 伞缘（扇贝形的垂片）
+    const ax = Math.abs(x) / rx;
+    if (ax > 1 || ax < 0.7) return false;
+    const lim = R * 0.14 * (0.55 + 0.45 * Math.cos(x / rx * Math.PI * 7 + this.phase * 0.5)) * (0.6 + 0.4 * this.c);
+    if (y > lim) return false;
+    color(0.55); O.sh = 0.6; O.set = '\'`';
+    return true;
+  }
+  render(z) {
+    const [r, g, b] = hsl(this.hue, 0.7, 0.55), d = this.dim, t = G.t;
+    for (const ch of this.chains) {
+      const base = ch.arm ? 0.7 : 0.38;
+      plotChain(ch.pts, ch.M, z - 0.001, (f) => { const k = (1 - f * 0.75) * base * d; return Q(r * k, g * k, b * k); }, ch.arm ? this.R * 0.12 : this.R * 0.05, t * 2 + ch.ax * 5);
+    }
+    raster(this, z);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  scenes
+// ════════════════════════════════════════════════════════════════
+function caustic(x, y, t) {
+  x *= 0.75; y *= 0.75;
+  const a = Math.sin(x * 0.21 + t * 0.7 + Math.sin(y * 0.13 + t * 0.4) * 1.7);
+  const b = Math.sin(y * 0.29 - t * 0.6 + Math.sin(x * 0.17 - t * 0.3) * 1.9);
+  const c = Math.sin((x * 0.6 + y) * 0.14 + t * 0.5);
+  const v = 1 - Math.abs(a + b + c) / 3;
+  return v * v * v * v;
+}
+// 共享的水面背景：波动梯度 → 高光 + 折射焦散
+function waterBackground(base, causticCol, causticAmt, specCol) {
+  const { cols, rows, h, t, shadow, gr, gg, gb } = G;
+  const [br, bgc, bb] = base;
+  for (let r = 1; r < rows - 1; r++) for (let c = 1; c < cols - 1; c++) {
+    const i = r * cols + c;
+    if (G.z[i] > -1e8) continue;
+    const hx = h[i + 1] - h[i - 1], hy = h[i + cols] - h[i - cols];
+    const spec = -(hx * 0.6 + hy * 0.8);
+    const sd = shadow[i] ? 0.3 : 1;
+    const cs = caustic(c + hx * 5, (r + hy * 5) * 1.5, t) * causticAmt * sd;
+    const gl = gr[i] + gg[i] + gb[i];
+    if (gl > 0.03) G.bg[i] = Q(br + gr[i] * 160, bgc + gg[i] * 160, bb + gb[i] * 160);
+    else if (shadow[i]) G.bg[i] = Q(br * 0.55, bgc * 0.55, bb * 0.55);
+    if (spec > 0.09) {
+      const k = clamp(spec * 2.2, 0, 1) * sd;
+      G.chr[i] = spec > 0.3 ? C('~') : C('-');
+      G.fg[i] = Q(lerp(causticCol[0], specCol[0], k), lerp(causticCol[1], specCol[1], k), lerp(causticCol[2], specCol[2], k));
+    } else if (cs > 0.26) {
+      G.chr[i] = cs > 0.7 ? C('=') : cs > 0.45 ? C('-') : C('.');
+      const k = 0.2 + cs * 0.8;
+      G.fg[i] = Q(causticCol[0] * k + gr[i] * 200, causticCol[1] * k + gg[i] * 200, causticCol[2] * k + gb[i] * 200);
+    } else if (gl > 0.08) {
+      G.chr[i] = C('·'); G.fg[i] = Q(gr[i] * 400, gg[i] * 400, gb[i] * 400);
+    }
+  }
+}
+
+const SCENES = {
+  koi: {
+    name: '锦鲤池', base: [4, 22, 26], style: 'block', hint: '点击投食 · 悬停引鱼 · 鱼会躲到荷叶下',
+    init() {
+      const { W, H } = G, m = Math.min(W, H);
+      this.koi = []; this.food = [];
+      const pool = KOI_VARIETIES.slice().sort(() => Math.random() - 0.5);
+      const n = clamp(Math.round((W * H) / 190000), 4, 7);
+      for (let i = 0; i < n; i++) this.koi.push(new Koi(rand(W * 0.2, W * 0.8), rand(H * 0.2, H * 0.8), clamp(m * 0.3, 110, 260) * rand(0.8, 1.1), pool[i % pool.length]));
+      this.koi.sort((a, b) => a.L - b.L);
+      this.pads = [];
+      const np = clamp(Math.round((W * H) / 220000), 3, 7);
+      for (let tries = 0; this.pads.length < np && tries < 200; tries++) {
+        const R = m * rand(0.05, 0.1), x = rand(R, W - R), y = rand(R, H - R);
+        if (this.pads.every((p) => Math.hypot(p.x - x, p.y - y) > p.R + R + 30)) this.pads.push(new LilyPad(x, y, R, this.pads.length < 2));
+      }
+      this.fry = new School(clamp(Math.round((W * H) / 18000), 30, 90), { min: 25, max: 70, color: [180, 210, 190] });
+    },
+    update(dt) {
+      for (const k of this.koi) k.update(dt, this);
+      for (const p of this.pads) p.update(dt);
+      const threats = this.koi.map((k) => ({ x: k.hx, y: k.hy, r: k.L * 0.6 }));
+      if (pointer.active) threats.push({ x: pointer.x, y: pointer.y, r: 90 });
+      this.fry.update(dt, threats);
+      for (const f of this.food) { f.life -= dt; f.x += Math.sin(G.t * 0.7 + f.s) * 3 * dt; }
+      this.food = this.food.filter((f) => !f.eaten && f.life > 0);
+      waveStep();
+    },
+    render() {
+      for (const p of this.pads) raster(p, 10);
+      this.koi.forEach((k, i) => { k.prepare(); raster(k, 2 + i * 0.01); k.whiskers(2 + i * 0.01 + 0.005); });
+      this.fry.render(1);
+      for (const f of this.food) put(cellAt(f.x, f.y), 9, C(f.life % 1 > 0.5 ? 'o' : '•'), Q(222, 170, 92));
+      waterBackground(this.base, [40, 110, 112], 0.75, [210, 245, 240]);
+    },
+    click(x, y) {
+      drop(x, y, 3, 4);
+      for (let i = 0; i < 5; i++) this.food.push({ x: x + rand(-26, 26), y: y + rand(-20, 20), life: rand(14, 22), s: rand(0, TAU) });
+    },
+  },
+
+  manta: {
+    name: '蝠鲼', base: [2, 14, 36], style: 'block', hint: '点击激起涟漪 · 蝠鲼滤食浮游生物',
+    init() {
+      const { W, H } = G, m = Math.min(W, H);
+      this.mantas = [];
+      const n = clamp(Math.round((W * H) / 450000), 2, 3);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * TAU + rand(-0.3, 0.3);
+        this.mantas.push(new Manta(W / 2 + Math.cos(a) * W * 0.25, H / 2 + Math.sin(a) * H * 0.25, clamp(m * 0.3, 120, 280) * rand(0.75, 1)));
+      }
+      this.mantas.sort((a, b) => a.Lb - b.Lb);
+      this.plankton = Array.from({ length: clamp(Math.round((W * H) / 4500), 120, 420) }, () => ({ x: rand(0, W), y: rand(0, H), z: Math.random() }));
+      this.school = new School(clamp(Math.round((W * H) / 22000), 30, 80), { min: 35, max: 90, color: [215, 228, 245] });
+    },
+    update(dt) {
+      for (const m of this.mantas) m.update(dt);
+      const { W, H } = G;
+      for (const p of this.plankton) {
+        current(p.x, p.y, G.t, CUR);
+        p.x += CUR.x * 0.35 * dt; p.y += CUR.y * 0.35 * dt;
+        for (const m of this.mantas) {
+          const dx = m.mx - p.x, dy = m.my - p.y, d = Math.hypot(dx, dy);
+          if (d < m.Lb * 0.5 && (p.x - m.x) * Math.cos(m.h) + (p.y - m.y) * Math.sin(m.h) > 0) {
+            p.x += (dx / d) * 90 * dt; p.y += (dy / d) * 90 * dt;
+            if (d < m.Lb * 0.07) { glow(m.mx, m.my, 1, 0.12, 0.3, 0.4); p.x = rand(0, W); p.y = rand(0, H); }
+          }
+        }
+        if (p.x < 0) p.x += W; if (p.x > W) p.x -= W; if (p.y < 0) p.y += H; if (p.y > H) p.y -= H;
+      }
+      this.school.update(dt, this.mantas.map((m) => ({ x: m.x, y: m.y, r: m.Lb * 0.9 })).concat(pointer.active ? [{ x: pointer.x, y: pointer.y, r: 90 }] : []));
+      waveStep();
+    },
+    render() {
+      this.mantas.forEach((m, i) => { raster(m, 3 + i * 0.01); m.tail(3 + i * 0.01 - 0.005); });
+      this.school.render(1);
+      for (const p of this.plankton) {
+        const k = 0.35 + 0.65 * p.z;
+        put(cellAt(p.x, p.y), 0.5 + p.z * 0.1, p.z > 0.7 ? C('·') : C('.'), Q(130 * k, 190 * k, 225 * k));
+      }
+      waterBackground(this.base, [40, 90, 150], 0.85, [190, 225, 255]);
+    },
+    click(x, y) { drop(x, y, 3, 5); glow(x, y, 2, 0.1, 0.25, 0.4); },
+  },
+
+  jelly: {
+    name: '深海水母', base: [1, 2, 9], style: 'ink', hint: '点击释放一圈光波 · 水母会被惊动并发光',
+    init() {
+      const { W, H } = G, m = Math.min(W, H);
+      const hues = [188, 282, 322, 168, 32, 205, 300];
+      this.jellies = [];
+      const n = clamp(Math.round((W * H) / 230000), 3, 6);
+      for (let i = 0; i < n; i++) this.jellies.push(new Jelly(rand(W * 0.15, W * 0.85), rand(H * 0.2, H * 0.9), m * rand(0.08, 0.15), hues[i % hues.length], rand(0.35, 1)));
+      this.jellies.sort((a, b) => a.depth - b.depth);
+      this.snow = Array.from({ length: clamp(Math.round((W * H) / 5000), 100, 380) }, () => ({ x: rand(0, W), y: rand(0, H), z: Math.random() }));
+      this.rings = [];
+    },
+    update(dt) {
+      const { W, H } = G;
+      for (const j of this.jellies) j.update(dt);
+      for (const s of this.snow) {
+        current(s.x, s.y, G.t, CUR);
+        s.x += CUR.x * 0.15 * (0.4 + s.z) * dt; s.y += (6 + 14 * s.z) * dt + CUR.y * 0.1 * dt;
+        if (s.y > H) { s.y -= H; s.x = rand(0, W); } if (s.x < 0) s.x += W; if (s.x > W) s.x -= W;
+      }
+      for (const r of this.rings) {
+        r.r += dt * 260; r.life -= dt * 0.7;
+        const steps = Math.ceil((r.r * TAU) / G.cw);
+        for (let k = 0; k < steps; k += 2) {
+          const a = (k / steps) * TAU;
+          const i = cellAt(r.x + Math.cos(a) * r.r, r.y + Math.sin(a) * r.r);
+          if (i >= 0) { G.gr[i] += 0.03 * r.life; G.gg[i] += 0.08 * r.life; G.gb[i] += 0.12 * r.life; }
+        }
+        for (const j of this.jellies) {
+          if (j.hitBy === r) continue;
+          const d = Math.hypot(j.x - r.x, j.y - r.y);
+          if (Math.abs(d - r.r) < j.R) { j.hitBy = r; j.flash = 1; j.vx += ((j.x - r.x) / d) * 60 * r.life; j.vy += ((j.y - r.y) / d) * 60 * r.life; j.phase = Math.floor(j.phase / TAU) * TAU + TAU; }
+        }
+      }
+      this.rings = this.rings.filter((r) => r.life > 0);
+    },
+    render() {
+      this.jellies.forEach((j) => j.render(2 + j.depth));
+      for (const s of this.snow) {
+        const k = 0.15 + 0.4 * s.z;
+        put(cellAt(s.x, s.y), -10 + s.z, s.z > 0.75 ? C('·') : C('.'), Q(150 * k, 165 * k, 190 * k));
+      }
+      const { n, gr, gg, gb } = G, [br, bgc, bb] = this.base;
+      for (let i = 0; i < n; i++) {
+        const gl = gr[i] + gg[i] + gb[i];
+        if (gl < 0.05) continue;
+        G.bg[i] = Q(br + gr[i] * 60, bgc + gg[i] * 60, bb + gb[i] * 60);
+        if (G.z[i] < -1e8 && gl > 0.12) { G.z[i] = -20; G.chr[i] = C('·'); G.fg[i] = Q(gr[i] * 380, gg[i] * 380, gb[i] * 380); }
+      }
+    },
+    click(x, y) { this.rings.push({ x, y, r: 4, life: 1 }); glow(x, y, 2, 0.2, 0.5, 0.7); },
+  },
+};
+
+// ════════════════════════════════════════════════════════════════
+//  engine
+// ════════════════════════════════════════════════════════════════
+let scene = SCENES.koi;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const STEP = 1 / 60;
+let last = 0, acc = 0, raf = 0;
+
+function resize() {
+  const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+  Object.assign(G, { W, H, dpr });
+  G.cw = clamp(Math.round(W / 125), 7, 13); G.ch = Math.round(G.cw * 1.5);
+  G.cols = Math.ceil(W / G.cw); G.rows = Math.ceil(H / G.ch); G.n = G.cols * G.rows;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  alloc(); scene.init();
+  if (reduced.matches) still();
+}
+function step(dt) { G.t += dt; scene.update(dt); glowStep(dt); }
+function render() {
+  const { n, dpr, W, H, ch } = G;
+  G.z.fill(-1e9); G.chr.fill(0); G.bg.fill(NONE); G.shadow.fill(0);
+  scene.render();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const [r, g, b] = scene.base;
+  ctx.fillStyle = `rgb(${r},${g},${b})`; ctx.fillRect(0, 0, W, H);
+  drawBuckets(G.bg, false);
+  ctx.font = `600 ${Math.round(ch * 0.74)}px ${getComputedStyle(cv).fontFamily}`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  drawBuckets(G.fg, true);
+}
+function frame(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now; acc += dt;
+  let k = 0;
+  while (acc >= STEP && k < 4) { step(STEP); acc -= STEP; k++; }
+  if (k === 4) acc = 0;
+  render();
+  raf = requestAnimationFrame(frame);
+}
+function still() { for (let i = 0; i < 300; i++) step(STEP); render(); }
+function start() { cancelAnimationFrame(raf); if (reduced.matches) return still(); last = performance.now(); raf = requestAnimationFrame(frame); }
+
+function setScene(key) {
+  scene = SCENES[key]; STYLE = scene.style; G.t = 0;
+  G.h.fill(0); G.hp.fill(0); G.gr.fill(0); G.gg.fill(0); G.gb.fill(0);
+  scene.init(); syncUI();
+  if (reduced.matches) still();
+}
+function syncUI() {
+  document.querySelectorAll('[data-scene]').forEach((b) => b.classList.toggle('on', SCENES[b.dataset.scene] === scene));
+  document.getElementById('style').textContent = 'S ' + (STYLE === 'block' ? '块面' : '线墨');
+  document.getElementById('hint').textContent = scene.hint;
+}
+
+document.querySelectorAll('[data-scene]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setScene(b.dataset.scene); }));
+document.getElementById('style').addEventListener('click', (e) => { e.stopPropagation(); STYLE = STYLE === 'block' ? 'ink' : 'block'; scene.style = STYLE; syncUI(); if (reduced.matches) render(); });
+addEventListener('keydown', (e) => {
+  if (e.key === '1') setScene('koi'); else if (e.key === '2') setScene('manta'); else if (e.key === '3') setScene('jelly');
+  else if (e.key === 's' || e.key === 'S') document.getElementById('style').click();
+});
+addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = e.pointerType !== 'touch'; }, { passive: true });
+addEventListener('pointerdown', (e) => { if (e.target.closest('#ui')) return; scene.click(e.clientX, e.clientY); }, { passive: true });
+document.documentElement.addEventListener('pointerleave', () => (pointer.active = false));
+addEventListener('blur', () => (pointer.active = false));
+addEventListener('resize', resize);
+reduced.addEventListener('change', start);
+document.fonts?.ready.then(() => reduced.matches && render());
+
+const initial = new URLSearchParams(location.search).get('scene');
+if (initial && SCENES[initial]) scene = SCENES[initial];
+STYLE = scene.style;
+resize(); syncUI(); start();
+</script>
+</body>
+</html>

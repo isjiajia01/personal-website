@@ -1,0 +1,31 @@
+/* ============ BOOKMARK PILL (pin): fold -> box -> sheets drop -> unfold blue, count rolls ============ */
+.act.bm{width:auto;min-width:64px;gap:8px;padding:0 14px 0 11px;font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;background:#F4F4F4;color:#6B6B6B;border-color:transparent;transition:background .5s ease .8s,color .5s ease .8s}
+.act.bm.on{background:#E8F4FD;color:#5A6B78}
+.bm-ico{position:relative;display:block;width:18px;height:22px;perspective:120px;flex:none}
+.bm-mark,.bm-box{position:absolute;inset:0;display:block}
+.bm-mark{background:linear-gradient(90deg,#D6D6D6 50%,#DCDCDC 50%);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);transition:background .4s ease .9s}
+.act.bm.on .bm-mark{background:linear-gradient(90deg,#3AA0F7 50%,#55B0FA 50%)}
+.bm-box{opacity:0;transform-origin:50% 100%}
+.bm-box>i{position:absolute;display:block}
+.bm-top{left:0;right:0;top:3px;height:5px;background:#4A4A4A;transform:skewX(-20deg) scaleY(.9)}
+.bm-box::before{content:"";position:absolute;left:0;right:0;top:6px;bottom:0;background:linear-gradient(90deg,#B9B9B9,#E9E9E9)}
+.bm-s{left:3px;right:3px;height:3px;border-radius:1px;opacity:0;transform:translateY(-8px)}
+.bm-s.s1{top:2px;background:#F8EE9C}.bm-s.s2{top:4px;background:#F6B8DA}.bm-s.s3{top:6px;background:#C8F59A}
+.bm-drop{left:3px;right:3px;top:-12px;height:12px;background:#CCE6FB;opacity:0;transform:rotate(8deg)}
+.bm-num{position:relative;display:block;height:1.2em;overflow:hidden;line-height:1.2}
+.bm-num b{display:block;font-weight:inherit;position:relative}
+.bm-num b.roll{animation:bmRoll .42s cubic-bezier(.3,.8,.3,1) .95s both}
+.bm-num b.roll::before{content:attr(data-old);position:absolute;left:0;bottom:100%}
+@keyframes bmRoll{from{transform:translateY(0)}to{transform:translateY(100%)}}
+.act.bm.bm-in .bm-mark{animation:bmMarkIn 1.5s ease both}
+.act.bm.bm-in .bm-box{animation:bmBox 1.5s ease both}
+.act.bm.bm-in .bm-s{animation:bmSheet 1.5s cubic-bezier(.3,.8,.3,1) both}
+.act.bm.bm-in .bm-s.s2{animation-delay:.08s}.act.bm.bm-in .bm-s.s3{animation-delay:.16s}
+.act.bm.bm-in .bm-drop{animation:bmDrop 1.5s cubic-bezier(.3,.8,.3,1) both}
+.act.bm.bm-out .bm-mark{animation:bmFade .35s ease both}
+@keyframes bmMarkIn{0%{opacity:1;transform:rotateX(0)}18%{opacity:1;transform:scaleY(.8)}24%,78%{opacity:0}84%{opacity:1;transform:scaleY(.8)}100%{opacity:1;transform:none}}
+@keyframes bmBox{0%,18%{opacity:0;transform:scaleY(.8)}24%,76%{opacity:1;transform:none}84%,100%{opacity:0}}
+@keyframes bmSheet{0%,30%{opacity:0;transform:translateY(-8px)}46%{opacity:1;transform:translateY(0)}72%{opacity:1;transform:translateY(0)}80%,100%{opacity:0;transform:translateY(0)}}
+@keyframes bmDrop{0%,24%{opacity:0;transform:translateY(0) rotate(8deg)}34%{opacity:1}56%{opacity:1;transform:translateY(12px) rotate(-6deg) scaleY(.5)}64%,100%{opacity:0;transform:translateY(14px) scaleY(.2)}}
+@keyframes bmFade{from{opacity:.2;transform:scale(.8)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.act.bm *{animation:none!important}}

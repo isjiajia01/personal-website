@@ -50,8 +50,10 @@ function fbm(x: number, y: number) {
   return sum;
 }
 
-export function DitherDemo() {
+export function DitherDemo({ paused = false }: { paused?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const pausedRef = useRef(paused);
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -62,6 +64,7 @@ export function DitherDemo() {
     const img = ctx.createImageData(W, H);
     const pointer = { x: -1, y: -1 };
     let raf = 0;
+    let drawn = false;
 
     const onMove = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
@@ -73,6 +76,9 @@ export function DitherDemo() {
     canvas.addEventListener("pointerleave", onLeave);
 
     const draw = (t: number) => {
+      if (!reduce) raf = requestAnimationFrame(draw);
+      if (pausedRef.current && drawn) return;
+      drawn = true;
       const drift = reduce ? 0 : t * 0.00004;
       for (let y = 0; y < H; y++) {
         for (let x = 0; x < W; x++) {
@@ -87,7 +93,6 @@ export function DitherDemo() {
         }
       }
       ctx.putImageData(img, 0, 0);
-      if (!reduce) raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
 
@@ -105,8 +110,8 @@ export function DitherDemo() {
       height={H}
       role="img"
       aria-label="Clouds rendered as a two-colour dither pattern; moving the pointer thins them out"
-      className="block w-full rounded-md"
-      style={{ imageRendering: "pixelated", aspectRatio: `${W} / ${H}` }}
+      className="block h-auto w-full rounded-md"
+      style={{ imageRendering: "pixelated" }}
     />
   );
 }
