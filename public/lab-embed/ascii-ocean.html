@@ -939,10 +939,6 @@ function syncUI() {
 
 document.querySelectorAll('[data-scene]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setScene(b.dataset.scene); }));
 document.getElementById('style').addEventListener('click', (e) => { e.stopPropagation(); STYLE = STYLE === 'block' ? 'ink' : 'block'; scene.style = STYLE; syncUI(); if (reduced.matches) render(); });
-addEventListener('keydown', (e) => {
-  if (e.key === '1') setScene('koi'); else if (e.key === '2') setScene('manta'); else if (e.key === '3') setScene('jelly');
-  else if (e.key === 's' || e.key === 'S') document.getElementById('style').click();
-});
 addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = e.pointerType !== 'touch'; }, { passive: true });
 addEventListener('pointerdown', (e) => { if (e.target.closest('#ui')) return; scene.click(e.clientX, e.clientY); }, { passive: true });
 document.documentElement.addEventListener('pointerleave', () => (pointer.active = false));
