@@ -34,7 +34,7 @@ export const labEffects: LabEffect[] = [
     date: "Oct 2026",
     tags: "WebGL2 · painterly",
     summary: "A procedural painted-gradient sky with brush dabs, from-scratch approximation of a meadow hero. Move the mouse.",
-    span: "col-span-2 sm:col-span-4",
+    span: "col-span-2",
     repo: "https://github.com/isjiajia01/painterly-sky",
   },
   {
@@ -45,5 +45,14 @@ export const labEffects: LabEffect[] = [
     summary: "A 64×36 dot-matrix video decoded from a 6-bit temporal-delta text format and drawn as jittering dots. The scene is my own generated sky.",
     span: "col-span-2",
     repo: "https://github.com/isjiajia01/canopy-dotmatrix",
+  },
+  {
+    slug: "stacked-toasts",
+    title: "Stacked toasts",
+    date: "Nov 2026",
+    tags: "React · CSS · gestures",
+    summary: "Notifications slide in with a touch of motion blur and stack behind each other. Swipe to dismiss.",
+    span: "col-span-2",
+    repo: "https://github.com/isjiajia01/personal-website/blob/main/components/lab/toast-demo.tsx",
   },
 ];
