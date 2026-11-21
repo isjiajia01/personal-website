@@ -3,7 +3,7 @@ import { labEffects } from "../../../lib/lab-effects";
 import { LabTile } from "../../../components/lab/lab-tile";
 
 const url = "https://me.isjia.page/lab/";
-const description = "Visual effects I rebuilt from things I liked. Hover a tile to wake it up; each one has a live demo and the source.";
+const description = "Visual effects I rebuilt from things I liked. Each one has a live demo and the source.";
 const ogImage = { url: "https://me.isjia.page/og/home-en-v1.png", width: 1200, height: 630, alt: "Lab" };
 
 export const metadata: Metadata = {

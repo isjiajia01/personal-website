@@ -7,7 +7,7 @@ import { EmbedDemo } from "./embed-demo";
 
 const embed = (src: string, title: string) =>
   function Embedded({ paused }: { paused?: boolean }) {
-    return <EmbedDemo src={src} title={title} paused={paused} tile={paused !== undefined} />;
+    return <EmbedDemo src={src} title={title} tile={paused !== undefined} />;
   };
 
 export const labDemos: Record<string, ComponentType<{ paused?: boolean }>> = {
