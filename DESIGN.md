@@ -8,7 +8,7 @@ A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fit
 
 ## Layout
 - Page: `#fafaf9` (dark `#0b0b0d`) with 20px grid (minor) and 100px grid (major), centred, lines align to paper edges.
-- Paper: white (dark `#18181b`), max 1040px, 100px below viewport top from `md` (768px); full-bleed, no shadow, no top gap below `md`. Soft side shadow. Print: no grid, shadow or margin.
+- Paper: warm cream `#fffdf8` on page `#eeede8` (dark: black card `#1b1a19`), max 1040px, 100px below viewport top from `md` (768px); full-bleed, no shadow, no top gap below `md`. Soft side shadow. Print: no grid, shadow or margin.
 - Column: 592px max, 24px side padding. Nav sits at the top of the column; `main` starts 80px (mobile) / 112px (≥640) below it.
 - Type: Crimson Pro (serif) for name, page titles, project titles; Inter/PingFang for body. Body 15px/26 (zh /28). Home intro 16px.
 - Colour: body stone-600 `#57534e` (7.5:1 on white), meta stone-500 `#78716c` (4.8:1), hover rose-700 `#be123c` (6.0:1) / dark rose-400 `#fb7185` on `#18181b` (6.3:1).
@@ -48,3 +48,9 @@ The ASCII ocean (fish, sharks, jellyfish) behind the paper is gone: it read as a
 - Day: warm ink on paper, `--contour` / `--contour-index` (rgb 120 100 84 at 0.2 / 0.38).
 - Night: cool moonlit lines (rgb 125 150 190 / 0.13, index 160 185 225 / 0.26) with a 4 px halo on index lines, `--contour-halo`.
 Reduced motion draws one still frame; below `md` (paper full-bleed) and in print the canvas is hidden and the loop never runs; a hidden tab pauses it.
+
+## Paper stock (2026-11-24)
+The old single-scale lit grain read as stucco and, multiplied over white, greyed the sheet to the page colour; the dark sheet had no texture and banded. Now (all in `styles/globals.css`, pure CSS/SVG, screen only):
+- Texture, three tiles of different sizes: faint large formation clouds (900px), sparse short fibres (520px), barely-there tooth (240px) that also dithers the vignette. Day tints them warm ink; night lifts them with `mix-blend-mode: screen` on black card.
+- Colour: cream `#fffdf8` on a page one shade darker (`#eeede8`), so the sheet lifts off; body text contrast unchanged.
+- Edge: hairline top border, 1px inner highlight (`--paper-highlight`), two-part shadow: short dense contact + wide faint ambient (`--paper-shadow`).

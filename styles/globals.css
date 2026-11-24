@@ -11,10 +11,12 @@
   --motion-page: 500ms;
   --motion-mask: 360ms;
   --content-w: 592px;
-  --page-bg: #f3f3ef;
-  --paper-bg: #fff;
-  --paper-edge: rgb(120 113 108 / 0.2);
-  --paper-shadow: 0 0 48px rgb(0 0 0 / 0.07);
+  --page-bg: #eeede8; /* a shade below the cream paper so the sheet lifts off it */
+  --paper-bg: #fffdf8; /* warm cream, brighter than the page so the sheet lifts off it */
+  --paper-edge: rgb(120 100 84 / 0.16);
+  --paper-highlight: rgb(255 255 255 / 0.9);
+  --paper-vignette: rgb(140 110 70 / 0.05);
+  --paper-shadow: 0 1px 2px rgb(70 55 40 / 0.1), 0 1px 1px rgb(70 55 40 / 0.04), 0 18px 48px -12px rgb(70 55 40 / 0.14);
   --grid-minor: rgb(120 113 108 / 0.08);
   --grid-major: rgb(120 113 108 / 0.13);
   /* Day contours: warm ink on paper. */
@@ -27,9 +29,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --page-bg: #09080b;
-    --paper-bg: #18181b;
-    --paper-edge: rgb(161 161 170 / 0.18);
-    --paper-shadow: 0 0 48px rgb(0 0 0 / 0.55);
+    --paper-bg: #1b1a19; /* black card: warm charcoal */
+    --paper-edge: rgb(255 250 240 / 0.07);
+    --paper-highlight: rgb(255 250 240 / 0.06);
+    --paper-vignette: rgb(0 0 0 / 0.22);
+    --paper-shadow: 0 1px 2px rgb(0 0 0 / 0.6), 0 2px 4px rgb(0 0 0 / 0.25), 0 24px 64px -12px rgb(0 0 0 / 0.7);
     --grid-minor: rgb(161 161 170 / 0.06);
     --grid-major: rgb(161 161 170 / 0.1);
     /* Night contours: cool moonlit lines, index lines with a faint halo. */
@@ -229,14 +233,17 @@ time {
   background: var(--paper-bg);
 }
 
-/* Paper texture (screen only): warm tint, fine fibre grain, soft edge shading. */
+/* Paper texture (screen only), three quiet layers that only read as paper up close:
+   1. formation: large, faint clouds where the fibre web is denser (900px tile);
+   2. fibres: sparse short strands (520px tile);
+   3. tooth: a barely-there fine grain (240px tile), which also dithers the vignette so
+      dark gradients do not band.
+   Day is warm ink pressed into cream stock; night is black card, its texture lifted with
+   `screen` so it stays visible. Tile sizes differ so repeats never line up. */
 @media screen {
   .paper {
-    --paper-grain-opacity: 0.45;
     background-color: var(--paper-bg);
-    background-image:
-      linear-gradient(to bottom, rgb(255 255 255 / 0.55), transparent 120px),
-      radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(120 90 50 / 0.07) 100%);
+    background-image: radial-gradient(ellipse 120% 90% at 50% 35%, transparent 60%, var(--paper-vignette) 100%);
   }
   .paper::before {
     content: "";
@@ -244,11 +251,10 @@ time {
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: var(--paper-grain-opacity);
-    mix-blend-mode: multiply;
-    /* Surface relief: fine noise lit by a raking distant light (feDiffuseLighting), then a faint horizontal fibre layer. */
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='r' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' seed='5' stitchTiles='stitch' result='n'/><feDiffuseLighting in='n' surfaceScale='1.1' diffuseConstant='1.05' lighting-color='%23fffdf8'><feDistantLight azimuth='75' elevation='62'/></feDiffuseLighting></filter><rect width='100%25' height='100%25' filter='url(%23r)'/></svg>"),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.01 0.45' numOctaves='2' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.42  0 0 0 0 0.3  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.0045' numOctaves='4' seed='11' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.29  0 0 0 0 0.2  0.15 0 0 0 -0.06'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='turbulence' baseFrequency='0.012 0.07' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.29  0 0 0 0 0.2  -1.6 0 0 0 0.05'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.29  0 0 0 0 0.2  0.16 0 0 0 -0.05'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
   }
   .paper-column {
     position: relative;
@@ -256,20 +262,24 @@ time {
   }
 }
 @media screen and (prefers-color-scheme: dark) {
-  .paper {
-    --paper-grain-opacity: 0.1;
-    background-image: radial-gradient(ellipse at 50% 40%, transparent 55%, rgb(0 0 0 / 0.25) 100%);
+  .paper::before {
+    mix-blend-mode: screen;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.0045' numOctaves='4' seed='11' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.92  0 0 0 0 0.86  0.07 0 0 0 -0.02'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='turbulence' baseFrequency='0.012 0.07' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.92  0 0 0 0 0.86  -0.7 0 0 0 0.022'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.92  0 0 0 0 0.86  0.1 0 0 0 -0.03'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
   }
 }
 
-/* The paper floats on the pond: a strip of water above it on every width, and a gutter
-   either side from 768px so the koi can swim round it. */
+/* The paper lies just off the desk: a strip of contour map above it on every width, and a
+   gutter either side from 768px. Edge: hairline border, 1px inner highlight, and a two-part
+   shadow (short dense contact shadow + wide faint ambient one). */
 @media screen {
   .paper {
     margin-top: 72px;
     min-height: calc(100vh - 72px);
     border-top: 1px solid var(--paper-edge);
-    box-shadow: var(--paper-shadow);
+    box-shadow: inset 0 1px 0 var(--paper-highlight), var(--paper-shadow);
   }
 }
 
