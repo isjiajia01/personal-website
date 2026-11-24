@@ -128,6 +128,7 @@ const dictionary = {
       detail: true,
       name: "OpsDesk",
       year: "2026",
+      kind: "演示",
       summary:
         "一个 support/operations demo，把客户问题转成证据、草稿动作、审批、反馈记忆和可 replay 的日志。",
       roleFit: "Internal tools · workflow automation with human review · support operations",
@@ -148,6 +149,7 @@ const dictionary = {
       detail: true,
       name: "Denmark Flex Planner",
       year: "2026",
+      kind: "已上线",
       summary:
         "一个已上线的地图型决策支持工具，在预算、电网分区和区域约束下，为丹麦 EV 充电与本地灵活性投资确定优先级。",
       roleFit: "能源基础设施 · 约束优化 · 数据产品",
@@ -167,6 +169,7 @@ const dictionary = {
       slug: "afgang",
       name: "Afgang",
       year: "2026",
+      kind: "案例",
       summary:
         "一个本地优先的哥本哈根交通工具，把通勤决策和基于计划时刻表的保守可达范围放在同一产品中。",
       roleFit: "全栈工程 · 公共交通数据 · 地理空间可靠性",
@@ -186,6 +189,7 @@ const dictionary = {
       slug: "ascii-studio",
       name: "ASCII Studio",
       year: "2026",
+      kind: "已上线",
       summary:
         "一个免费的浏览器工具：把任意图片或视频实时转成 ASCII、盲文、半色调、抖动或砖块纹理，全程本地渲染，不上传任何内容。",
       roleFit: "产品工程 · 浏览器图形 · 工具设计",
@@ -204,6 +208,7 @@ const dictionary = {
       slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
       year: "2026",
+      kind: "论文",
       summary:
         "一个有 Mover 场景背景的真实物流规划项目：决定多日配送如何接单、排路线，并在 depot 压力下做恢复。",
       roleFit: "Logistics planning · optimization · operational decision support",
@@ -222,6 +227,7 @@ const dictionary = {
       slug: "apple-apps",
       name: "Apple apps",
       year: "2026",
+      kind: "App Store",
       summary:
         "八款独立设计、开发的小型 Apple 应用 —— 5 款已在 App Store 上架（覆盖 iPhone、Watch、TV、Mac 和 Safari），2 款审核中，1 款即将推出。",
       roleFit: "产品工程 · SwiftUI · App Store 发布运维",

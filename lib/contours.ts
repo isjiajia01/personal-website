@@ -80,6 +80,8 @@ export class ContourField {
   private hill = { x: 0, y: 0, h: 0 };
   private reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+  /** Phones and touch screens: one still frame, no loop, no battery cost. */
+  private still = window.matchMedia("(max-width: 767px), (pointer: coarse)");
   private resizeObserver: ResizeObserver;
 
   constructor(private canvas: HTMLCanvasElement) {
@@ -89,6 +91,7 @@ export class ContourField {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.reducedMotion.addEventListener("change", this.onMotionChange);
+    this.still.addEventListener("change", this.onMotionChange);
     this.darkScheme.addEventListener("change", this.onThemeChange);
     window.addEventListener("pointermove", this.onPointerMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", this.onPointerLeave);
@@ -101,6 +104,7 @@ export class ContourField {
     cancelAnimationFrame(this.raf);
     this.resizeObserver.disconnect();
     this.reducedMotion.removeEventListener("change", this.onMotionChange);
+    this.still.removeEventListener("change", this.onMotionChange);
     this.darkScheme.removeEventListener("change", this.onThemeChange);
     window.removeEventListener("pointermove", this.onPointerMove);
     document.documentElement.removeEventListener("pointerleave", this.onPointerLeave);
@@ -127,7 +131,7 @@ export class ContourField {
   private resize() {
     const { clientWidth: w, clientHeight: h } = this.canvas;
     this.width = w;
-    if (!w || !h) return; // hidden (phones: the paper is full-bleed), so stay asleep
+    if (!w || !h) return; // hidden (print), so stay asleep
     this.height = h;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.canvas.width = Math.round(w * this.dpr);
@@ -140,7 +144,7 @@ export class ContourField {
   }
 
   private get animating() {
-    return this.width > 0 && !this.reducedMotion.matches && document.visibilityState === "visible";
+    return this.width > 0 && !this.reducedMotion.matches && !this.still.matches && document.visibilityState === "visible";
   }
 
   private schedule() {

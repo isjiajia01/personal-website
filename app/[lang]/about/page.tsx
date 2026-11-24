@@ -110,11 +110,6 @@ export default async function AboutPage(
           ))}
         </dl>
       </section>
-
-      {/* Footer */}
-      <div className="mt-12 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
-        {params.lang === "zh" ? "就酱～" : "That's about it~"}
-      </div>
     </div>
   );
 }

@@ -10,6 +10,7 @@
   --motion-out: 100ms;
   --motion-page: 500ms;
   --motion-mask: 360ms;
+  --motion-leave: 200ms;
   --content-w: 592px;
   --page-bg: #eeede8; /* a shade below the cream paper so the sheet lifts off it */
   --paper-bg: #fffdf8; /* warm cream, brighter than the page so the sheet lifts off it */
@@ -175,39 +176,16 @@ time {
   }
 }
 
-/* Departure mask (route-transition.tsx). Paper-coloured, 48px soft leading edge, sweeps in
-   from the right for next / left for prev. Rendered only while a transition runs. */
-.route-mask {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  z-index: 55;
-  width: calc(100% + 48px);
-  pointer-events: none;
-  will-change: transform;
-  transition: transform var(--motion-mask) var(--ease-snap);
-}
-.route-mask[data-dir="next"] {
-  left: -48px;
-  background: linear-gradient(to right, transparent 0, var(--paper-bg) 48px);
-  transform: translateX(100%);
-}
-.route-mask[data-dir="prev"] {
-  left: 0;
-  background: linear-gradient(to left, transparent 0, var(--paper-bg) 48px);
-  transform: translateX(-100%);
-}
-.route-mask[data-phase="covering"] {
-  transform: translateX(0);
-}
-@media (prefers-reduced-motion: reduce), print {
-  .route-mask {
-    display: none;
-  }
+/* Departure fade (route-transition.tsx): the page's words (main + footer) fade out on the
+   paper while the nav, the sheet and the contour map stay; the new page then rises in with
+   the usual stagger. Only while a transition runs; reduced motion skips it in JS. */
+.paper[data-leaving] :is(main, footer) {
+  opacity: 0;
+  transition: opacity var(--motion-leave) ease-out;
 }
 
 /* Contour lines behind the paper (components/contour-background.tsx, lib/contours.ts).
-   Below md the paper is full-bleed, so the canvas is hidden and the field never runs. */
+   Phones and touch devices get one still frame (it fills the strip above the paper). */
 .contour-background {
   position: fixed;
   inset: 0;
@@ -216,7 +194,7 @@ time {
   pointer-events: none;
 }
 
-@media (max-width: 767px), print {
+@media print {
   .contour-background {
     display: none;
   }

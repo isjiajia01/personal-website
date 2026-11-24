@@ -15,7 +15,7 @@ A recruiter lands on `/en` or `/zh`, understands who Jiajia is and what role fit
 
 ## Home order
 1. Name (h1, serif 32px) 2. Positioning sentence (existing motto) 3. Bio paragraphs with org links 4. Work index 5. “view all evidence” link 6. `* * *` ornament + footer contacts.
-Work index row: serif title (+ ↗ if external) · dotted leader · year; below it the existing `summary` at 14px stone-500, unclamped. Whole row is one link. Rows are the `homeFeatured` works in dictionary order. No data change.
+Work index row: serif title (+ ↗ if external) · dotted leader · kind (`kind` in the dictionaries: Live / Demo / Case study / Thesis / App Store; the year column was all 2026 and said nothing); below it the existing `summary` at 14px stone-500, unclamped. Whole row is one link. Rows are the `homeFeatured` works in dictionary order. No data change.
 
 ## Behaviour
 - Navigation: always-visible inline row (Home Work Notes About · language). No overlay menu: short labels fit at 320px, so an overlay would add steps. Targets ≥ 40px tall via padding. `aria-current="page"` on active.
@@ -54,3 +54,8 @@ The old single-scale lit grain read as stucco and, multiplied over white, greyed
 - Texture, three tiles of different sizes: faint large formation clouds (900px), sparse short fibres (520px), barely-there tooth (240px) that also dithers the vignette. Day tints them warm ink; night lifts them with `mix-blend-mode: screen` on black card.
 - Colour: cream `#fffdf8` on a page one shade darker (`#eeede8`), so the sheet lifts off; body text contrast unchanged.
 - Edge: hairline top border, 1px inner highlight (`--paper-highlight`), two-part shadow: short dense contact + wide faint ambient (`--paper-shadow`).
+
+## Polish pass (2026-11-24)
+- Phones: the language link stays on the nav row (no forced wrap); the strip above the paper shows one still contour frame (no loop on `max-width: 767px` or coarse pointers).
+- Route change: the paper-coloured departure mask is replaced by a 200ms fade of `main` + `footer` (`--motion-leave`, `.paper[data-leaving]`); nav, sheet and map stay, the new page rises in as before. Same link filters and reduced-motion handling as the mask had.
+- About page: dropped the casual sign-off line.

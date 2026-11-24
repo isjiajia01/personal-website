@@ -3,34 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-// Departure mask: a paper-coloured panel sweeps over the page, we navigate once it covers,
-// then remove it ~60ms after the new pathname commits so the existing CSS entrance plays.
-const COVER_MS = 360; // keep in sync with --motion-mask in globals.css
+// Departure fade: the page's words (main + footer) fade out on the paper while the nav, the
+// sheet and the contour map stay put; we navigate once they are gone, then clear the flag
+// ~60ms after the new pathname commits so the existing CSS entrance (rise + stagger) plays.
+const FADE_MS = 200; // keep in sync with --motion-leave in globals.css
 const SETTLE_MS = 60;
-const FAILSAFE_MS = 3000; // after navigate(): never leave the mask up longer than this
-
-type Direction = "next" | "prev";
-type Phase = "preparing" | "covering";
+const FAILSAFE_MS = 3000; // after navigate(): never leave the page faded longer than this
 
 const norm = (p: string) => (p.length > 1 ? p.replace(/\/+$/, "") : p);
 const LOCALE_RE = /^\/(en|zh)(?=\/|$)/;
-
-// Section order Home < Works < Notes < About decides the sweep direction.
-function rank(path: string): number {
-  const rest = norm(path).replace(LOCALE_RE, "");
-  const seg = rest.split("/")[1] ?? "";
-  if (seg === "") return 0;
-  if (seg === "works" || seg === "projects") return 1;
-  if (seg === "notes") return 2;
-  if (seg === "about") return 3;
-  return -1;
-}
-
-function directionFor(from: string, to: string): Direction {
-  const a = rank(from);
-  const b = rank(to);
-  return a >= 0 && b >= 0 && b < a ? "prev" : "next";
-}
 
 interface Run {
   href: string;
@@ -39,7 +20,6 @@ interface Run {
   navTimer?: number;
   settleTimer?: number;
   failTimer?: number;
-  raf?: number;
 }
 
 export function RouteTransition({
@@ -51,7 +31,7 @@ export function RouteTransition({
 }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
-  const [mask, setMask] = useState<{ dir: Direction; phase: Phase } | null>(null);
+  const [leaving, setLeaving] = useState(false);
   const run = useRef<Run | null>(null);
   const routerRef = useRef(router);
   routerRef.current = router;
@@ -60,7 +40,6 @@ export function RouteTransition({
     window.clearTimeout(r.navTimer);
     window.clearTimeout(r.settleTimer);
     window.clearTimeout(r.failTimer);
-    if (r.raf) window.cancelAnimationFrame(r.raf);
   };
 
   const finish = useCallback((focusMain: boolean) => {
@@ -68,7 +47,7 @@ export function RouteTransition({
     if (!r) return;
     clearTimers(r);
     run.current = null;
-    setMask(null);
+    setLeaving(false);
     if (focusMain) document.getElementById("main")?.focus({ preventScroll: true });
   }, []);
 
@@ -80,7 +59,7 @@ export function RouteTransition({
     routerRef.current.push(r.href);
   }, [finish]);
 
-  // Pathname committed: schedule uncover. Never touches the navigate timer.
+  // Pathname committed: schedule the fade-in. Never touches the navigate timer.
   useEffect(() => {
     const r = run.current;
     if (!r || !r.navigated || norm(pathname) === norm(r.startPath)) return;
@@ -88,7 +67,7 @@ export function RouteTransition({
     r.settleTimer = window.setTimeout(() => finish(true), SETTLE_MS);
   }, [pathname, finish]);
 
-  // Reduced motion toggled mid-flight: navigate now, drop the mask, no delay.
+  // Reduced motion toggled mid-flight: navigate now, drop the fade, no delay.
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = () => {
@@ -147,30 +126,13 @@ export function RouteTransition({
       navigated: false,
     };
     run.current = r;
-    setMask({ dir: directionFor(r.startPath, url.pathname), phase: "preparing" });
-    // Two frames so the off-screen start state is painted before transitioning to cover.
-    r.raf = window.requestAnimationFrame(() => {
-      r.raf = window.requestAnimationFrame(() => {
-        r.raf = 0;
-        if (run.current === r) setMask((m) => (m ? { ...m, phase: "covering" } : m));
-      });
-    });
-    r.navTimer = window.setTimeout(() => navigate(r), COVER_MS);
+    setLeaving(true);
+    r.navTimer = window.setTimeout(() => navigate(r), FADE_MS);
   };
 
   return (
-    <>
-      <div className={className} onClickCapture={onClickCapture}>
-        {children}
-      </div>
-      {mask && (
-        <div
-          aria-hidden="true"
-          className="route-mask"
-          data-dir={mask.dir}
-          data-phase={mask.phase}
-        />
-      )}
-    </>
+    <div className={className} data-leaving={leaving ? "" : undefined} onClickCapture={onClickCapture}>
+      {children}
+    </div>
   );
 }

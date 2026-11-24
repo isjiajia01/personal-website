@@ -43,7 +43,7 @@ export default async function Home(props: {
         ))}
       </div>
 
-      {/* Work index: title · dotted leader · year, then the real summary. Rows own their stagger. */}
+      {/* Work index: title · dotted leader · kind (Live / Demo / Thesis …), then the real summary. Rows own their stagger. */}
       <section className="rise-own mt-14" aria-labelledby="home-work">
         <h2 id="home-work" className="sr-only">
           {dictionary.meta.authorName}
@@ -75,8 +75,8 @@ export default async function Home(props: {
                     )}
                   </span>
                   <span className="leader" aria-hidden="true" />
-                  <span className="text-[14px] tabular-nums text-stone-500 dark:text-zinc-400">
-                    {work.year}
+                  <span className="shrink-0 whitespace-nowrap text-[13px] text-stone-500 dark:text-zinc-400">
+                    {work.kind}
                   </span>
                 </span>
                 <span className="mt-1 block text-[14px] leading-6 text-stone-500 dark:text-zinc-400">

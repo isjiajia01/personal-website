@@ -138,6 +138,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       detail: true,
       name: "OpsDesk",
       year: "2026",
+      kind: "Demo",
       summary:
         "A support/operations demo that turns cases into evidence, draft actions, approvals, feedback memory, and replayable logs.",
       roleFit: "Internal tools · workflow automation with human review · support operations",
@@ -158,6 +159,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       detail: true,
       name: "Denmark Flex Planner",
       year: "2026",
+      kind: "Live",
       summary:
         "A live, map-first decision-support tool for prioritizing Danish EV charging and local flexibility investments under budget, grid-zone, and regional constraints.",
       roleFit: "Energy infrastructure · constrained optimization · data product",
@@ -177,6 +179,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       slug: "afgang",
       name: "Afgang",
       year: "2026",
+      kind: "Case study",
       summary:
         "A local-first Copenhagen transport utility combining commute decisions with conservative, timetable-based reachability maps.",
       roleFit: "Full-stack engineering · transit data · geospatial reliability",
@@ -196,6 +199,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       slug: "ascii-studio",
       name: "ASCII Studio",
       year: "2026",
+      kind: "Live",
       summary:
         "A free browser tool that turns any image or video into ASCII, braille, halftone, dither or brick textures, rendered live and exported without uploading anything.",
       roleFit: "Product engineering · browser graphics · tool design",
@@ -214,6 +218,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       slug: "dtu-mover-thesis",
       name: "DTU × Mover Thesis",
       year: "2026",
+      kind: "Thesis",
       summary:
         "A real logistics planning project with Mover context: decide how multi-day deliveries should be admitted, routed, and recovered when depots are under stress.",
       roleFit: "Logistics planning · optimization · operational decision support",
@@ -232,6 +237,7 @@ My strongest work sits around internal tools, workflow automation with human rev
       slug: "apple-apps",
       name: "Apple apps",
       year: "2026",
+      kind: "App Store",
       summary:
         "Eight small Apple apps designed and built solo — five live on the App Store for iPhone, Watch, TV, Mac and Safari, two in review and one coming soon.",
       roleFit: "Product engineering · SwiftUI · App Store release operations",

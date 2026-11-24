@@ -121,7 +121,7 @@ export function SiteShell({
             <Link
               href={switchPath}
               hrefLang={otherLang === "zh" ? "zh-Hans" : "en"}
-              className={`${linkBase} ml-auto shrink-0 whitespace-nowrap text-[12px] tracking-wide max-sm:basis-full max-sm:text-right text-stone-500 dark:text-zinc-400`}
+              className={`${linkBase} ml-auto shrink-0 whitespace-nowrap text-[12px] tracking-wide text-stone-500 dark:text-zinc-400`}
             >
               {otherLangLabel}
             </Link>
