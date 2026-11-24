@@ -3,7 +3,7 @@ import { Crimson_Pro } from "next/font/google";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { CustomCursor } from "../components/custom-cursor";
-import { OceanBackground } from "../components/ocean-background";
+import { ContourBackground } from "../components/contour-background";
 import "../styles/globals.css";
 
 const allo = localFont({
@@ -38,7 +38,7 @@ export function SharedRootLayout({
         <link rel="stylesheet" href="/fonts/wenyuan/result.css" />
       </head>
       <body className="text-[15px] leading-(--leading-body) text-zinc-900 antialiased dark:text-zinc-100">
-        <OceanBackground />
+        <ContourBackground />
         <CustomCursor />
         {children}
       </body>

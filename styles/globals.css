@@ -11,23 +11,31 @@
   --motion-page: 500ms;
   --motion-mask: 360ms;
   --content-w: 592px;
-  --page-bg: #f3f3ef; /* matches the day pond in lib/ascii-ocean/renderer.ts */
+  --page-bg: #f3f3ef;
   --paper-bg: #fff;
   --paper-edge: rgb(120 113 108 / 0.2);
   --paper-shadow: 0 0 48px rgb(0 0 0 / 0.07);
   --grid-minor: rgb(120 113 108 / 0.08);
   --grid-major: rgb(120 113 108 / 0.13);
+  /* Day contours: warm ink on paper. */
+  --contour: rgb(120 100 84 / 0.2);
+  --contour-index: rgb(120 100 84 / 0.38);
+  --contour-halo: none;
   --rose: #be123c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page-bg: #09080b; /* night sea */
+    --page-bg: #09080b;
     --paper-bg: #18181b;
     --paper-edge: rgb(161 161 170 / 0.18);
     --paper-shadow: 0 0 48px rgb(0 0 0 / 0.55);
     --grid-minor: rgb(161 161 170 / 0.06);
     --grid-major: rgb(161 161 170 / 0.1);
+    /* Night contours: cool moonlit lines, index lines with a faint halo. */
+    --contour: rgb(125 150 190 / 0.13);
+    --contour-index: rgb(160 185 225 / 0.26);
+    --contour-halo: rgb(120 160 230 / 0.06);
     --rose: #fb7185;
   }
 }
@@ -194,19 +202,18 @@ time {
   }
 }
 
-/* Pond behind the paper (components/ocean-background.tsx). The renderer paints its own
-   day and night palettes and keeps the creatures in the water the paper leaves open. */
-.ocean-background {
+/* Contour lines behind the paper (components/contour-background.tsx, lib/contours.ts).
+   Below md the paper is full-bleed, so the canvas is hidden and the field never runs. */
+.contour-background {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  font-family: ui-monospace, Menlo, monospace;
 }
 
-@media print {
-  .ocean-background {
+@media (max-width: 767px), print {
+  .contour-background {
     display: none;
   }
 }
