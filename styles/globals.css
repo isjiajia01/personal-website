@@ -474,7 +474,9 @@ time {
 }
 
 
-/* Custom cursor (components/custom-cursor.tsx): thin ring + dot, rose on interactive targets */
+/* Custom cursor (components/custom-cursor.tsx): adaptive ink pointer.
+   Ink layer = dot / caret, inverted against the page. Accent layer = rose disc on links,
+   label pill beside the pointer for [data-cursor]. */
 .cursor-layer {
   position: fixed;
   top: 0;
@@ -489,68 +491,115 @@ time {
   display: block;
 }
 
+.cursor-ink {
+  mix-blend-mode: difference;
+}
+
 .has-custom-cursor,
 .has-custom-cursor * {
   cursor: none !important;
 }
 
-.cursor-ring,
-.cursor-dot {
+/* Form fields and iframes keep the system cursor; the custom one steps aside. */
+.has-custom-cursor :is(input, textarea, [contenteditable="true"], iframe) {
+  cursor: auto !important;
+}
+
+.cursor-dot,
+.cursor-disc {
   position: absolute;
-  border-radius: 9999px;
   opacity: 0;
   translate: -50% -50%;
-  transition:
-    opacity var(--motion-in) var(--ease-snap),
-    scale var(--motion-mask) var(--ease-snap),
-    border-color var(--motion-link) var(--ease-snap),
-    background-color var(--motion-link) var(--ease-snap);
-}
-
-.cursor-ring {
-  width: 32px;
-  height: 32px;
-  border: 1px solid rgb(24 24 27 / 0.7);
 }
 
 .cursor-dot {
-  width: 5px;
-  height: 5px;
-  background-color: #18181b;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #fff;
+  transition:
+    opacity var(--motion-in) var(--ease-snap),
+    width var(--motion-in) var(--ease-snap),
+    height var(--motion-in) var(--ease-snap),
+    border-radius var(--motion-in) var(--ease-snap),
+    scale var(--motion-in) var(--ease-snap);
 }
 
-.cursor-ready .cursor-ring,
+.cursor-disc {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--rose) 16%, transparent);
+  scale: 0.3;
+  transition:
+    opacity var(--motion-in) var(--ease-snap),
+    scale var(--motion-mask) var(--ease-snap);
+}
+
+.cursor-pill {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  white-space: nowrap;
+  border-radius: 9999px;
+  padding: 3px 9px;
+  background: #1c1917;
+  color: #fafaf9;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14), 0 4px 12px rgb(0 0 0 / 0.18);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  scale: 0.85;
+  transform-origin: 0 0;
+  transition:
+    opacity var(--motion-out) var(--ease-snap),
+    scale var(--motion-in) var(--ease-snap);
+}
+
 .cursor-ready .cursor-dot {
   opacity: 1;
 }
 
-.cursor-hover .cursor-ring {
-  scale: 1.5;
-  border-color: var(--rose);
+/* Over glyphs: a caret the height of the line. */
+.cursor-text .cursor-dot {
+  width: 2px;
+  height: var(--caret-h, 18px);
+  border-radius: 1px;
 }
 
-.cursor-hover .cursor-dot {
-  background-color: var(--rose);
+/* Over links and buttons: the dot gives way to a soft rose disc. */
+.cursor-ready.cursor-link .cursor-dot {
+  opacity: 0;
+  scale: 0.4;
+}
+.cursor-ready.cursor-link .cursor-disc {
+  opacity: 1;
+  scale: 1;
 }
 
-.cursor-down .cursor-ring {
-  scale: 0.8;
+.cursor-ready.cursor-label .cursor-pill {
+  opacity: 1;
+  scale: 1;
+  transition-duration: var(--motion-in);
+}
+
+.cursor-ready.cursor-native .cursor-dot {
+  opacity: 0;
+}
+
+.cursor-down .cursor-dot {
+  scale: 0.7;
+}
+.cursor-down .cursor-disc {
+  scale: 0.85;
 }
 
 @media (prefers-color-scheme: dark) {
-  .cursor-ring {
-    border-color: rgb(244 244 245 / 0.7);
-  }
-
-  .cursor-dot {
-    background-color: #f4f4f5;
-  }
-
-  .cursor-hover .cursor-ring {
-    border-color: var(--rose);
-  }
-
-  .cursor-hover .cursor-dot {
-    background-color: var(--rose);
+  .cursor-pill {
+    background: #f4f4f5;
+    color: #18181b;
   }
 }

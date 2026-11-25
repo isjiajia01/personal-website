@@ -31,6 +31,7 @@ export function LabTile({ slug, index }: { slug: string; index: number }) {
       ref={ref}
       href={`/lab/${slug}/`}
       aria-label={`${effect.title}: ${effect.summary}`}
+      data-cursor="Open"
       className="group block rounded-sm"
       style={{ "--tilt": `${tilt}deg`, "--tape": tape } as React.CSSProperties}
     >

@@ -84,6 +84,7 @@ export function ToastDemo({ paused }: { paused?: boolean }) {
           return (
             <div
               key={t.id}
+              data-cursor={interactive && isFront && !t.out ? "Swipe" : undefined}
               className="toast-card absolute inset-x-0 bottom-0 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#222226] px-3.5 py-3 text-white shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
               style={{
                 transform,
