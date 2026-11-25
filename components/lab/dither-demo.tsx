@@ -28,16 +28,24 @@ function bayer8() {
   return m.flat().map((v) => (v + 0.5) / 64);
 }
 
-function hash(x: number, y: number) {
-  const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-  return s - Math.floor(s);
-}
+// Value noise on a fixed 256×256 lattice of seeded random numbers. A table lookup is far
+// cheaper than a sin()-based hash, which matters at 59k pixels × 5 octaves per frame.
+const LATTICE = (() => {
+  const t = new Float32Array(256 * 256);
+  let s = 0x9e3779b9;
+  for (let i = 0; i < t.length; i++) {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    t[i] = s / 4294967296;
+  }
+  return t;
+})();
 
 function noise(x: number, y: number) {
   const xi = Math.floor(x), yi = Math.floor(y);
   const xf = x - xi, yf = y - yi;
   const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
-  const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+  const x0 = xi & 255, x1 = (xi + 1) & 255, y0 = (yi & 255) << 8, y1 = ((yi + 1) & 255) << 8;
+  const a = LATTICE[y0 + x0], b = LATTICE[y0 + x1], c = LATTICE[y1 + x0], d = LATTICE[y1 + x1];
   return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
 }
 
@@ -65,7 +73,6 @@ export function DitherDemo({ paused = false }: { paused?: boolean }) {
     const pointer = { x: -1, y: -1 };
     let raf = 0;
     let drawn = false;
-    let frame = 0;
 
     const onMove = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
@@ -76,23 +83,35 @@ export function DitherDemo({ paused = false }: { paused?: boolean }) {
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerleave", onLeave);
 
+    // One 32-bit write per pixel (ImageData is RGBA bytes; on little-endian that reads as ABGR).
+    const pixels = new Uint32Array(img.data.buffer);
+    const pack = ([r, g, b]: number[]) => ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0;
+    const skyPx = pack(SKY);
+    const cloudPx = pack(CLOUD);
+    const R = 44;
+    let last = -Infinity;
+
     const draw = (t: number) => {
       if (!reduce) raf = requestAnimationFrame(draw);
-      frame++;
       if (pausedRef.current && drawn) return;
-      if (drawn && frame % 2) return; // ~30fps is plenty for slow drift
+      if (drawn && t - last < 1000 / 24) return; // the drift is slow: ~24fps is plenty, on 60 and 120Hz screens
+      last = t;
       drawn = true;
       const drift = reduce ? 0 : t * 0.00004;
+      const ox = drift * 6, oy = drift * 2;
+      const px = pointer.x, py = pointer.y;
       for (let y = 0; y < H; y++) {
+        const fy = y * 0.016 + oy;
+        const dy = y - py;
+        const row = y * W;
+        const m = (y & 7) * 8;
         for (let x = 0; x < W; x++) {
-          let d = fbm(x * 0.011 + drift * 6, y * 0.016 + drift * 2);
-          d = Math.min(1, Math.max(0, (d - 0.38) * 2.2));
-          const dist = Math.hypot(x - pointer.x, y - pointer.y);
-          if (dist < 44) d -= (1 - dist / 44) * 1.1; // pointer carves the cloud
-          const on = d > matrix[(y & 7) * 8 + (x & 7)];
-          const c = on ? CLOUD : SKY;
-          const i = (y * W + x) * 4;
-          img.data[i] = c[0]; img.data[i + 1] = c[1]; img.data[i + 2] = c[2]; img.data[i + 3] = 255;
+          let d = fbm(x * 0.011 + ox, fy);
+          d = d < 0.38 ? 0 : Math.min(1, (d - 0.38) * 2.2);
+          const dx = x - px;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < R * R) d -= (1 - Math.sqrt(d2) / R) * 1.1; // pointer carves the cloud
+          pixels[row + x] = d > matrix[m + (x & 7)] ? cloudPx : skyPx;
         }
       }
       ctx.putImageData(img, 0, 0);

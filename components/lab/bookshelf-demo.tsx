@@ -360,10 +360,14 @@ export function BookshelfDemo({ paused }: { paused?: boolean }) {
     let raf = 0;
     let last = performance.now();
     let ready = false;
+    // A held tile still runs its first frames, so the shelf settles into a full row instead of
+    // freezing on a blank or half-filled card.
+    let warm = 45;
     const loop = (t: number) => {
       const dt = Math.min(0.05, (t - last) / 1000);
       last = t;
-      if (!pausedRef.current) {
+      if (!pausedRef.current || warm > 0) {
+        warm -= 1;
         frame(dt);
         if (!ready) {
           stage.setAttribute("data-ready", "");

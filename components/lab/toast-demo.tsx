@@ -47,12 +47,14 @@ export function ToastDemo({ paused }: { paused?: boolean }) {
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 260);
   };
 
-  // Tile: fire by itself while on screen. Page: one toast at load so it is never empty.
+  // Tile: fire by itself while in play, and start with a full stack so a held tile is not
+  // empty. Page: one toast at load so it is never empty.
   useEffect(() => {
     if (interactive) {
       fire();
       return;
     }
+    if (counter.current === 0) Array.from({ length: MAX }, fire);
     if (paused) return;
     fire();
     const id = setInterval(fire, 1700);

@@ -6,18 +6,37 @@ import { labEffects, labNumber } from "../../lib/lab-effects";
 import { labDemos } from "./demos";
 
 // One collage piece: a live demo mounted like a print taped onto the paper, pinned a little
-// crooked, with a specimen caption underneath. Hover straightens and lifts it. The demo keeps
-// running while on screen and pauses off screen.
+// crooked, with a specimen caption underneath. Hover straightens and lifts it.
+//
+// The demo mounts once the tile is near the screen and shows a still frame. It only animates
+// while it is in play: under the pointer or keyboard focus, or, on a screen without hover, while
+// the tile crosses the middle of the viewport. Running every demo at once made the page stutter,
+// in Safari above all.
 export function LabTile({ slug, index }: { slug: string; index: number }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [near, setNear] = useState(false);
+  const [centred, setCentred] = useState(false);
+  const [canHover, setCanHover] = useState(true);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([en]) => setVisible(en.isIntersecting), { rootMargin: "100px" });
+    const hover = matchMedia("(hover: hover) and (pointer: fine)");
+    const syncHover = () => setCanHover(hover.matches);
+    syncHover();
+    hover.addEventListener("change", syncHover);
+    const io = new IntersectionObserver(([en]) => setNear(en.isIntersecting), { rootMargin: "100px" });
+    const middle = new IntersectionObserver(([en]) => setCentred(en.isIntersecting), { rootMargin: "-40% 0px -40% 0px" });
     io.observe(el);
-    return () => io.disconnect();
+    middle.observe(el);
+    return () => {
+      io.disconnect();
+      middle.disconnect();
+      hover.removeEventListener("change", syncHover);
+    };
   }, []);
+  const playing = near && (hovered || focused || (!canHover && centred));
   const effect = labEffects.find((e) => e.slug === slug);
   const Demo = labDemos[slug];
   if (!effect || !Demo) return null;
@@ -32,6 +51,10 @@ export function LabTile({ slug, index }: { slug: string; index: number }) {
       href={`/lab/${slug}/`}
       aria-label={`${effect.title}: ${effect.summary}`}
       data-cursor="Open"
+      onPointerEnter={(e) => e.pointerType !== "touch" && setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       className="group block rounded-sm"
       style={{ "--tilt": `${tilt}deg`, "--tape": tape } as React.CSSProperties}
     >
@@ -42,7 +65,7 @@ export function LabTile({ slug, index }: { slug: string; index: number }) {
         />
         <div className={`relative overflow-hidden bg-stone-100 dark:bg-zinc-800 ${aspect}`}>
           <div className="absolute inset-0 [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:object-cover">
-            <Demo paused={!visible} />
+            <Demo paused={!playing} near={near} />
           </div>
         </div>
       </div>
