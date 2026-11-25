@@ -36,7 +36,7 @@ const videos = [
   {
     file: "xc-12-ac2",
     title: "XC-12 Reply: a reply that fails",
-    note: "The failure state is part of the criterion, so it is recorded too.",
+    note: "Testing the failure path as part of the acceptance criteria.",
   },
 ];
 
@@ -62,19 +62,18 @@ export default function ClaudeCodeWorkshopNotes() {
         Claude Code workshop notes
       </h1>
       <p className="mt-3 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
-        A one-day Claude Code workshop in Copenhagen, run by Zartis with Anthropic. The task was a
-        small X (Twitter) clone built from written stories. This is what I took from it.
+        I spent a day at a Claude Code workshop in Copenhagen run by Zartis with Anthropic. The exercise was building a small X (Twitter) clone from written user stories, with a board and QA recordings built into the loop.
       </p>
 
       <div className="mt-12 space-y-12">
         <section>
-          <h2 className={h2}>The idea</h2>
+          <h2 className={h2}>How the workflow was set up</h2>
           <p className={p}>
-            A story goes through three Claude Code skills, and a person has the last word.
-            <code> /implement-story</code> writes the tests and the code,{" "}
-            <code>/review-pr</code> reviews the change with fresh eyes, and{" "}
-            <code>/qa-evidence</code> records one video per acceptance criterion. A board moves the
-            card at each step. Only a human can move it to Done.
+            Each story goes through three Claude Code skills, and a person has the final say.
+            <code> /implement-story</code> writes the tests and implementation,{" "}
+            <code>/review-pr</code> reviews the diff in a fresh context, and{" "}
+            <code>/qa-evidence</code> records one short video per acceptance criterion. The board
+            moves the card at each stage, but only a human can move it to Done.
           </p>
           <Image
             src={`${base}/board.jpg`}
@@ -89,106 +88,70 @@ export default function ClaudeCodeWorkshopNotes() {
         </section>
 
         <section>
-          <h2 className={h2}>What I did</h2>
+          <h2 className={h2}>What I actually ran</h2>
           <p className={p}>
-            I built all ten stories earlier with a different coding agent. At the workshop I ran
-            the same flow on a fresh clone for two stories, XC-5 and XC-8, then re-ran everything
-            on my earlier build. It passes lint, 102 unit tests and 83 end-to-end tests. Every
-            story has QA videos on the board.
+            I had already built all ten stories earlier with a different coding agent. During the
+            workshop I ran the three-skill flow on a fresh clone for two stories (XC-5 and XC-8),
+            then re-ran the full pipeline on my earlier build. In the end it passed lint, 102
+            unit tests, and 83 end-to-end tests, with QA videos attached to every story on the
+            board.
           </p>
         </section>
 
         <section>
-          <h2 className={h2}>What I learned</h2>
+          <h2 className={h2}>Things I noticed</h2>
           <ul className="mt-3 list-disc space-y-3 pl-5 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
             <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Review reads code, QA runs it.
-              </strong>{" "}
-              The review approved XC-5. Recording the videos then failed, because the recorder adds
-              a caption that matched a loose text selector. Only running the test showed it.
+              <code>/review-pr</code> approved XC-5, and then <code>/qa-evidence</code> failed
+              immediately. The video recorder overlays a caption on the page, and that caption
+              matched a loose text selector in the test. Reading the diff didn&apos;t catch it;
+              actually running the recording did, and switching to an exact match fixed it.
             </li>
             <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Say where the spec and the system disagree.
-              </strong>{" "}
-              XC-8 asks for tweets from all users, but the API returns only your own and those you
-              follow. Claude stopped and asked. I chose to test what the API gives and wrote the
-              gap on the ticket, instead of faking data.
+              XC-8 asks for tweets from all users, whereas the API only returns your own tweets
+              and people you follow. Claude stopped and asked how to handle it. Instead of faking
+              data to make the story look green, I tested against what the API actually returns
+              and wrote the mismatch down on the ticket.
             </li>
             <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                The human step is the point.
-              </strong>{" "}
-              Videos make acceptance quick, but someone still has to watch them. Re-recording
-              reused file names, so old comments opened the new videos. Worth knowing.
+              The QA videos make acceptance much faster, though you still have to watch them
+              carefully. When I re-recorded a story, it reused the same file names, so older
+              comments on the card ended up linking to the newer video.
             </li>
             <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                A flaky test is not a fixed test.
-              </strong>{" "}
-              One test failed once and I could not reproduce it in eight reruns. I noted it
-              rather than calling it done.
+              One test failed once and then passed eight reruns in a row. I left a note about it
+              rather than pretending it wasn&apos;t flaky.
             </li>
             <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Hooks and scoped rules are optional.
-              </strong>{" "}
-              The instructors said to drop them when short on time. I set up both anyway, and they
-              work as guard rails, but the board and the videos carry the value.
+              The instructors suggested skipping hooks and scoped rules if we ran short on time. I
+              set them up anyway—they&apos;re nice guard rails, though most of the real value
+              came from the board states and the QA videos.
             </li>
           </ul>
         </section>
 
         <section>
-          <h2 className={h2}>What this says about AI in a company</h2>
+          <h2 className={h2}>What it looks like on a real team</h2>
           <p className={p}>
-            This is my reading, from one day and one small app, not a study. Many companies talk
-            about AI transformation as buying a tool. The workshop made it look more like
-            redesigning how work is checked.
+            What surprised me wasn&apos;t how fast Claude wrote a story—it did that in minutes. The
+            slow parts were things like a spec contradicting the API and a person actually checking
+            whether the result was acceptable. You don&apos;t get to skip writing down your
+            workflow either: the skills, board transitions, and the rule that only a human moves a
+            card to Done only work because someone put them in plain files instead of leaving them
+            as unwritten team habits.
           </p>
-          <ul className="mt-3 list-disc space-y-3 pl-5 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
-            <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Writing code gets cheap; deciding and checking do not.
-              </strong>{" "}
-              Claude built a story in minutes. The slow parts were a requirement that
-              contradicted itself and a person accepting the result. Most real organisations
-              have the same unclear requirements, only less visible.
-            </li>
-            <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Process has to be written down before an agent can follow it.
-              </strong>{" "}
-              The skills, the board rules and the rule that only a person moves a card to Done
-              are plain files. A team that runs on habit and hallway agreements has to make
-              them explicit first. That work is useful even without AI.
-            </li>
-            <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Evidence beats confidence.
-              </strong>{" "}
-              An agent says it is done. A video of the criterion passing is something a manager
-              can check in thirty seconds. I would ask for this kind of proof in any AI-assisted
-              workflow.
-            </li>
-            <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                The human role moves, it does not disappear.
-              </strong>{" "}
-              People spend less time typing and more time owning decisions: accepting a gap,
-              judging a flaky test, noticing that old comments now open new videos. That needs
-              judgement and accountability, so it is not a role to cut first.
-            </li>
-            <li>
-              <strong className="font-medium text-zinc-900 dark:text-zinc-100">
-                Shared systems pay for the speed.
-              </strong>{" "}
-              Fast automated runs left dozens of throwaway accounts on a shared API. Companies
-              adopting agents will need the same hygiene: test data, rate limits, clean-up and
-              clear ownership.
-            </li>
-          </ul>
+          <p className={p}>
+            Once an agent says &ldquo;done&rdquo;, a 20-second video of the acceptance criterion
+            passing is much easier to trust than a green checkmark. That doesn&apos;t remove the
+            human from the loop—someone still has to decide what to do about a spec mismatch, a
+            flaky test, or stale links on a ticket—it just shifts the work from typing to
+            reviewing.
+          </p>
+          <p className={p}>
+            One practical headache: fast automated runs left dozens of throwaway test accounts on
+            the shared API. If a team runs agents like this regularly, test-data cleanup, rate
+            limits, and ownership stop being an afterthought.
+          </p>
         </section>
 
         <section>

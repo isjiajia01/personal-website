@@ -20,21 +20,21 @@ const notes = [
     date: "Nov 2026",
     title: "OpsDesk: where automation should stop",
     summary:
-      "A support case can end with no draft at all. Why OpsDesk treats that as a safe outcome, and what the run trace and gates show.",
+      "Why OpsDesk treats an empty customer draft as a valid outcome, and how the run trace and policy gates sit around it.",
   },
   {
     href: "/notes/afgang-data-lifecycle/",
     date: "Nov 2026",
     title: "Afgang: updating timetable data without breaking the app",
     summary:
-      "Isolated candidate, audits, atomic promotion and automatic rollback for a transport utility built on GTFS and OpenStreetMap.",
+      "Updating Rejseplanen GTFS and OpenStreetMap bundles with an isolated candidate, hash-bound manifest, and automatic rollback.",
   },
   {
     href: "/notes/claude-code-workshop/",
     date: "Nov 2026",
     title: "Claude Code workshop notes",
     summary:
-      "A one-day workshop building an X clone from written stories: a board that moves by itself, QA videos as evidence, and a person who accepts the work.",
+      "A one-day workshop building an X clone from user stories—automated board stages, QA video evidence, and a human at the Done column.",
   },
 ];
 

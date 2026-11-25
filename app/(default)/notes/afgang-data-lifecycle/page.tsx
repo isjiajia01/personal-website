@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title, description, images: [image] },
 };
 
+const link =
+  "underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100";
 const p = "mt-3 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400";
 const h2 = "text-[15px] font-medium text-zinc-900 dark:text-zinc-100";
 
@@ -36,7 +38,7 @@ export default function Note() {
         {title}
       </h1>
       <p className="mt-3 text-[15px] leading-7 text-zinc-900 dark:text-zinc-100">
-        Afgang computes scheduled reachability from official timetable data. A feed update should never leave the app half-updated, so I treat each update as a transaction. This is how it works and why.
+        Afgang computes Copenhagen reachability maps locally from Rejseplanen&apos;s static GTFS and Denmark OpenStreetMap data. Once the routing worked, the more annoying problem was updating those feeds without ever leaving the app half-updated or quietly serving an expired timetable.
       </p>
 
       <figure className="mt-8">
@@ -49,37 +51,43 @@ export default function Note() {
           className="h-auto w-full rounded-md border border-zinc-200 dark:border-zinc-800"
         />
         <figcaption className="mt-2 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">
-          Scheduled reachability from Nørreport Station: the output that depends on one consistent data bundle.
+          Scheduled reachability from Nørreport Station: all four contour layers come from one consistent GTFS and R5 bundle.
         </figcaption>
       </figure>
 
       <div className="mt-12 space-y-12">
         <section>
-          <h2 className={h2}>The problem</h2>
+          <h2 className={h2}>Why in-place rebuilds don&apos;t work</h2>
           <p className={p}>
-            The R5 network is built from GTFS, OpenStreetMap, a serialized network and a runtime JAR. If any of these changes in place, the app can serve results from a mix of old and new data, or from a timetable that has expired. Rebuilding the active data in place was therefore ruled out.
+            At startup, one FastAPI lifespan loads an in-process R5 network (via r5py 1.1.7 / R5 7.5.1) built from the GTFS feed, the Denmark OSM extract, a serialized network file, and a runtime JAR. If you overwrite any of those files in place while the server is running—or if a build fails halfway—the app can end up mixing old and new artifacts. Worse, if a feed expires and the tool quietly falls back to older schedule dates, commute leave times still look plausible even though the timetable underneath is stale.
           </p>
         </section>
 
         <section>
-          <h2 className={h2}>Data identity is a hard gate</h2>
+          <h2 className={h2}>Binding the bundle to one manifest</h2>
           <p className={p}>
-            GTFS, OSM, the network, the runtime JAR, engine versions, hashes and real service dates define one bundle identity. An invalid or expired identity fails closed. The app does not quietly extend timetable coverage.
+            Instead of treating the files as loose inputs, Afgang ties the GTFS archive, OSM data, serialized network, runtime JAR, engine versions, file hashes, and actual service dates into a single manifest. If a hash doesn&apos;t match or the service dates have expired, startup fails closed rather than stretching old timetable coverage.
           </p>
         </section>
 
         <section>
-          <h2 className={h2}>Four steps per update</h2>
+          <h2 className={h2}>Candidate, audit, promote, rollback</h2>
           <p className={p}>
-            Prepare an isolated candidate without interrupting the active app. Build the R5 network and audit service dates, warnings, hashes and boundary evidence. Stop briefly and promote the whole bundle with atomic directory renames. Then run health and smoke checks; if they fail, restore the previous bundle and its freshness state automatically.
+            Each feed update runs outside the live directory:
           </p>
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
+            <li>Prepare an isolated candidate directory while the current app keeps serving requests.</li>
+            <li>Build the R5 network and audit the service dates, build warnings, hashes, and the 12 representative rail and bus boundary checks (verifying the 250 m hex surface doesn&apos;t produce optimistic contour buckets).</li>
+            <li>Take a brief stop and swap the whole bundle in using atomic directory renames.</li>
+            <li>Run health and smoke checks right after startup; if anything fails, restore the previous bundle and its freshness state automatically.</li>
+          </ol>
         </section>
 
         <section>
-          <h2 className={h2}>What it costs and what it buys</h2>
+          <h2 className={h2}>The trade-off</h2>
           <p className={p}>
-            The cost is a short stop at promotion time and more bookkeeping than a simple rebuild. The gain is that a bad feed can only ever fail in the candidate stage or be rolled back. The full case study, including the verification numbers and the claim boundaries, is in the{" "}
-            <Link href="/en/projects/afgang/" className="underline decoration-zinc-400 underline-offset-[3px] hover:text-zinc-900 dark:decoration-zinc-500 dark:hover:text-zinc-100">
+            You do pay a short pause during the directory rename, and you keep extra manifest bookkeeping and disk space for the candidate and fallback bundles. For a local transport utility, that&apos;s an easy trade: a broken or expired feed can only fail in the candidate stage or roll straight back, never half-break the running app. The verification numbers and claim boundaries are in the{" "}
+            <Link href="/en/projects/afgang/" className={link}>
               Afgang case study
             </Link>
             .
