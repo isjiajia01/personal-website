@@ -113,7 +113,7 @@ export function DitherDemo({ paused = false }: { paused?: boolean }) {
       height={H}
       role="img"
       aria-label="Clouds rendered as a two-colour dither pattern; moving the pointer thins them out"
-      className="block h-auto w-full rounded-md"
+      className="block h-auto w-full"
       style={{ imageRendering: "pixelated" }}
     />
   );

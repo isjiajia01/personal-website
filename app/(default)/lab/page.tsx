@@ -19,14 +19,19 @@ export default function LabIndex() {
     <div>
       <h1 className="page-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">Lab</h1>
       <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">{description}</p>
-      <ul className="rise-own mt-10 grid auto-rows-[9rem] grid-flow-dense grid-cols-2 gap-2 sm:grid-cols-4">
+      <p className="mt-3 font-mono text-[11px] uppercase tracking-wider text-stone-400 dark:text-zinc-500">
+        {String(labEffects.length).padStart(2, "0")} experiments · all running live
+      </p>
+      {/* Collage: wider than the text column on large screens, one column with alternating
+          offsets on phones, a staggered 12-column grid from 640px (see layout in lib/lab-effects.ts). */}
+      <ul className="rise-own mt-14 grid grid-cols-1 items-start gap-y-14 sm:grid-cols-12 sm:gap-x-6 sm:gap-y-16 lg:-mx-24">
         {labEffects.map((e, index) => (
           <li
             key={e.slug}
-            className={`rise ${e.span}`}
-            style={{ "--i": 2 + index } as React.CSSProperties}
+            className={`rise max-sm:w-[92%] ${index % 2 ? "max-sm:ml-auto" : ""} ${e.layout.cols}`}
+            style={{ "--i": 3 + index } as React.CSSProperties}
           >
-            <LabTile slug={e.slug} />
+            <LabTile slug={e.slug} index={index} />
           </li>
         ))}
       </ul>

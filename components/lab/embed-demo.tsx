@@ -8,7 +8,7 @@ export function EmbedDemo({ src, title, tile = false, paused = false }: { src: s
   const root = () => document.documentElement;
   return (
     <div
-      className={tile ? "h-full w-full bg-stone-200 dark:bg-zinc-800" : "aspect-[3/2] w-full overflow-hidden rounded-md border border-stone-200 dark:border-zinc-700"}
+      className={tile ? "h-full w-full bg-stone-200 dark:bg-zinc-800" : "aspect-[3/2] w-full overflow-hidden"}
       onPointerEnter={tile ? undefined : () => root().classList.remove("cursor-ready")}
       onPointerLeave={tile ? undefined : () => root().classList.add("cursor-ready")}
     >

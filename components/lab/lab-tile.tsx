@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { labEffects } from "../../lib/lab-effects";
+import { labEffects, labNumber } from "../../lib/lab-effects";
 import { labDemos } from "./demos";
 
-// One bento tile: a live canvas that always running.
-export function LabTile({ slug }: { slug: string }) {
+// One collage piece: a live demo mounted like a print taped onto the paper, pinned a little
+// crooked, with a specimen caption underneath. Hover straightens and lifts it. The demo keeps
+// running while on screen and pauses off screen.
+export function LabTile({ slug, index }: { slug: string; index: number }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -19,21 +21,42 @@ export function LabTile({ slug }: { slug: string }) {
   const effect = labEffects.find((e) => e.slug === slug);
   const Demo = labDemos[slug];
   if (!effect || !Demo) return null;
+  const { tilt, aspect } = effect.layout;
+  // Tape leans against the print, and alternates side to side so it does not look stamped.
+  const tape = `${(index % 2 ? 1 : -1) * (2 + (index % 3))}deg`;
+  const tapeX = ["left-1/2", "left-[30%]", "left-[68%]"][index % 3];
 
   return (
     <Link
       ref={ref}
       href={`/lab/${slug}/`}
       aria-label={`${effect.title}: ${effect.summary}`}
-      className={`group relative block h-full overflow-hidden rounded-lg border border-stone-200 bg-stone-100 transition-transform duration-150 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-800 ${effect.span}`}
+      className="group block rounded-sm"
+      style={{ "--tilt": `${tilt}deg`, "--tape": tape } as React.CSSProperties}
     >
-      <div className="absolute inset-0 [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:rounded-none [&>canvas]:object-cover">
-        <Demo paused={!visible} />
+      <div className="relative rotate-(--tilt) bg-white p-1.5 shadow-[0_1px_2px_rgb(0_0_0/0.06),0_10px_24px_-12px_rgb(0_0_0/0.28)] transition-[rotate,translate,box-shadow,scale] duration-300 ease-snap group-hover:rotate-0 group-hover:-translate-y-1 group-hover:shadow-[0_2px_4px_rgb(0_0_0/0.06),0_22px_40px_-16px_rgb(0_0_0/0.35)] group-active:scale-[0.985] dark:bg-zinc-700/60 dark:shadow-[0_10px_28px_-12px_rgb(0_0_0/0.8)]">
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute -top-2.5 z-10 h-5 w-16 -translate-x-1/2 rotate-(--tape) bg-[#ece3c8]/80 shadow-[0_1px_1px_rgb(0_0_0/0.06)] dark:bg-white/15 ${tapeX}`}
+        />
+        <div className={`relative overflow-hidden bg-stone-100 dark:bg-zinc-800 ${aspect}`}>
+          <div className="absolute inset-0 [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:object-cover">
+            <Demo paused={!visible} />
+          </div>
+        </div>
       </div>
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2.5 pt-8 text-white">
-        <span className="block text-[13px] font-medium leading-4">{effect.title}</span>
-        <span className="block font-mono text-[10px] leading-4 text-white/75">{effect.tags}</span>
-      </span>
+      <div className="mt-4 px-0.5">
+        <div className="flex items-baseline gap-x-2">
+          <span className="font-mono text-[11px] tabular-nums text-stone-400 dark:text-zinc-500">{labNumber(slug)}</span>
+          <span className="project-title text-stone-800 transition-colors group-hover:text-(--rose) dark:text-zinc-100">
+            {effect.title}
+            <span aria-hidden="true" className="link-arrow ml-1 text-[0.7em] text-stone-400 dark:text-zinc-500">↗</span>
+          </span>
+        </div>
+        <p className="mt-0.5 font-mono text-[11px] leading-4 text-stone-400 dark:text-zinc-500">
+          <span className="text-stone-500 dark:text-zinc-400">{effect.date}</span> · {effect.tags}
+        </p>
+      </div>
     </Link>
   );
 }

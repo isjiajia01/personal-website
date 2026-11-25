@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { labEffects } from "../../../../lib/lab-effects";
+import { labEffects, labNumber } from "../../../../lib/lab-effects";
 import { labDemos } from "../../../../components/lab/demos";
 
 export const dynamicParams = false;
@@ -39,13 +39,18 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <p className="text-[13px] text-stone-500 dark:text-zinc-400">
         <Link href="/lab/" className={linkClass}>← Lab</Link>
       </p>
-      <div className="mt-4 overflow-hidden rounded-lg border border-stone-200 dark:border-zinc-700">
-        <Demo />
+      {/* Same mounted print as the collage, laid straight and wider than the text column. */}
+      <div className="mt-6 bg-white p-1.5 shadow-[0_1px_2px_rgb(0_0_0/0.06),0_14px_32px_-14px_rgb(0_0_0/0.3)] lg:-mx-24 dark:bg-zinc-700/60 dark:shadow-[0_14px_32px_-14px_rgb(0_0_0/0.8)]">
+        <div className="overflow-hidden bg-stone-100 dark:bg-zinc-800">
+          <Demo />
+        </div>
       </div>
-      <div className="mt-5 flex items-baseline gap-3">
+      <p className="mt-8 font-mono text-[11px] uppercase tracking-wider text-stone-400 dark:text-zinc-500">
+        No. {labNumber(slug)} · {e.date}
+      </p>
+      <div className="mt-1 flex flex-wrap items-baseline gap-x-3">
         <h1 className="page-title text-[15px] font-medium text-zinc-900 dark:text-zinc-100">{e.title}</h1>
         <span className="font-mono text-[12px] text-stone-400 dark:text-zinc-500">{e.tags}</span>
-        <span className="ml-auto text-[13px] tabular-nums text-stone-500 dark:text-zinc-400">{e.date}</span>
       </div>
       <p className="mt-1 text-[13px] leading-5 text-zinc-600 dark:text-zinc-400">{e.summary}</p>
       <p className="mt-4 text-[13px]">
