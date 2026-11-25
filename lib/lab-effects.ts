@@ -17,6 +17,15 @@ export type LabEffect = {
 
 export const labEffects: LabEffect[] = [
   {
+    slug: "bookshelf",
+    title: "Bookshelf",
+    date: "Nov 2026",
+    tags: "React · CSS 3D · gestures",
+    summary: "An endless shelf of spines, after SeaThru's shelf view. The front book turns to show its cover and leans toward the pointer. Drag, scroll sideways or use ← →; click the cover.",
+    layout: { cols: "sm:col-span-10 sm:col-start-2", aspect: "aspect-[2/1]", tilt: 0.8 },
+    repo: "https://github.com/isjiajia01/personal-website/blob/main/components/lab/bookshelf-demo.tsx",
+  },
+  {
     slug: "dither-clouds",
     title: "Dither clouds",
     date: "Nov 2026",
